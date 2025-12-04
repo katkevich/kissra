@@ -1,9 +1,11 @@
 #include <doctest/doctest.h>
 
+#include "kissra/kissra.hpp"
 #include <algorithm>
 #include <charconv>
+#include <forward_list>
 #include <iostream>
-#include <kissra/kissra.hpp>
+#include <list>
 #include <vector>
 
 KISSRA_REGISTER_MIXINS_BEGIN
@@ -140,6 +142,76 @@ TEST_CASE("drop + reverse + drop (should drop from the head (2 items) and from t
         actual.push_back(*item);
     }
     std::vector expected = { 5, 4, 3 };
+
+    REQUIRE_EQ(actual, expected);
+}
+
+TEST_CASE("drop_last + reverse + drop_last (should drop from the head (2 items) and from the tail (1 item))") {
+    std::array arr = { 1, 2, 3, 4, 5, 6 };
+
+    auto view = kissra::all(arr).drop_last(1).reverse().drop_last(2);
+
+    std::vector<int> actual;
+    while (auto item = view.next()) {
+        actual.push_back(*item);
+    }
+    std::vector expected = { 5, 4, 3 };
+
+    REQUIRE_EQ(actual, expected);
+}
+
+TEST_CASE("drop + drop_last (drop and drop_last intersects)") {
+    std::array arr = { 1, 2, 3, 4, 5, 6 };
+
+    auto view = kissra::all(arr).drop(4).reverse().drop_last(4);
+
+    std::vector<int> actual;
+    while (auto item = view.next()) {
+        actual.push_back(*item);
+    }
+    std::vector<int> expected = {};
+
+    REQUIRE_EQ(actual, expected);
+}
+
+TEST_CASE("drop + drop_last (drop and drop_last exactly match)") {
+    std::array arr = { 1, 2, 3, 4, 5, 6 };
+
+    auto view = kissra::all(arr).drop(3).drop_last(3);
+
+    std::vector<int> actual;
+    while (auto item = view.next()) {
+        actual.push_back(*item);
+    }
+    std::vector<int> expected = {};
+
+    REQUIRE_EQ(actual, expected);
+}
+
+TEST_CASE("drop + drop_last (random access source collection, drop and drop_last keep exactly one element)") {
+    std::array arr = { 1, 2, 3, 4, 5, 6 };
+
+    auto view = kissra::all(arr).drop(2).drop_last(3);
+
+    std::vector<int> actual;
+    while (auto item = view.next()) {
+        actual.push_back(*item);
+    }
+    std::vector<int> expected = { 3 };
+
+    REQUIRE_EQ(actual, expected);
+}
+
+TEST_CASE("drop + drop_last (bidir source collection, drop and drop_last keep exactly one element)") {
+    std::list coll = { 1, 2, 3, 4, 5, 6 };
+
+    auto view = kissra::all(coll).drop(2).drop_last(3);
+
+    std::vector<int> actual;
+    while (auto item = view.next()) {
+        actual.push_back(*item);
+    }
+    std::vector<int> expected = { 3 };
 
     REQUIRE_EQ(actual, expected);
 }

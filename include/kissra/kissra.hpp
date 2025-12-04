@@ -1,5 +1,6 @@
 #pragma once
 #include "kissra/all_view.hpp"
+#include "kissra/drop_last_view.hpp"
 #include "kissra/drop_view.hpp"
 #include "kissra/filter_view.hpp"
 #include "kissra/impl/registration_macro.hpp"

@@ -75,7 +75,8 @@ constexpr std::size_t mixin_idx{};
     KISSRA_REGISTER_MIXIN(kissra::filter_mixin)    \
     KISSRA_REGISTER_MIXIN(kissra::transform_mixin) \
     KISSRA_REGISTER_MIXIN(kissra::reverse_mixin)   \
-    KISSRA_REGISTER_MIXIN(kissra::drop_mixin)
+    KISSRA_REGISTER_MIXIN(kissra::drop_mixin)      \
+    KISSRA_REGISTER_MIXIN(kissra::drop_last_mixin)
 
 namespace kissra {
 /**
