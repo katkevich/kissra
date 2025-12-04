@@ -115,4 +115,32 @@ TEST_CASE("transform + drop (dropping the amount greater than the size of the or
 
     REQUIRE_EQ(actual, expected);
 }
+
+TEST_CASE("drop + reverse (should drop from the head)") {
+    std::array arr = { 1, 2, 3, 4 };
+
+    auto view = kissra::all(arr).drop(2).reverse();
+
+    std::vector<int> actual;
+    while (auto item = view.next()) {
+        actual.push_back(*item);
+    }
+    std::vector expected = { 4, 3 };
+
+    REQUIRE_EQ(actual, expected);
+}
+
+TEST_CASE("drop + reverse + drop (should drop from the head (2 items) and from the tail (1 item))") {
+    std::array arr = { 1, 2, 3, 4, 5, 6 };
+
+    auto view = kissra::all(arr).drop(2).reverse().drop(1);
+
+    std::vector<int> actual;
+    while (auto item = view.next()) {
+        actual.push_back(*item);
+    }
+    std::vector expected = { 5, 4, 3 };
+
+    REQUIRE_EQ(actual, expected);
+}
 } // namespace kissra::test

@@ -39,7 +39,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> reverse_next(this TSelf&& self) {
+    next_result_t<TSelf> next_tail(this TSelf&& self) {
         if (self.cursor != self.sentinel) {
             return *--self.sentinel;
         }
@@ -48,24 +48,31 @@ public:
 
     template <typename TSelf>
         requires is_random
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    void advance(this TSelf&& self, std::size_t n) {
         self.cursor += std::min(n, std::size_t(std::distance(self.cursor, self.sentinel)));
-        if (self.cursor != self.sentinel) {
-            return *self.cursor++;
-        } else {
-            return {};
+    }
+
+    template <typename TSelf>
+    void advance(this TSelf&& self, std::size_t n) {
+        while (self.cursor != self.sentinel && n != 0) {
+            ++self.cursor;
+            --n;
         }
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        while (self.cursor != self.sentinel) {
-            if (n-- == 0) {
-                return *self.cursor;
-            }
-            ++self.cursor;
+        requires is_random
+    void advance_tail(this TSelf&& self, std::size_t n) {
+        self.sentinel -= std::min(n, std::size_t(std::distance(self.cursor, self.sentinel)));
+    }
+
+    template <typename TSelf>
+        requires(is_common && is_bidir && !is_random)
+    void advance_tail(this TSelf&& self, std::size_t n) {
+        while (self.cursor != self.sentinel && n != 0) {
+            --self.sentinel;
+            --n;
         }
-        return {};
     }
 
 private:

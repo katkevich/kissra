@@ -38,8 +38,8 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> reverse_next(this TSelf&& self) {
-        while (auto item = self.underlying_view.reverse_next()) {
+    next_result_t<TSelf> next_tail(this TSelf&& self) {
+        while (auto item = self.underlying_view.next_tail()) {
             if (std::invoke(self.fn, *item)) {
                 return item;
             }
@@ -48,13 +48,22 @@ public:
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    void advance(this TSelf&& self, std::size_t n) {
         while (auto item = self.underlying_view.next()) {
-            if (std::invoke(self.fn, *item) && n-- == 0) {
-                return item;
+            if (std::invoke(self.fn, *item) && --n == 0) {
+                return;
             }
         }
-        return {};
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    void advance_tail(this TSelf&& self, std::size_t n) {
+        while (auto item = self.underlying_view.next_tail()) {
+            if (std::invoke(self.fn, *item) && --n == 0) {
+                return;
+            }
+        }
     }
 
 private:

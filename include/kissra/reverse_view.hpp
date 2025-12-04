@@ -3,7 +3,6 @@
 
 #include "beman/optional/optional.hpp"
 #include "kissra/impl/registration_macro.hpp"
-#include "kissra/mixin/advance_mixin.hpp"
 
 namespace kissra {
 template <typename TUnderlyingView, typename... TMixins>
@@ -29,12 +28,23 @@ public:
     template <typename TSelf>
         requires is_common && is_bidir
     next_result_t<TSelf> next(this TSelf&& self) {
-        return self.underlying_view.reverse_next();
+        return self.underlying_view.next_tail();
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> reverse_next(this TSelf&& self) {
+    next_result_t<TSelf> next_tail(this TSelf&& self) {
         return self.underlying_view.next();
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    void advance(this TSelf&& self, std::size_t n) {
+        self.underlying_view.advance_tail(n);
+    }
+
+    template <typename TSelf>
+    void advance_tail(this TSelf&& self, std::size_t n) {
+        self.underlying_view.advance(n);
     }
 
 private:

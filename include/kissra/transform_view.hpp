@@ -1,7 +1,6 @@
 #pragma once
 #include "beman/optional/optional.hpp"
 #include "kissra/impl/registration_macro.hpp"
-#include "kissra/mixin/advance_mixin.hpp"
 #include <algorithm>
 
 namespace kissra {
@@ -39,19 +38,22 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> reverse_next(this TSelf&& self) {
-        if (auto item = self.underlying_view.reverse_next()) {
+    next_result_t<TSelf> next_tail(this TSelf&& self) {
+        if (auto item = self.underlying_view.next_tail()) {
             return std::invoke(self.fn, *item);
         }
         return {};
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        if (auto item = self.underlying_view.advance(n)) {
-            return std::invoke(self.fn, *item);
-        }
-        return {};
+    void advance(this TSelf&& self, std::size_t n) {
+        self.underlying_view.advance(n);
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    void advance_tail(this TSelf&& self, std::size_t n) {
+        self.underlying_view.advance_tail(n);
     }
 
 private:

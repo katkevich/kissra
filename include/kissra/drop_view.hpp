@@ -3,7 +3,6 @@
 
 #include "beman/optional/optional.hpp"
 #include "kissra/impl/registration_macro.hpp"
-#include "kissra/mixin/advance_mixin.hpp"
 
 namespace kissra {
 template <typename TUnderlyingView, typename... TMixins>
@@ -30,30 +29,38 @@ public:
 
     template <typename TSelf>
     next_result_t<TSelf> next(this TSelf&& self) {
-        if (self.curr_n == 0) {
+        if (self.curr_n != 0) {
+            self.curr_n = 0;
+            self.advance(self.n);
             return self.underlying_view.next();
         } else {
-            self.curr_n = 0;
-            return self.advance(self.n);
+            return self.underlying_view.next();
         }
     }
 
     template <typename TSelf>
-        requires is_common && is_random
-    next_result_t<TSelf> reverse_next(this TSelf&& self) {
-        // while (auto item = self.underlying_view.reverse_next()) {
-        //     if (std::invoke(self.fn, *item)) {
-        //         return item;
-        //     }
-        // }
-        return {};
+        requires is_common && is_bidir
+    next_result_t<TSelf> next_tail(this TSelf&& self) {
+        if (self.curr_n != 0) {
+            self.curr_n = 0;
+            self.advance(self.n);
+            return self.underlying_view.next_tail();
+        } else {
+            return self.underlying_view.next_tail();
+        }
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    void advance(this TSelf&& self, std::size_t n) {
         const auto total = self.curr_n + n;
         self.curr_n = 0;
-        return self.underlying_view.advance(total);
+        self.underlying_view.advance(total);
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    void advance_tail(this TSelf&& self, std::size_t n) {
+        self.underlying_view.advance_tail(n);
     }
 
 private:
