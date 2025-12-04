@@ -36,6 +36,13 @@
 *.exe
 *.out
 *.app
+build/
 
 # debug information files
 *.dwo
+
+# IDE
+.vscode
+
+# CMake
+CMakePresets.json
