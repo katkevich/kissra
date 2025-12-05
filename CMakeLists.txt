@@ -16,8 +16,16 @@ project(kissra VERSION 0.5)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(MORFO_HEADERS
     include/kissra/kissra.hpp
-    include/kissra/all_iter.hpp
-    include/kissra/filter_iter.hpp
+    include/kissra/iter/all_iter.hpp
+    include/kissra/iter/drop_iter.hpp
+    include/kissra/iter/drop_last_iter.hpp
+    include/kissra/iter/drop_last_while_iter.hpp
+    include/kissra/iter/drop_while_iter.hpp
+    include/kissra/iter/filter_iter.hpp
+    include/kissra/iter/reverse_iter.hpp
+    include/kissra/iter/transform_iter.hpp
+    include/kissra/impl/registration_macro.hpp
+    include/kissra/fn/cmp.hpp
 )
 
 add_library(kissra INTERFACE)
