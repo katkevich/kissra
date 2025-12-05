@@ -13,7 +13,7 @@ public:
     using const_reference = typename TContainer::const_reference;
 
     template <typename TSelf>
-    using next_result_t = beman::optional::optional<std::conditional_t< //
+    using ref_t = beman::optional::optional<std::conditional_t< //
         std::is_const_v<std::remove_reference_t<TSelf>>,
         const_reference,
         reference>>;
@@ -30,7 +30,7 @@ public:
         , sentinel(std::ranges::end(container)) {}
 
     template <typename TSelf>
-    next_result_t<TSelf> next(this TSelf&& self) {
+    ref_t<TSelf> next(this TSelf&& self) {
         if (self.cursor != self.sentinel) {
             return *self.cursor++;
         }
@@ -39,7 +39,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> next_tail(this TSelf&& self) {
+    ref_t<TSelf> next_back(this TSelf&& self) {
         if (self.cursor != self.sentinel) {
             return *--self.sentinel;
         }
@@ -48,13 +48,13 @@ public:
 
     template <typename TSelf>
         requires is_random
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         self.cursor += std::min(n, std::size_t(self.sentinel - self.cursor));
         return self.front();
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         while (n != 0 && self.cursor != self.sentinel) {
             ++self.cursor;
             --n;
@@ -64,14 +64,14 @@ public:
 
     template <typename TSelf>
         requires is_random
-    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         self.sentinel -= std::min(n, std::size_t(self.sentinel - self.cursor));
         return self.back();
     }
 
     template <typename TSelf>
         requires(is_common && is_bidir && !is_random)
-    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         while (n != 0 && self.cursor != self.sentinel) {
             --self.sentinel;
             --n;
@@ -80,7 +80,7 @@ public:
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> front(this TSelf&& self) {
+    ref_t<TSelf> front(this TSelf&& self) {
         if (self.cursor != self.sentinel) {
             return *self.cursor;
         }
@@ -89,7 +89,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> back(this TSelf&& self) {
+    ref_t<TSelf> back(this TSelf&& self) {
         if (self.cursor != self.sentinel) {
             auto sentinel_copy = self.sentinel;
             return *--sentinel_copy;

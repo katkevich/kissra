@@ -13,7 +13,7 @@ public:
     using const_reference = typename TUnderlyingView::const_reference;
 
     template <typename TSelf>
-    using next_result_t = typename TUnderlyingView::template next_result_t<TSelf>;
+    using ref_t = typename TUnderlyingView::template ref_t<TSelf>;
 
     static constexpr bool is_sized = false;
     static constexpr bool is_common = TUnderlyingView::is_common;
@@ -27,7 +27,7 @@ public:
         , underlying_view(std::forward<UUnderlyingView>(underlying_view)) {}
 
     template <typename TSelf>
-    next_result_t<TSelf> next(this TSelf&& self) {
+    ref_t<TSelf> next(this TSelf&& self) {
         while (auto item = self.underlying_view.next()) {
             if (std::invoke(self.fn, *item)) {
                 return item;
@@ -38,8 +38,8 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> next_tail(this TSelf&& self) {
-        while (auto item = self.underlying_view.next_tail()) {
+    ref_t<TSelf> next_back(this TSelf&& self) {
+        while (auto item = self.underlying_view.next_back()) {
             if (std::invoke(self.fn, *item)) {
                 return item;
             }
@@ -48,7 +48,7 @@ public:
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         auto item = self.underlying_view.front();
         for (; item; item = self.underlying_view.advance(1)) {
             if (std::invoke(self.fn, *item)) {
@@ -62,9 +62,9 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         auto item = self.underlying_view.back();
-        for (; item; item = self.underlying_view.advance_tail(1)) {
+        for (; item; item = self.underlying_view.advance_back(1)) {
             if (std::invoke(self.fn, *item)) {
                 if (n-- == 0) {
                     break;
@@ -75,14 +75,14 @@ public:
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> front(this TSelf&& self) {
+    ref_t<TSelf> front(this TSelf&& self) {
         return self.advance(0);
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> back(this TSelf&& self) {
-        return self.advance_tail(0);
+    ref_t<TSelf> back(this TSelf&& self) {
+        return self.advance_back(0);
     }
 
 private:

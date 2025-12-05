@@ -13,7 +13,7 @@ public:
     using const_reference = typename TUnderlyingView::const_reference;
 
     template <typename TSelf>
-    using next_result_t = typename TUnderlyingView::template next_result_t<TSelf>;
+    using ref_t = typename TUnderlyingView::template ref_t<TSelf>;
 
     static constexpr bool is_sized = TUnderlyingView::is_sized;
     static constexpr bool is_common = TUnderlyingView::is_common;
@@ -27,34 +27,34 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> next(this TSelf&& self) {
-        return self.underlying_view.next_tail();
+    ref_t<TSelf> next(this TSelf&& self) {
+        return self.underlying_view.next_back();
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> next_tail(this TSelf&& self) {
+    ref_t<TSelf> next_back(this TSelf&& self) {
         return self.underlying_view.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        return self.underlying_view.advance_tail(n);
+    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+        return self.underlying_view.advance_back(n);
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         return self.underlying_view.advance(n);
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> front(this TSelf&& self) {
+    ref_t<TSelf> front(this TSelf&& self) {
         return self.underlying_view.back();
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> back(this TSelf&& self) {
+    ref_t<TSelf> back(this TSelf&& self) {
         return self.underlying_view.front();
     }
 

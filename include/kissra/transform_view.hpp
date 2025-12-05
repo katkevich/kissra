@@ -12,7 +12,7 @@ public:
     using const_reference = std::invoke_result_t<TFn, typename TUnderlyingView::const_reference>;
 
     template <typename TSelf>
-    using next_result_t = beman::optional::optional<std::conditional_t< //
+    using ref_t = beman::optional::optional<std::conditional_t< //
         std::is_const_v<std::remove_reference_t<TSelf>>,
         const_reference,
         reference>>;
@@ -29,7 +29,7 @@ public:
         , underlying_view(std::forward<UUnderlyingView>(underlying_view)) {}
 
     template <typename TSelf>
-    next_result_t<TSelf> next(this TSelf&& self) {
+    ref_t<TSelf> next(this TSelf&& self) {
         if (auto item = self.underlying_view.next()) {
             return std::invoke(self.fn, *item);
         }
@@ -38,15 +38,15 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> next_tail(this TSelf&& self) {
-        if (auto item = self.underlying_view.next_tail()) {
+    ref_t<TSelf> next_back(this TSelf&& self) {
+        if (auto item = self.underlying_view.next_back()) {
             return std::invoke(self.fn, *item);
         }
         return {};
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         if (auto item = self.underlying_view.advance(n)) {
             return std::invoke(self.fn, *item);
         }
@@ -55,15 +55,15 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
-        if (auto item = self.underlying_view.advance_tail(n)) {
+    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
+        if (auto item = self.underlying_view.advance_back(n)) {
             return std::invoke(self.fn, *item);
         }
         return;
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> front(this TSelf&& self) {
+    ref_t<TSelf> front(this TSelf&& self) {
         if (auto item = self.underlying_view.front()) {
             return std::invoke(self.fn, *item);
         }
@@ -72,7 +72,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> back(this TSelf&& self) {
+    ref_t<TSelf> back(this TSelf&& self) {
         if (auto item = self.underlying_view.back()) {
             return std::invoke(self.fn, *item);
         }

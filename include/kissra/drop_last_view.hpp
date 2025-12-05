@@ -13,7 +13,7 @@ public:
     using const_reference = typename TUnderlyingView::const_reference;
 
     template <typename TSelf>
-    using next_result_t = typename TUnderlyingView::template next_result_t<TSelf>;
+    using ref_t = typename TUnderlyingView::template ref_t<TSelf>;
 
     static constexpr bool is_sized = TUnderlyingView::is_sized;
     static constexpr bool is_common = TUnderlyingView::is_common;
@@ -29,51 +29,51 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> next(this TSelf&& self) {
+    ref_t<TSelf> next(this TSelf&& self) {
         if (self.curr_n) {
-            self.advance_tail(0);
+            self.advance_back(0);
         }
         return self.underlying_view.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> next_tail(this TSelf&& self) {
+    ref_t<TSelf> next_back(this TSelf&& self) {
         if (self.curr_n) {
-            self.advance_tail(0);
+            self.advance_back(0);
         }
-        return self.underlying_view.next_tail();
+        return self.underlying_view.next_back();
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         if (self.curr_n) {
-            self.advance_tail(0);
+            self.advance_back(0);
         }
         return self.underlying_view.advance(n);
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         const auto total = self.curr_n + n;
         self.curr_n = 0;
-        return self.underlying_view.advance_tail(total);
+        return self.underlying_view.advance_back(total);
     }
 
     template <typename TSelf>
-    next_result_t<TSelf> front(this TSelf&& self) {
+    ref_t<TSelf> front(this TSelf&& self) {
         if (self.curr_n) {
-            self.advance_tail(0);
+            self.advance_back(0);
         }
         return self.underlying_view.front();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    next_result_t<TSelf> back(this TSelf&& self) {
+    ref_t<TSelf> back(this TSelf&& self) {
         if (self.curr_n) {
-            return self.advance_tail(0);
+            return self.advance_back(0);
         }
         return self.underlying_view.back();
     }
