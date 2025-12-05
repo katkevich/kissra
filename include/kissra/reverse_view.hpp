@@ -38,13 +38,24 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    void advance(this TSelf&& self, std::size_t n) {
-        self.underlying_view.advance_tail(n);
+    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+        return self.underlying_view.advance_tail(n);
     }
 
     template <typename TSelf>
-    void advance_tail(this TSelf&& self, std::size_t n) {
-        self.underlying_view.advance(n);
+    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+        return self.underlying_view.advance(n);
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    next_result_t<TSelf> front(this TSelf&& self) {
+        return self.underlying_view.back();
+    }
+
+    template <typename TSelf>
+    next_result_t<TSelf> back(this TSelf&& self) {
+        return self.underlying_view.front();
     }
 
 private:

@@ -48,31 +48,53 @@ public:
 
     template <typename TSelf>
         requires is_random
-    void advance(this TSelf&& self, std::size_t n) {
-        self.cursor += std::min(n, std::size_t(std::distance(self.cursor, self.sentinel)));
+    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+        self.cursor += std::min(n, std::size_t(self.sentinel - self.cursor));
+        return self.front();
     }
 
     template <typename TSelf>
-    void advance(this TSelf&& self, std::size_t n) {
-        while (self.cursor != self.sentinel && n != 0) {
+    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+        while (n != 0 && self.cursor != self.sentinel) {
             ++self.cursor;
             --n;
         }
+        return self.front();
     }
 
     template <typename TSelf>
         requires is_random
-    void advance_tail(this TSelf&& self, std::size_t n) {
-        self.sentinel -= std::min(n, std::size_t(std::distance(self.cursor, self.sentinel)));
+    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+        self.sentinel -= std::min(n, std::size_t(self.sentinel - self.cursor));
+        return self.back();
     }
 
     template <typename TSelf>
         requires(is_common && is_bidir && !is_random)
-    void advance_tail(this TSelf&& self, std::size_t n) {
-        while (self.cursor != self.sentinel && n != 0) {
+    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
+        while (n != 0 && self.cursor != self.sentinel) {
             --self.sentinel;
             --n;
         }
+        return self.back();
+    }
+
+    template <typename TSelf>
+    next_result_t<TSelf> front(this TSelf&& self) {
+        if (self.cursor != self.sentinel) {
+            return *self.cursor;
+        }
+        return {};
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    next_result_t<TSelf> back(this TSelf&& self) {
+        if (self.cursor != self.sentinel) {
+            auto sentinel_copy = self.sentinel;
+            return *--sentinel_copy;
+        }
+        return {};
     }
 
 private:

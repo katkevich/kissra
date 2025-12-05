@@ -30,38 +30,52 @@ public:
     template <typename TSelf>
         requires is_common && is_bidir
     next_result_t<TSelf> next(this TSelf&& self) {
-        if (self.curr_n != 0) {
-            self.curr_n = 0;
-            self.advance_tail(self.n);
-            return self.underlying_view.next();
-        } else {
-            return self.underlying_view.next();
+        if (self.curr_n) {
+            self.advance_tail(0);
         }
+        return self.underlying_view.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
     next_result_t<TSelf> next_tail(this TSelf&& self) {
-        if (self.curr_n != 0) {
-            self.curr_n = 0;
-            self.advance_tail(self.n);
-            return self.underlying_view.next_tail();
-        } else {
-            return self.underlying_view.next_tail();
+        if (self.curr_n) {
+            self.advance_tail(0);
         }
+        return self.underlying_view.next_tail();
     }
 
     template <typename TSelf>
-    void advance(this TSelf&& self, std::size_t n) {
-        self.underlying_view.advance(n);
+    next_result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+        if (self.curr_n) {
+            self.advance_tail(0);
+        }
+        return self.underlying_view.advance(n);
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    void advance_tail(this TSelf&& self, std::size_t n) {
+    next_result_t<TSelf> advance_tail(this TSelf&& self, std::size_t n) {
         const auto total = self.curr_n + n;
         self.curr_n = 0;
-        self.underlying_view.advance_tail(total);
+        return self.underlying_view.advance_tail(total);
+    }
+
+    template <typename TSelf>
+    next_result_t<TSelf> front(this TSelf&& self) {
+        if (self.curr_n) {
+            self.advance_tail(0);
+        }
+        return self.underlying_view.front();
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    next_result_t<TSelf> back(this TSelf&& self) {
+        if (self.curr_n) {
+            return self.advance_tail(0);
+        }
+        return self.underlying_view.back();
     }
 
 private:

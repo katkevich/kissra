@@ -21,8 +21,10 @@ constexpr std::size_t mixins_count();
 template <std::size_t N>
 struct mixin_tag {};
 
+namespace {
 template <typename TMixin>
 constexpr std::size_t mixin_idx{};
+}
 } // namespace kissra::impl
 
 /**
@@ -55,8 +57,10 @@ constexpr std::size_t mixin_idx{};
     namespace kissra::impl {                                                                                  \
     /* We must ensure that `mixin_idx<Mixin>` have the same value across all TUs to prevent ODR violations */ \
     /* thus the `mixins_count_baseline` usage (in this case delta should always be the same) */               \
+    namespace {                                                                                               \
     template <>                                                                                               \
     constexpr std::size_t mixin_idx<Mixin> = __COUNTER__ - mixins_count_baseline - 1;                         \
+    }                                                                                                         \
     auto loophole(mixin_tag<mixin_idx<Mixin>>);                                                               \
     static_assert(sizeof(loophole_t<Mixin, mixin_idx<Mixin>>));                                               \
     }

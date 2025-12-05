@@ -12,6 +12,8 @@ FetchContent_MakeAvailable(doctest)
 
 add_executable(kissra_tests
     src/view_chains.cpp
+    src/filter.cpp
+    src/drop.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
 
