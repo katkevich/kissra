@@ -6,7 +6,7 @@ namespace kissra {
 struct advance_mixin {
     template <typename TSelf>
     auto advance(this TSelf&& self, std::size_t n) {
-        return self.underlying_view.advance(n);
+        return self.underlying_iter.advance(n);
     }
 };
 } // namespace kissra

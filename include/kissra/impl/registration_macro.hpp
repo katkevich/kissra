@@ -8,7 +8,7 @@ namespace kissra::impl {
 
 /**
  * Keep track how much mixin were registered using macro from below.
- * Each mixin provides an implementation for a particular view (see filter_view & filter_mixin as an example).
+ * Each mixin provides an implementation for a particular iterator (see filter_iter & filter_mixin as an example).
  * "DeferInstantiation" allows us to use these functions while they are not yet defined (defered instantiation).
  */
 template <typename DeferInstantiation = void>
@@ -86,7 +86,7 @@ constexpr std::size_t mixin_idx{};
 
 namespace kissra {
 /**
- * Get all registered mixin types. You will need this list while creating your own custom_view & custom_mixin.
+ * Get all registered mixin types. You will need this list while creating your own custom_iter & custom_mixin.
  */
 template <typename DeferInstantiation = void>
 auto registered_mixins() {

@@ -11,7 +11,7 @@ FetchContent_Declare(doctest
 FetchContent_MakeAvailable(doctest)
 
 add_executable(kissra_tests
-    src/view_chains.cpp
+    src/iter_chains.cpp
     src/filter.cpp
     src/drop.cpp
     src/drop_while.cpp

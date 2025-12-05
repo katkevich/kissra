@@ -15,121 +15,121 @@ KISSRA_REGISTER_MIXINS_END
 namespace kissra::test {
 using namespace std::string_literals;
 
-TEST_CASE("filter_view::advance(0) should filter out an element but not move the cursor") {
+TEST_CASE("filter_iter::advance(0) should filter out an element but not move the cursor") {
     std::array arr = { 1, 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.advance(0), 2);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.advance(0), 2);
 }
 
-TEST_CASE("filter_view::front() should filter out an element but not move the cursor") {
+TEST_CASE("filter_iter::front() should filter out an element but not move the cursor") {
     std::array arr = { 1, 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.front(), 2);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.front(), 2);
 }
 
-TEST_CASE("filter_view::advance(0) should not move cursor") {
+TEST_CASE("filter_iter::advance(0) should not move cursor") {
     std::array arr = { 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.advance(0), 2);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.advance(0), 2);
 }
 
-TEST_CASE("filter_view::front() should not move cursor") {
+TEST_CASE("filter_iter::front() should not move cursor") {
     std::array arr = { 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.front(), 2);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.front(), 2);
 }
 
-TEST_CASE("filter_view::advance_back(0) should filter out an element but not move the sentinel") {
+TEST_CASE("filter_iter::advance_back(0) should filter out an element but not move the sentinel") {
     std::array arr = { 1, 2, 3, 4, 5 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.advance_back(0), 4);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.advance_back(0), 4);
 }
 
-TEST_CASE("filter_view::back() should filter out an element but not move the sentinel") {
+TEST_CASE("filter_iter::back() should filter out an element but not move the sentinel") {
     std::array arr = { 1, 2, 3, 4, 5 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.back(), 4);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.back(), 4);
 }
 
-TEST_CASE("filter_view::advance_back(0) should not move the sentinel") {
+TEST_CASE("filter_iter::advance_back(0) should not move the sentinel") {
     std::array arr = { 1, 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.advance_back(0), 4);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.advance_back(0), 4);
 }
 
-TEST_CASE("filter_view::back() should not move the sentinel") {
+TEST_CASE("filter_iter::back() should not move the sentinel") {
     std::array arr = { 1, 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.advance_back(0), 4);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.advance_back(0), 4);
 }
 
 
-TEST_CASE("filter_view::next() should filter out an element AND move the cursor") {
+TEST_CASE("filter_iter::next() should filter out an element AND move the cursor") {
     std::array arr = { 1, 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.next(), 2);
-    REQUIRE_EQ(*view.front(), 4);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.next(), 2);
+    REQUIRE_EQ(*iter.front(), 4);
 }
 
-TEST_CASE("filter_view::next() should move the cursor") {
+TEST_CASE("filter_iter::next() should move the cursor") {
     std::array arr = { 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.next(), 2);
-    REQUIRE_EQ(*view.front(), 4);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.next(), 2);
+    REQUIRE_EQ(*iter.front(), 4);
 }
 
-TEST_CASE("filter_view::next_back() should filter out an element AND move the cursor") {
+TEST_CASE("filter_iter::next_back() should filter out an element AND move the cursor") {
     std::array arr = { 1, 2, 3, 4, 5 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.next_back(), 4);
-    REQUIRE_EQ(*view.back(), 2);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.next_back(), 4);
+    REQUIRE_EQ(*iter.back(), 2);
 }
 
-TEST_CASE("filter_view::next_back() should move the cursor") {
+TEST_CASE("filter_iter::next_back() should move the cursor") {
     std::array arr = { 1, 2, 3, 4 };
 
-    auto view = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
-    REQUIRE_EQ(*view.next_back(), 4);
-    REQUIRE_EQ(*view.back(), 2);
+    auto iter = kissra::all(arr).filter([](const auto& s) { return s % 2 == 0; });
+    REQUIRE_EQ(*iter.next_back(), 4);
+    REQUIRE_EQ(*iter.back(), 2);
 }
 
 TEST_CASE("two opposite consecutive filters filter out all elements") {
     std::array arr = { 1, 2, 3, 4 };
 
     {
-        auto view = kissra::all(arr) //
+        auto iter = kissra::all(arr) //
                         .filter([](const auto& s) { return s % 2 == 0; })
                         .filter([](const auto& s) { return s % 2 != 0; });
-        REQUIRE_FALSE(view.next());
+        REQUIRE_FALSE(iter.next());
     }
     {
-        auto view = kissra::all(arr) //
+        auto iter = kissra::all(arr) //
                         .filter([](const auto& s) { return s % 2 == 0; })
                         .filter([](const auto& s) { return s % 2 != 0; });
-        REQUIRE_FALSE(view.next_back());
+        REQUIRE_FALSE(iter.next_back());
     }
     {
-        auto view = kissra::all(arr) //
+        auto iter = kissra::all(arr) //
                         .filter([](const auto& s) { return s % 2 == 0; })
                         .filter([](const auto& s) { return s % 2 != 0; });
-        REQUIRE_FALSE(view.back());
+        REQUIRE_FALSE(iter.back());
     }
     {
-        auto view = kissra::all(arr) //
+        auto iter = kissra::all(arr) //
                         .filter([](const auto& s) { return s % 2 == 0; })
                         .filter([](const auto& s) { return s % 2 != 0; });
-        REQUIRE_FALSE(view.front());
+        REQUIRE_FALSE(iter.front());
     }
 }
 } // namespace kissra::test

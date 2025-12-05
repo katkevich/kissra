@@ -16,8 +16,8 @@ project(kissra VERSION 0.5)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(MORFO_HEADERS
     include/kissra/kissra.hpp
-    include/kissra/all_view.hpp
-    include/kissra/filter_view.hpp
+    include/kissra/all_iter.hpp
+    include/kissra/filter_iter.hpp
 )
 
 add_library(kissra INTERFACE)

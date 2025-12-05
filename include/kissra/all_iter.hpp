@@ -6,7 +6,7 @@
 
 namespace kissra {
 template <std::ranges::range TContainer, typename... TMixins>
-class all_view : public TMixins... {
+class all_iter : public TMixins... {
 public:
     using value_type = typename TContainer::value_type;
     using reference = typename TContainer::reference;
@@ -24,7 +24,7 @@ public:
     static constexpr bool is_bidir = std::ranges::bidirectional_range<TContainer>;
     static constexpr bool is_random = std::ranges::random_access_range<TContainer>;
 
-    all_view(TContainer& container)
+    all_iter(TContainer& container)
         : container(std::addressof(container))
         , cursor(std::ranges::begin(container))
         , sentinel(std::ranges::end(container)) {}
@@ -106,6 +106,6 @@ private:
 template <typename TContainer, typename DeferInstantiation = void>
 auto all(TContainer& container) {
     auto [... mixins] = registered_mixins<DeferInstantiation>();
-    return all_view<TContainer, decltype(mixins)...>{ container };
+    return all_iter<TContainer, decltype(mixins)...>{ container };
 }
 } // namespace kissra

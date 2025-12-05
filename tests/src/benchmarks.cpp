@@ -40,13 +40,13 @@ static void BM_KissraRangesNext(benchmark::State& state) {
     for (auto _ : state) {
         std::vector<int> vec;
 
-        auto view = kissra::all(arr)
+        auto iter = kissra::all(arr)
                         .filter([](const auto& s) { return s.size() != 2; })
                         .transform([](const auto& s) { return std::atoi(s.c_str()); })
                         .transform([](int i) { return i + 3; })
                         .filter([](int i) { return i % 2 == 0; });
 
-        while (auto item = view.next()) {
+        while (auto item = iter.next()) {
             vec.push_back(*item);
         }
     }
