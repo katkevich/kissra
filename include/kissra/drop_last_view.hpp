@@ -30,26 +30,20 @@ public:
     template <typename TSelf>
         requires is_common && is_bidir
     ref_t<TSelf> next(this TSelf&& self) {
-        if (self.curr_n) {
-            self.advance_back(0);
-        }
+        self.ff();
         return self.underlying_view.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
     ref_t<TSelf> next_back(this TSelf&& self) {
-        if (self.curr_n) {
-            self.advance_back(0);
-        }
+        self.ff();
         return self.underlying_view.next_back();
     }
 
     template <typename TSelf>
     ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        if (self.curr_n) {
-            self.advance_back(0);
-        }
+        self.ff();
         return self.underlying_view.advance(n);
     }
 
@@ -63,9 +57,7 @@ public:
 
     template <typename TSelf>
     ref_t<TSelf> front(this TSelf&& self) {
-        if (self.curr_n) {
-            self.advance_back(0);
-        }
+        self.ff();
         return self.underlying_view.front();
     }
 
@@ -76,6 +68,14 @@ public:
             return self.advance_back(0);
         }
         return self.underlying_view.back();
+    }
+
+private:
+    template <typename TSelf>
+    void ff(this TSelf&& self) {
+        if (self.curr_n) {
+            self.advance_back(0);
+        }
     }
 
 private:

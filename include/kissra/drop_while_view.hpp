@@ -5,8 +5,8 @@
 #include "kissra/impl/registration_macro.hpp"
 
 namespace kissra {
-template <typename TUnderlyingView, typename... TMixins>
-class drop_view : public TMixins... {
+template <typename TFn, typename TUnderlyingView, typename... TMixins>
+class drop_while_view : public TMixins... {
 public:
     using value_type = typename TUnderlyingView::value_type;
     using reference = typename TUnderlyingView::reference;
@@ -15,16 +15,15 @@ public:
     template <typename TSelf>
     using ref_t = typename TUnderlyingView::template ref_t<TSelf>;
 
-    static constexpr bool is_sized = TUnderlyingView::is_sized;
+    static constexpr bool is_sized = false;
     static constexpr bool is_common = TUnderlyingView::is_common;
     static constexpr bool is_forward = TUnderlyingView::is_forward;
     static constexpr bool is_bidir = TUnderlyingView::is_bidir;
     static constexpr bool is_random = TUnderlyingView::is_random;
 
     template <typename UUnderlyingView>
-    drop_view(std::size_t n, UUnderlyingView&& underlying_view)
-        : curr_n(n)
-        , n(n)
+    drop_while_view(TFn fn, UUnderlyingView&& underlying_view)
+        : fn(fn)
         , underlying_view(std::forward<UUnderlyingView>(underlying_view)) {}
 
     template <typename TSelf>
@@ -42,9 +41,15 @@ public:
 
     template <typename TSelf>
     ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        const auto total = self.curr_n + n;
-        self.curr_n = 0;
-        return self.underlying_view.advance(total);
+        if (!std::exchange(self.dropped, true)) {
+            for (auto item = self.underlying_view.front(); item; item = self.underlying_view.advance(1)) {
+                if (!std::invoke(self.fn, *item)) {
+                    break;
+                }
+            }
+        }
+
+        return self.underlying_view.advance(n);
     }
 
     template <typename TSelf>
@@ -56,7 +61,7 @@ public:
 
     template <typename TSelf>
     ref_t<TSelf> front(this TSelf&& self) {
-        if (self.curr_n) {
+        if (!self.dropped) {
             return self.advance(0);
         }
         return self.underlying_view.front();
@@ -72,22 +77,22 @@ public:
 private:
     template <typename TSelf>
     void ff(this TSelf&& self) {
-        if (self.curr_n) {
+        if (!self.dropped) {
             self.advance(0);
         }
     }
 
 private:
-    std::size_t curr_n;
-    std::size_t n;
+    TFn fn;
+    bool dropped{};
     TUnderlyingView underlying_view;
 };
 
-struct drop_mixin {
-    template <typename TSelf, typename DeferInstantiation = void>
-    auto drop(this TSelf&& self, std::size_t n) {
+struct drop_while_mixin {
+    template <typename TSelf, typename TFn, typename DeferInstantiation = void>
+    auto drop_while(this TSelf&& self, TFn fn) {
         auto [... mixins] = registered_mixins<DeferInstantiation>();
-        return drop_view<std::remove_cvref_t<TSelf>, decltype(mixins)...>{ n, std::forward<TSelf>(self) };
+        return drop_while_view<TFn, std::remove_cvref_t<TSelf>, decltype(mixins)...>{ fn, std::forward<TSelf>(self) };
     }
 };
 } // namespace kissra
