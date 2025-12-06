@@ -43,6 +43,7 @@ build/
 
 # IDE
 .vscode
+.idea
 
 # CMake
 CMakePresets.json

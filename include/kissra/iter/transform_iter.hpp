@@ -1,11 +1,15 @@
 #pragma once
 #include "kissra/impl/registration_macro.hpp"
+#include "kissra/mixin/size_mixin.hpp"
+#include "kissra/mixin/ssize_mixin.hpp"
 #include "kissra/optional.hpp"
 #include <algorithm>
 
 namespace kissra {
 template <typename TFn, typename TUnderlyingIter, typename... TMixins>
-class transform_iter : public TMixins... {
+class transform_iter : public size_mixin, public ssize_mixin, public TMixins... {
+    friend class size_mixin;
+
 public:
     using value_type = std::invoke_result_t<TFn, typename TUnderlyingIter::reference>;
     using reference = std::invoke_result_t<TFn, typename TUnderlyingIter::reference>;

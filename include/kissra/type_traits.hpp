@@ -25,4 +25,19 @@ using iter_reference_t = typename iter_reference<TIt>::type;
 
 template <typename TIt>
 using iter_const_reference_t = typename iter_const_reference<TIt>::type;
+
+template <typename T>
+constexpr bool is_sized_v = std::remove_cvref_t<T>::is_sized;
+
+template <typename T>
+constexpr bool is_common_v = std::remove_cvref_t<T>::is_common;
+
+template <typename T>
+constexpr bool is_forward_v = std::remove_cvref_t<T>::is_forward;
+
+template <typename T>
+constexpr bool is_bidir_v = std::remove_cvref_t<T>::is_bidir;
+
+template <typename T>
+constexpr bool is_random_v = std::remove_cvref_t<T>::is_random;
 } // namespace kissra

@@ -16,6 +16,7 @@ add_executable(kissra_tests
     src/drop.cpp
     src/drop_while.cpp
     src/collect.cpp
+    src/size.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
 

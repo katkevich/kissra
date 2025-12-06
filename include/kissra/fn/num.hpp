@@ -1,7 +1,7 @@
 #pragma once
 
 namespace kissra {
-namespace fn {
+namespace functor {
 /* x % y == 0 */
 template <typename Rhs>
 struct divisible_by_val_t {
@@ -46,12 +46,14 @@ struct odd_t {
         return l % 2 == 1;
     }
 };
-} // namespace fn
+} // namespace functor
 
+namespace fn {
 template <auto Rhs>
-constexpr fn::divisible_by_c_t<Rhs> divisible_by_c;
-constexpr fn::divisible_by_t divisible_by;
+constexpr kissra::functor::divisible_by_c_t<Rhs> divisible_by_c;
+constexpr kissra::functor::divisible_by_t divisible_by;
 
-constexpr fn::even_t even;
-constexpr fn::odd_t odd;
+constexpr kissra::functor::even_t even;
+constexpr kissra::functor::odd_t odd;
+} // namespace fn
 } // namespace kissra

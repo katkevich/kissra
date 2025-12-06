@@ -28,8 +28,10 @@ set(MORFO_HEADERS
     include/kissra/impl/registration_macro.hpp
     include/kissra/fn/cmp.hpp
     include/kissra/fn/num.hpp
+    include/kissra/fn/proj.hpp
     include/kissra/concepts.hpp
-    include/kissra/misc.hpp
+    include/kissra/misc/fwd.hpp
+    include/kissra/misc/static_string.hpp
     include/kissra/optional.hpp
     include/kissra/type_traits.hpp
 )

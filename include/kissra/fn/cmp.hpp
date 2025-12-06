@@ -2,7 +2,7 @@
 #include <utility>
 
 namespace kissra {
-namespace fn {
+namespace functor {
 /* operator < */
 template <typename Rhs>
 struct lt_val_t {
@@ -191,29 +191,31 @@ struct ne_c_t {
         return l != Rhs;
     }
 };
+} // namespace functor
+
+namespace fn {
+template <auto Rhs>
+constexpr kissra::functor::lt_c_t<Rhs> lt_c;
+constexpr kissra::functor::lt_t lt;
+
+template <auto Rhs>
+constexpr kissra::functor::le_c_t<Rhs> le_c;
+constexpr kissra::functor::le_t le;
+
+template <auto Rhs>
+constexpr kissra::functor::gt_c_t<Rhs> gt_c;
+constexpr kissra::functor::gt_t gt;
+
+template <auto Rhs>
+constexpr kissra::functor::ge_c_t<Rhs> ge_c;
+constexpr kissra::functor::ge_t ge;
+
+template <auto Rhs>
+constexpr kissra::functor::eq_c_t<Rhs> eq_c;
+constexpr kissra::functor::eq_t eq;
+
+template <auto Rhs>
+constexpr kissra::functor::ne_c_t<Rhs> ne_c;
+constexpr kissra::functor::ne_t ne;
 } // namespace fn
-
-template <auto Rhs>
-constexpr fn::lt_c_t<Rhs> lt_c;
-constexpr fn::lt_t lt;
-
-template <auto Rhs>
-constexpr fn::le_c_t<Rhs> le_c;
-constexpr fn::le_t le;
-
-template <auto Rhs>
-constexpr fn::gt_c_t<Rhs> gt_c;
-constexpr fn::gt_t gt;
-
-template <auto Rhs>
-constexpr fn::ge_c_t<Rhs> ge_c;
-constexpr fn::ge_t ge;
-
-template <auto Rhs>
-constexpr fn::eq_c_t<Rhs> eq_c;
-constexpr fn::eq_t eq;
-
-template <auto Rhs>
-constexpr fn::ne_c_t<Rhs> ne_c;
-constexpr fn::ne_t ne;
 } // namespace kissra

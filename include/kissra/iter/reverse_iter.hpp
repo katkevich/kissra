@@ -3,10 +3,14 @@
 
 #include "beman/optional/optional.hpp"
 #include "kissra/impl/registration_macro.hpp"
+#include "kissra/mixin/size_mixin.hpp"
+#include "kissra/mixin/ssize_mixin.hpp"
 
 namespace kissra {
 template <typename TUnderlyingIter, typename... TMixins>
-class reverse_iter : public TMixins... {
+class reverse_iter : public size_mixin, public ssize_mixin, public TMixins... {
+    friend struct size_mixin;
+
 public:
     using value_type = typename TUnderlyingIter::value_type;
     using reference = typename TUnderlyingIter::reference;

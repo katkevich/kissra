@@ -1,12 +1,13 @@
 #pragma once
 #include "kissra/impl/registration_macro.hpp"
+#include "kissra/mixin/ssize_mixin.hpp"
 #include "kissra/optional.hpp"
 #include <memory>
 #include <ranges>
 
 namespace kissra {
 template <std::ranges::range TContainer, typename... TMixins>
-class all_iter : public TMixins... {
+class all_iter : public ssize_mixin, public TMixins... {
 public:
     using value_type = typename TContainer::value_type;
     using reference = typename TContainer::reference;
@@ -18,7 +19,7 @@ public:
         const_reference,
         reference>>;
 
-    static constexpr bool is_sized = std::ranges::sized_range<TContainer>;
+    static constexpr bool is_sized = std::ranges::random_access_range<TContainer>;
     static constexpr bool is_common = std::ranges::common_range<TContainer>;
     static constexpr bool is_forward = std::ranges::forward_range<TContainer>;
     static constexpr bool is_bidir = std::ranges::bidirectional_range<TContainer>;
@@ -77,6 +78,12 @@ public:
             --n;
         }
         return self.back();
+    }
+
+    template <typename TSelf>
+        requires is_sized
+    auto size(this TSelf&& self) {
+        return std::size_t(self.sentinel - self.cursor);
     }
 
     template <typename TSelf>

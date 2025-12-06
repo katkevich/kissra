@@ -3,10 +3,11 @@
 
 #include "beman/optional/optional.hpp"
 #include "kissra/impl/registration_macro.hpp"
+#include "kissra/mixin/ssize_mixin.hpp"
 
 namespace kissra {
 template <typename TUnderlyingIter, typename... TMixins>
-class drop_last_iter : public TMixins... {
+class drop_last_iter : public ssize_mixin, public TMixins... {
 public:
     using value_type = typename TUnderlyingIter::value_type;
     using reference = typename TUnderlyingIter::reference;
@@ -53,6 +54,13 @@ public:
         const auto total = self.curr_n + n;
         self.curr_n = 0;
         return self.underlying_iter.advance_back(total);
+    }
+
+    template <typename TSelf>
+        requires is_sized
+    auto size(this TSelf&& self) {
+        const std::size_t underlying_size = self.underlying_iter.size();
+        return underlying_size - std::min(underlying_size, self.curr_n);
     }
 
     template <typename TSelf>
