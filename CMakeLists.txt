@@ -24,8 +24,14 @@ set(MORFO_HEADERS
     include/kissra/iter/filter_iter.hpp
     include/kissra/iter/reverse_iter.hpp
     include/kissra/iter/transform_iter.hpp
+    include/kissra/mixin/collect_mixin.hpp
     include/kissra/impl/registration_macro.hpp
     include/kissra/fn/cmp.hpp
+    include/kissra/fn/num.hpp
+    include/kissra/concepts.hpp
+    include/kissra/misc.hpp
+    include/kissra/optional.hpp
+    include/kissra/type_traits.hpp
 )
 
 add_library(kissra INTERFACE)

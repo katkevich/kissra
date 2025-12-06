@@ -15,6 +15,7 @@ add_executable(kissra_tests
     src/filter.cpp
     src/drop.cpp
     src/drop_while.cpp
+    src/collect.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
 
@@ -32,7 +33,7 @@ doctest_discover_tests(kissra_tests)
 
 
 #
-# Benchmarks (loops vs standard ranges vs kissra ranges (coroutines))
+# Benchmarks (loops vs standard ranges vs kissra ranges)
 #
 FetchContent_Declare(benchmark
     GIT_REPOSITORY https://github.com/google/benchmark.git

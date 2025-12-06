@@ -1,6 +1,6 @@
 #pragma once
-#include "beman/optional/optional.hpp"
 #include "kissra/impl/registration_macro.hpp"
+#include "kissra/optional.hpp"
 #include <memory>
 #include <ranges>
 
@@ -13,7 +13,7 @@ public:
     using const_reference = typename TContainer::const_reference;
 
     template <typename TSelf>
-    using ref_t = beman::optional::optional<std::conditional_t< //
+    using ref_t = kissra::optional<std::conditional_t< //
         std::is_const_v<std::remove_reference_t<TSelf>>,
         const_reference,
         reference>>;

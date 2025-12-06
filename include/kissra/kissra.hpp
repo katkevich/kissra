@@ -1,5 +1,6 @@
 #pragma once
 #include "kissra/fn/cmp.hpp"
+#include "kissra/fn/num.hpp"
 #include "kissra/impl/registration_macro.hpp"
 #include "kissra/iter/all_iter.hpp"
 #include "kissra/iter/drop_iter.hpp"
@@ -9,3 +10,4 @@
 #include "kissra/iter/filter_iter.hpp"
 #include "kissra/iter/reverse_iter.hpp"
 #include "kissra/iter/transform_iter.hpp"
+#include "kissra/mixin/collect_mixin.hpp"

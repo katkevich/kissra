@@ -2,8 +2,6 @@
 #include <cstddef>
 #include <utility>
 
-#define KISSRA_FWD(x) std::forward<decltype(x)>(x)
-
 namespace kissra::impl {
 
 /**
@@ -75,14 +73,15 @@ constexpr std::size_t mixin_idx{};
     }                                                                                                               \
     }
 
-#define KISSRA_REGISTER_BUILTIN_MIXINS              \
-    KISSRA_REGISTER_MIXIN(kissra::filter_mixin)     \
-    KISSRA_REGISTER_MIXIN(kissra::transform_mixin)  \
-    KISSRA_REGISTER_MIXIN(kissra::reverse_mixin)    \
-    KISSRA_REGISTER_MIXIN(kissra::drop_mixin)       \
-    KISSRA_REGISTER_MIXIN(kissra::drop_last_mixin)  \
-    KISSRA_REGISTER_MIXIN(kissra::drop_while_mixin) \
-    KISSRA_REGISTER_MIXIN(kissra::drop_last_while_mixin)
+#define KISSRA_REGISTER_BUILTIN_MIXINS                   \
+    KISSRA_REGISTER_MIXIN(kissra::filter_mixin)          \
+    KISSRA_REGISTER_MIXIN(kissra::transform_mixin)       \
+    KISSRA_REGISTER_MIXIN(kissra::reverse_mixin)         \
+    KISSRA_REGISTER_MIXIN(kissra::drop_mixin)            \
+    KISSRA_REGISTER_MIXIN(kissra::drop_last_mixin)       \
+    KISSRA_REGISTER_MIXIN(kissra::drop_while_mixin)      \
+    KISSRA_REGISTER_MIXIN(kissra::drop_last_while_mixin) \
+    KISSRA_REGISTER_MIXIN(kissra::collect_mixin)
 
 namespace kissra {
 /**
