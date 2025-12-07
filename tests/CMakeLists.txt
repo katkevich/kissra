@@ -1,3 +1,7 @@
+#
+# cmake --build build/refl-release --target kissra_tests && ctest --test-dir ./build/refl-release/tests --output-on-failure
+#
+
 cmake_minimum_required(VERSION 3.30)
 
 include(FetchContent)
@@ -17,9 +21,9 @@ add_executable(kissra_tests
     src/drop_while.cpp
     src/collect.cpp
     src/size.cpp
+    src/convert.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
-
 target_link_libraries(kissra_tests kissra::kissra doctest::doctest_with_main)
 target_compile_definitions(kissra_tests PUBLIC
     DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS
@@ -31,24 +35,3 @@ target_compile_definitions(kissra_tests PUBLIC
 list(APPEND CMAKE_MODULE_PATH ${doctest_SOURCE_DIR}/scripts/cmake)
 include(doctest)
 doctest_discover_tests(kissra_tests)
-
-
-#
-# Benchmarks (loops vs standard ranges vs kissra ranges)
-#
-FetchContent_Declare(benchmark
-    GIT_REPOSITORY https://github.com/google/benchmark.git
-    GIT_TAG v1.9.4
-    GIT_SHALLOW 1
-    EXCLUDE_FROM_ALL TRUE
-)
-set(BENCHMARK_ENABLE_TESTING OFF)
-set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
-set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON)
-FetchContent_MakeAvailable(benchmark)
-
-add_executable(kissra_bench_tests
-    src/benchmarks.cpp
-)
-target_compile_features(kissra_bench_tests PRIVATE cxx_std_26)
-target_link_libraries(kissra_bench_tests kissra::kissra benchmark::benchmark_main)

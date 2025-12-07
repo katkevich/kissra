@@ -2,6 +2,7 @@
 #include "kissra/kissra.hpp"
 #include <algorithm>
 #include <array>
+#include <charconv>
 #include <optional>
 #include <ranges>
 #include <string>
@@ -30,6 +31,7 @@ static void BM_RawLoops(benchmark::State& state) {
                 }
             }
         }
+        benchmark::DoNotOptimize(vec);
     }
 }
 BENCHMARK(BM_RawLoops);
@@ -38,17 +40,16 @@ static void BM_KissraRangesNext(benchmark::State& state) {
     std::array arr = { "1"s, "22"s, "333"s, "4444"s, "55555"s, "666666"s };
 
     for (auto _ : state) {
-        std::vector<int> vec;
+        // clang-format off
+        std::vector<int> vec = kissra::all(arr)
+            .filter([](const auto& s) { return s.size() != 2; })
+            .transform([](const auto& s) { return std::atoi(s.c_str()); })
+            .transform([](int i) { return i + 3; })
+            .filter([](int i) { return i % 2 == 0; })
+            .collect();
+        // clang-format on
 
-        auto iter = kissra::all(arr)
-                        .filter([](const auto& s) { return s.size() != 2; })
-                        .transform([](const auto& s) { return std::atoi(s.c_str()); })
-                        .transform([](int i) { return i + 3; })
-                        .filter([](int i) { return i % 2 == 0; });
-
-        while (auto item = iter.next()) {
-            vec.push_back(*item);
-        }
+        benchmark::DoNotOptimize(vec);
     }
 }
 BENCHMARK(BM_KissraRangesNext);
@@ -70,6 +71,8 @@ static void BM_StandardRanges(benchmark::State& state) {
         for (auto&& item : view) {
             vec.push_back(item);
         }
+
+        benchmark::DoNotOptimize(vec);
     }
 }
 BENCHMARK(BM_StandardRanges);

@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 
-#include "beman/optional/optional.hpp"
+#include "kissra/optional.hpp"
 #include "kissra/impl/registration_macro.hpp"
 
 namespace kissra {

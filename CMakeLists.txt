@@ -28,7 +28,7 @@ set(MORFO_HEADERS
     include/kissra/impl/registration_macro.hpp
     include/kissra/fn/cmp.hpp
     include/kissra/fn/num.hpp
-    include/kissra/fn/proj.hpp
+    include/kissra/fn/convert.hpp
     include/kissra/concepts.hpp
     include/kissra/misc/fwd.hpp
     include/kissra/misc/static_string.hpp
@@ -47,6 +47,8 @@ target_sources(kissra INTERFACE
     BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
     FILES ${MORFO_HEADERS}
 )
+
+add_subdirectory(benchmarks EXCLUDE_FROM_ALL)
 
 enable_testing()
 add_subdirectory(tests EXCLUDE_FROM_ALL)
