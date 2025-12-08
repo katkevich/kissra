@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-using namespace std::string_literals;
+using std::string_literals::operator""s;
 
 static void BM_RawLoops(benchmark::State& state) {
     std::array arr = { "1"s, "22"s, "333"s, "4444"s, "55555"s, "666666"s };

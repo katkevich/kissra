@@ -210,4 +210,36 @@ TEST_CASE("drop + drop_last (bidir source collection, drop and drop_last keep ex
 
     REQUIRE_EQ(actual, expected);
 }
+
+TEST_CASE("all kinds of adapters + front") {
+    std::array arr = {
+        "1"s,
+        "22"s,
+        "333"s,
+        "4444"s,
+        "55555"s,
+        "666666"s,
+        "7777777"s,
+        "88888888"s,
+        "0"s,
+        "xxxxxxxxxxxxxx"s,
+        "ada"s,
+    };
+
+    // clang-format off
+    auto item = kissra::all(arr)
+        .filter([](const auto& s){ return s.size() % 6 != 0; })
+        .drop_while([](const auto& s){ return s.size() < 3; })
+        .drop(1)
+        .drop_last(1)
+        .drop_last_while([](const auto& s){ return s.size() > 9; })
+        .transform([](const auto& s) { return s.size(); })
+        .drop_last(1)
+        .filter(kissra::fn::even)
+        .reverse()
+        .front();
+    // clang-format on
+
+    REQUIRE_EQ(*item, 8);
+}
 } // namespace kissra::test

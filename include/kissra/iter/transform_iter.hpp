@@ -64,7 +64,7 @@ public:
         if (auto item = self.underlying_iter.advance_back(n)) {
             return std::invoke(self.fn, *item);
         }
-        return;
+        return {};
     }
 
     template <typename TSelf>
