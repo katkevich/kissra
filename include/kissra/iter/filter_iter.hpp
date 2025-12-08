@@ -22,7 +22,7 @@ public:
     static constexpr bool is_common = TUnderlyingIter::is_common;
     static constexpr bool is_forward = TUnderlyingIter::is_forward;
     static constexpr bool is_bidir = TUnderlyingIter::is_bidir;
-    static constexpr bool is_random = TUnderlyingIter::is_random;
+    static constexpr bool is_random = false;
 
     template <typename UUnderlyingIter>
     filter_iter(UUnderlyingIter&& underlying_iter, TFn fn)
