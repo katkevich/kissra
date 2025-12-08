@@ -31,10 +31,13 @@ set(MORFO_HEADERS
     include/kissra/algo/size_mixin.hpp
     include/kissra/algo/front_mixin.hpp
     include/kissra/algo/back_mixin.hpp
+    include/kissra/algo/empty_mixin.hpp
+    include/kissra/algo/find_mixin.hpp
     include/kissra/algo/ssize_mixin.hpp
     include/kissra/fn/cmp.hpp
     include/kissra/fn/num.hpp
     include/kissra/fn/convert.hpp
+    include/kissra/fn/misc.hpp
     include/kissra/misc/fwd.hpp
     include/kissra/misc/static_string.hpp
     include/kissra/misc/optional.hpp

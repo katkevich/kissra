@@ -4,11 +4,13 @@
 #include "kissra/algo/front_mixin.hpp"
 #include "kissra/algo/back_mixin.hpp"
 #include "kissra/algo/empty_mixin.hpp"
+#include "kissra/algo/find_mixin.hpp"
 #include "kissra/algo/size_mixin.hpp"
 #include "kissra/algo/ssize_mixin.hpp"
 #include "kissra/concepts.hpp"
 #include "kissra/fn/cmp.hpp"
 #include "kissra/fn/convert.hpp"
+#include "kissra/fn/misc.hpp"
 #include "kissra/fn/num.hpp"
 #include "kissra/iter/all_iter.hpp"
 #include "kissra/iter/drop_iter.hpp"
@@ -33,6 +35,7 @@ struct builtin_mixins : filter_mixin,
                         collect_mixin,
                         front_mixin,
                         back_mixin,
+                        find_mixin,
                         empty_mixin,
                         ssize_mixin {};
 
