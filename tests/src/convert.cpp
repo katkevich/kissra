@@ -10,11 +10,6 @@
 #include <unordered_set>
 #include <vector>
 
-KISSRA_REGISTER_MIXINS_BEGIN
-KISSRA_REGISTER_BUILTIN_MIXINS
-KISSRA_REGISTER_MIXINS_END
-
-
 namespace kissra::test {
 using namespace std::string_literals;
 
@@ -25,17 +20,20 @@ TEST_CASE("transform(to_chars).collect() should produce dec vector<string>") {
 
 TEST_CASE("transform(to_chars_bin).collect() should produce bin vector<string>") {
     std::array arr = { 10, 11, 16, 17 };
-    REQUIRE_EQ(kissra::all(arr).transform(kissra::fn::to_chars_bin).collect(), (std::vector{ "1010"s, "1011"s, "10000"s, "10001"s }));
+    REQUIRE_EQ(kissra::all(arr).transform(kissra::fn::to_chars_bin).collect(),
+        (std::vector{ "1010"s, "1011"s, "10000"s, "10001"s }));
 }
 
 TEST_CASE("transform(to_chars_oct).collect() should produce oct vector<string>") {
     std::array arr = { 10, 11, 16, 17 };
-    REQUIRE_EQ(kissra::all(arr).transform(kissra::fn::to_chars_oct).collect(), (std::vector{ "12"s, "13"s, "20"s, "21"s }));
+    REQUIRE_EQ(
+        kissra::all(arr).transform(kissra::fn::to_chars_oct).collect(), (std::vector{ "12"s, "13"s, "20"s, "21"s }));
 }
 
 TEST_CASE("transform(to_chars_hex).collect() should produce hex vector<string>") {
     std::array arr = { 10, 11, 16, 17 };
-    REQUIRE_EQ(kissra::all(arr).transform(kissra::fn::to_chars_hex).collect(), (std::vector{ "a"s, "b"s, "10"s, "11"s }));
+    REQUIRE_EQ(
+        kissra::all(arr).transform(kissra::fn::to_chars_hex).collect(), (std::vector{ "a"s, "b"s, "10"s, "11"s }));
 }
 
 TEST_CASE("to_chars(uint64_t::max) should work") {

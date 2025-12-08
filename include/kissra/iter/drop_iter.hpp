@@ -1,17 +1,18 @@
 #pragma once
+#include "kissra/misc/optional.hpp"
+#include "kissra/registered_mixins_fwd.hpp"
 #include <functional>
 
-#include "kissra/optional.hpp"
-#include "kissra/impl/registration_macro.hpp"
-#include "kissra/mixin/ssize_mixin.hpp"
-
 namespace kissra {
-template <typename TUnderlyingIter, typename... TMixins>
-class drop_iter : public ssize_mixin, public TMixins... {
+template <typename TUnderlyingIter, typename TMixins>
+class drop_iter : public TMixins {
 public:
     using value_type = typename TUnderlyingIter::value_type;
     using reference = typename TUnderlyingIter::reference;
     using const_reference = typename TUnderlyingIter::const_reference;
+
+    template <typename TSelf>
+    using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
 
     template <typename TSelf>
     using result_t = typename TUnderlyingIter::template result_t<TSelf>;
@@ -94,8 +95,8 @@ private:
 struct drop_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     auto drop(this TSelf&& self, std::size_t n) {
-        auto [... mixins] = registered_mixins<DeferInstantiation>();
-        return drop_iter<std::remove_cvref_t<TSelf>, decltype(mixins)...>{ n, std::forward<TSelf>(self) };
+        auto mixins = registered_mixins<DeferInstantiation>();
+        return drop_iter<std::remove_cvref_t<TSelf>, decltype(mixins)>{ n, std::forward<TSelf>(self) };
     }
 };
 } // namespace kissra

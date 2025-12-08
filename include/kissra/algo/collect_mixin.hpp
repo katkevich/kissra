@@ -8,16 +8,18 @@ namespace kissra {
 struct collect_mixin {
     template <template <typename...> typename TTo = std::vector, typename TSelf>
     auto collect(this TSelf&& self) {
-        using val_t = iter_value_t<TSelf>;
-        using result_t = TTo<val_t>;
+        using val_t = kissra::iter_value_t<TSelf>;
+        using container_t = TTo<val_t>;
 
-        result_t result;
-        // TODO: add reserve for 'sized' ranges
+        container_t result;
+        if constexpr (kissra::is_sized_v<TSelf> && kissra::can_reserve<container_t>) {
+            result.reserve(self.size());
+        }
 
         while (auto item = self.next()) {
-            if constexpr (can_push_back<result_t, val_t>) {
+            if constexpr (kissra::can_push_back<container_t, val_t>) {
                 result.push_back(KISSRA_FWD(*std::move(item)));
-            } else if constexpr (can_insert<result_t, val_t>) {
+            } else if constexpr (kissra::can_insert<container_t, val_t>) {
                 result.insert(std::ranges::end(result), KISSRA_FWD(*std::move(item)));
             }
         }

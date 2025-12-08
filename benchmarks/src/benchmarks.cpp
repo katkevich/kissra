@@ -8,10 +8,6 @@
 #include <string>
 #include <vector>
 
-KISSRA_REGISTER_MIXINS_BEGIN
-KISSRA_REGISTER_BUILTIN_MIXINS
-KISSRA_REGISTER_MIXINS_END
-
 using namespace std::string_literals;
 
 static void BM_RawLoops(benchmark::State& state) {

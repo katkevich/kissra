@@ -1,16 +1,19 @@
 #pragma once
+#include "kissra/misc/optional.hpp"
+#include "kissra/registered_mixins_fwd.hpp"
 #include <functional>
 
-#include "kissra/optional.hpp"
-#include "kissra/impl/registration_macro.hpp"
-
 namespace kissra {
-template <typename TFn, typename TUnderlyingIter, typename... TMixins>
-class filter_iter : public TMixins... {
+template <typename TUnderlyingIter, typename TFn, typename TMixins>
+    requires std::regular_invocable<TFn, typename TUnderlyingIter::reference>
+class filter_iter : public TMixins {
 public:
     using value_type = typename TUnderlyingIter::value_type;
     using reference = typename TUnderlyingIter::reference;
     using const_reference = typename TUnderlyingIter::const_reference;
+
+    template <typename TSelf>
+    using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
 
     template <typename TSelf>
     using result_t = typename TUnderlyingIter::template result_t<TSelf>;
@@ -22,9 +25,9 @@ public:
     static constexpr bool is_random = TUnderlyingIter::is_random;
 
     template <typename UUnderlyingIter>
-    filter_iter(TFn fn, UUnderlyingIter&& underlying_iter)
-        : fn(fn)
-        , underlying_iter(std::forward<UUnderlyingIter>(underlying_iter)) {}
+    filter_iter(UUnderlyingIter&& underlying_iter, TFn fn)
+        : underlying_iter(std::forward<UUnderlyingIter>(underlying_iter))
+        , fn(fn) {}
 
     template <typename TSelf>
     result_t<TSelf> next(this TSelf&& self) {
@@ -86,15 +89,15 @@ public:
     }
 
 private:
-    TFn fn;
     TUnderlyingIter underlying_iter;
+    TFn fn;
 };
 
 struct filter_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     auto filter(this TSelf&& self, TFn fn) {
-        auto [... mixins] = registered_mixins<DeferInstantiation>();
-        return filter_iter<TFn, std::remove_cvref_t<TSelf>, decltype(mixins)...>{ fn, std::forward<TSelf>(self) };
+        auto mixins = registered_mixins<DeferInstantiation>();
+        return filter_iter<std::remove_cvref_t<TSelf>, TFn, decltype(mixins)>{ std::forward<TSelf>(self), fn };
     }
 };
 } // namespace kissra

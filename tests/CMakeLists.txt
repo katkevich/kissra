@@ -22,6 +22,7 @@ add_executable(kissra_tests
     src/collect.cpp
     src/size.cpp
     src/convert.cpp
+    src/custom_mixin.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
 target_link_libraries(kissra_tests kissra::kissra doctest::doctest_with_main)

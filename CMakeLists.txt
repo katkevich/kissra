@@ -11,11 +11,14 @@ FetchContent_Declare(beman_optional
 FetchContent_MakeAvailable(beman_optional)
 target_compile_features(beman_optional INTERFACE cxx_std_26)
 
-project(kissra VERSION 0.5)
+project(kissra VERSION 0.6.0)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(MORFO_HEADERS
     include/kissra/kissra.hpp
+    include/kissra/type_traits.hpp
+    include/kissra/concepts.hpp
+    include/kissra/registered_mixins_fwd.hpp
     include/kissra/iter/all_iter.hpp
     include/kissra/iter/drop_iter.hpp
     include/kissra/iter/drop_last_iter.hpp
@@ -24,16 +27,15 @@ set(MORFO_HEADERS
     include/kissra/iter/filter_iter.hpp
     include/kissra/iter/reverse_iter.hpp
     include/kissra/iter/transform_iter.hpp
-    include/kissra/mixin/collect_mixin.hpp
-    include/kissra/impl/registration_macro.hpp
+    include/kissra/algo/collect_mixin.hpp
+    include/kissra/algo/size_mixin.hpp
+    include/kissra/algo/ssize_mixin.hpp
     include/kissra/fn/cmp.hpp
     include/kissra/fn/num.hpp
     include/kissra/fn/convert.hpp
-    include/kissra/concepts.hpp
     include/kissra/misc/fwd.hpp
     include/kissra/misc/static_string.hpp
-    include/kissra/optional.hpp
-    include/kissra/type_traits.hpp
+    include/kissra/misc/optional.hpp
 )
 
 add_library(kissra INTERFACE)

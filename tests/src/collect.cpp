@@ -10,11 +10,6 @@
 #include <unordered_set>
 #include <vector>
 
-KISSRA_REGISTER_MIXINS_BEGIN
-KISSRA_REGISTER_BUILTIN_MIXINS
-KISSRA_REGISTER_MIXINS_END
-
-
 namespace kissra::test {
 using namespace std::string_literals;
 

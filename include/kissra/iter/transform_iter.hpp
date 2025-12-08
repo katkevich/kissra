@@ -1,25 +1,26 @@
 #pragma once
-#include "kissra/impl/registration_macro.hpp"
-#include "kissra/mixin/size_mixin.hpp"
-#include "kissra/mixin/ssize_mixin.hpp"
-#include "kissra/optional.hpp"
+#include "kissra/algo/size_mixin.hpp"
+#include "kissra/misc/optional.hpp"
+#include "kissra/registered_mixins_fwd.hpp"
 #include <algorithm>
+#include <type_traits>
 
 namespace kissra {
-template <typename TFn, typename TUnderlyingIter, typename... TMixins>
-class transform_iter : public size_mixin, public ssize_mixin, public TMixins... {
+template <typename TUnderlyingIter, typename TFn, typename TMixins>
+    requires std::regular_invocable<TFn, typename TUnderlyingIter::reference>
+class transform_iter : public size_mixin, public TMixins {
     friend class size_mixin;
 
 public:
     using value_type = std::invoke_result_t<TFn, typename TUnderlyingIter::reference>;
-    using reference = std::invoke_result_t<TFn, typename TUnderlyingIter::reference>;
-    using const_reference = std::invoke_result_t<TFn, typename TUnderlyingIter::const_reference>;
+    using reference = value_type;
+    using const_reference = value_type;
 
     template <typename TSelf>
-    using result_t = kissra::optional<std::conditional_t< //
-        std::is_const_v<std::remove_reference_t<TSelf>>,
-        const_reference,
-        reference>>;
+    using ref_t = reference;
+
+    template <typename TSelf>
+    using result_t = kissra::optional<ref_t<TSelf>>;
 
     static constexpr bool is_sized = TUnderlyingIter::is_sized;
     static constexpr bool is_common = TUnderlyingIter::is_common;
@@ -28,9 +29,9 @@ public:
     static constexpr bool is_random = TUnderlyingIter::is_random;
 
     template <typename UUnderlyingIter>
-    transform_iter(TFn fn, UUnderlyingIter&& underlying_iter)
-        : fn(fn)
-        , underlying_iter(std::forward<UUnderlyingIter>(underlying_iter)) {}
+    transform_iter(UUnderlyingIter&& underlying_iter, TFn fn)
+        : underlying_iter(std::forward<UUnderlyingIter>(underlying_iter))
+        , fn(fn) {}
 
     template <typename TSelf>
     result_t<TSelf> next(this TSelf&& self) {
@@ -84,15 +85,15 @@ public:
     }
 
 private:
-    TFn fn;
     TUnderlyingIter underlying_iter;
+    TFn fn;
 };
 
 struct transform_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     auto transform(this TSelf&& self, TFn fn) {
-        auto [... mixins] = registered_mixins<DeferInstantiation>();
-        return transform_iter<TFn, std::remove_cvref_t<TSelf>, decltype(mixins)...>{ fn, std::forward<TSelf>(self) };
+        auto mixins = registered_mixins<DeferInstantiation>();
+        return transform_iter<std::remove_cvref_t<TSelf>, TFn, decltype(mixins)>{ std::forward<TSelf>(self), fn };
     }
 };
 } // namespace kissra

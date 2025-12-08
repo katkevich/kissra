@@ -1,23 +1,22 @@
 #pragma once
-#include "kissra/impl/registration_macro.hpp"
-#include "kissra/mixin/ssize_mixin.hpp"
-#include "kissra/optional.hpp"
+#include "kissra/misc/optional.hpp"
+#include "kissra/registered_mixins_fwd.hpp"
 #include <memory>
 #include <ranges>
 
 namespace kissra {
-template <std::ranges::range TContainer, typename... TMixins>
-class all_iter : public ssize_mixin, public TMixins... {
+template <std::ranges::range TContainer, typename TMixins>
+class all_iter : public TMixins {
 public:
     using value_type = typename TContainer::value_type;
     using reference = typename TContainer::reference;
     using const_reference = typename TContainer::const_reference;
 
     template <typename TSelf>
-    using result_t = kissra::optional<std::conditional_t< //
-        std::is_const_v<std::remove_reference_t<TSelf>>,
-        const_reference,
-        reference>>;
+    using ref_t = std::conditional_t<std::is_const_v<std::remove_reference_t<TSelf>>, const_reference, reference>;
+
+    template <typename TSelf>
+    using result_t = kissra::optional<ref_t<TSelf>>;
 
     static constexpr bool is_sized = std::ranges::random_access_range<TContainer>;
     static constexpr bool is_common = std::ranges::common_range<TContainer>;
@@ -112,7 +111,7 @@ private:
 
 template <typename TContainer, typename DeferInstantiation = void>
 auto all(TContainer& container) {
-    auto [... mixins] = registered_mixins<DeferInstantiation>();
-    return all_iter<TContainer, decltype(mixins)...>{ container };
+    auto mixins = registered_mixins<DeferInstantiation>();
+    return all_iter<TContainer, decltype(mixins)>{ container };
 }
 } // namespace kissra
