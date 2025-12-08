@@ -24,10 +24,10 @@ public:
     static constexpr bool is_random = TUnderlyingIter::is_random;
 
     template <typename UUnderlyingIter>
-    drop_last_iter(std::size_t n, UUnderlyingIter&& underlying_iter)
-        : curr_n(n)
-        , n(n)
-        , underlying_iter(std::forward<UUnderlyingIter>(underlying_iter)) {}
+    drop_last_iter(UUnderlyingIter&& underlying_iter, std::size_t n)
+        : underlying_iter(std::forward<UUnderlyingIter>(underlying_iter))
+        , curr_n(n)
+        , n(n) {}
 
     template <typename TSelf>
         requires is_common && is_bidir
@@ -73,16 +73,16 @@ private:
     }
 
 private:
+    TUnderlyingIter underlying_iter;
     std::size_t curr_n;
     std::size_t n;
-    TUnderlyingIter underlying_iter;
 };
 
 struct drop_last_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     auto drop_last(this TSelf&& self, std::size_t n) {
         auto mixins = registered_mixins<DeferInstantiation>();
-        return drop_last_iter<std::remove_cvref_t<TSelf>, decltype(mixins)>{ n, std::forward<TSelf>(self) };
+        return drop_last_iter<std::remove_cvref_t<TSelf>, decltype(mixins)>{ std::forward<TSelf>(self), n };
     }
 };
 } // namespace kissra
