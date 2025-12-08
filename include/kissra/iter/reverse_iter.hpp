@@ -16,7 +16,7 @@ public:
 
     template <typename TSelf>
     using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
-    
+
     template <typename TSelf>
     using result_t = typename TUnderlyingIter::template result_t<TSelf>;
 
@@ -50,17 +50,6 @@ public:
     template <typename TSelf>
     result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         return self.underlying_iter.advance(n);
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> front(this TSelf&& self) {
-        return self.underlying_iter.back();
-    }
-
-    template <typename TSelf>
-    result_t<TSelf> back(this TSelf&& self) {
-        return self.underlying_iter.front();
     }
 
 private:

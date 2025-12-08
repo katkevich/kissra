@@ -63,21 +63,6 @@ public:
         return underlying_size - std::min(underlying_size, self.curr_n);
     }
 
-    template <typename TSelf>
-    result_t<TSelf> front(this TSelf&& self) {
-        if (self.curr_n) {
-            return self.advance(0);
-        }
-        return self.underlying_iter.front();
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> back(this TSelf&& self) {
-        self.ff();
-        return self.underlying_iter.back();
-    }
-
 private:
     template <typename TSelf>
     void ff(this TSelf&& self) {

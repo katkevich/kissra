@@ -1,5 +1,7 @@
 #pragma once
+#include "kissra/algo/back_mixin.hpp"
 #include "kissra/algo/collect_mixin.hpp"
+#include "kissra/algo/front_mixin.hpp"
 #include "kissra/algo/size_mixin.hpp"
 #include "kissra/algo/ssize_mixin.hpp"
 #include "kissra/concepts.hpp"
@@ -27,6 +29,8 @@ struct builtin_mixins : filter_mixin,
                         drop_while_mixin,
                         drop_last_while_mixin,
                         collect_mixin,
+                        front_mixin,
+                        back_mixin,
                         ssize_mixin {};
 
 template <typename T>

@@ -50,7 +50,10 @@ public:
         requires is_random
     result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         self.cursor += std::min(n, std::size_t(self.sentinel - self.cursor));
-        return self.front();
+        if (self.cursor != self.sentinel) {
+            return *self.cursor;
+        }
+        return {};
     }
 
     template <typename TSelf>
@@ -59,14 +62,21 @@ public:
             ++self.cursor;
             --n;
         }
-        return self.front();
+        if (self.cursor != self.sentinel) {
+            return *self.cursor;
+        }
+        return {};
     }
 
     template <typename TSelf>
         requires is_random
     result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         self.sentinel -= std::min(n, std::size_t(self.sentinel - self.cursor));
-        return self.back();
+        if (self.cursor != self.sentinel) {
+            auto sentinel_copy = self.sentinel;
+            return *--sentinel_copy;
+        }
+        return {};
     }
 
     template <typename TSelf>
@@ -76,31 +86,17 @@ public:
             --self.sentinel;
             --n;
         }
-        return self.back();
+        if (self.cursor != self.sentinel) {
+            auto sentinel_copy = self.sentinel;
+            return *--sentinel_copy;
+        }
+        return {};
     }
 
     template <typename TSelf>
         requires is_sized
     auto size(this TSelf&& self) {
         return std::size_t(self.sentinel - self.cursor);
-    }
-
-    template <typename TSelf>
-    result_t<TSelf> front(this TSelf&& self) {
-        if (self.cursor != self.sentinel) {
-            return *self.cursor;
-        }
-        return {};
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> back(this TSelf&& self) {
-        if (self.cursor != self.sentinel) {
-            auto sentinel_copy = self.sentinel;
-            return *--sentinel_copy;
-        }
-        return {};
     }
 
 private:

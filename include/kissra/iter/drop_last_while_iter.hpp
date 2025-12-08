@@ -61,21 +61,6 @@ public:
         return self.underlying_iter.advance_back(n);
     }
 
-    template <typename TSelf>
-    result_t<TSelf> front(this TSelf&& self) {
-        self.ff();
-        return self.underlying_iter.front();
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> back(this TSelf&& self) {
-        if (!self.dropped) {
-            return self.advance_back(0);
-        }
-        return self.underlying_iter.back();
-    }
-
 private:
     template <typename TSelf>
     void ff(this TSelf&& self) {

@@ -67,23 +67,6 @@ public:
         return {};
     }
 
-    template <typename TSelf>
-    result_t<TSelf> front(this TSelf&& self) {
-        if (auto item = self.underlying_iter.front()) {
-            return std::invoke(self.fn, *item);
-        }
-        return {};
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> back(this TSelf&& self) {
-        if (auto item = self.underlying_iter.back()) {
-            return std::invoke(self.fn, *item);
-        }
-        return {};
-    }
-
 private:
     TUnderlyingIter underlying_iter;
     TFn fn;

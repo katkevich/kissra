@@ -77,17 +77,6 @@ public:
         return item;
     }
 
-    template <typename TSelf>
-    result_t<TSelf> front(this TSelf&& self) {
-        return self.advance(0);
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> back(this TSelf&& self) {
-        return self.advance_back(0);
-    }
-
 private:
     TUnderlyingIter underlying_iter;
     TFn fn;

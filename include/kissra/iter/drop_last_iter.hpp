@@ -13,7 +13,7 @@ public:
 
     template <typename TSelf>
     using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
-    
+
     template <typename TSelf>
     using result_t = typename TUnderlyingIter::template result_t<TSelf>;
 
@@ -62,21 +62,6 @@ public:
     auto size(this TSelf&& self) {
         const std::size_t underlying_size = self.underlying_iter.size();
         return underlying_size - std::min(underlying_size, self.curr_n);
-    }
-
-    template <typename TSelf>
-    result_t<TSelf> front(this TSelf&& self) {
-        self.ff();
-        return self.underlying_iter.front();
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> back(this TSelf&& self) {
-        if (self.curr_n) {
-            return self.advance_back(0);
-        }
-        return self.underlying_iter.back();
     }
 
 private:
