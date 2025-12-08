@@ -9,7 +9,7 @@ FetchContent_Declare(beman_optional
     FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(beman_optional)
-target_compile_features(beman_optional INTERFACE cxx_std_26)
+target_compile_features(beman_optional INTERFACE cxx_std_23)
 
 project(kissra VERSION 0.6.0)
 
@@ -40,7 +40,7 @@ set(MORFO_HEADERS
 
 add_library(kissra INTERFACE)
 add_library(kissra::kissra ALIAS kissra)
-target_compile_features(kissra INTERFACE cxx_std_26)
+target_compile_features(kissra INTERFACE cxx_std_23)
 target_link_libraries(kissra INTERFACE beman_optional)
 
 
