@@ -16,7 +16,7 @@ public:
     using const_reference = std::invoke_result_t<TFn, typename TUnderlyingIter::const_reference>;
 
     template <typename TSelf>
-    using ref_t = kissra::optional<std::conditional_t< //
+    using result_t = kissra::optional<std::conditional_t< //
         std::is_const_v<std::remove_reference_t<TSelf>>,
         const_reference,
         reference>>;
@@ -33,7 +33,7 @@ public:
         , underlying_iter(std::forward<UUnderlyingIter>(underlying_iter)) {}
 
     template <typename TSelf>
-    ref_t<TSelf> next(this TSelf&& self) {
+    result_t<TSelf> next(this TSelf&& self) {
         if (auto item = self.underlying_iter.next()) {
             return std::invoke(self.fn, *item);
         }
@@ -42,7 +42,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> next_back(this TSelf&& self) {
+    result_t<TSelf> next_back(this TSelf&& self) {
         if (auto item = self.underlying_iter.next_back()) {
             return std::invoke(self.fn, *item);
         }
@@ -50,7 +50,7 @@ public:
     }
 
     template <typename TSelf>
-    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         if (auto item = self.underlying_iter.advance(n)) {
             return std::invoke(self.fn, *item);
         }
@@ -59,7 +59,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         if (auto item = self.underlying_iter.advance_back(n)) {
             return std::invoke(self.fn, *item);
         }
@@ -67,7 +67,7 @@ public:
     }
 
     template <typename TSelf>
-    ref_t<TSelf> front(this TSelf&& self) {
+    result_t<TSelf> front(this TSelf&& self) {
         if (auto item = self.underlying_iter.front()) {
             return std::invoke(self.fn, *item);
         }
@@ -76,7 +76,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> back(this TSelf&& self) {
+    result_t<TSelf> back(this TSelf&& self) {
         if (auto item = self.underlying_iter.back()) {
             return std::invoke(self.fn, *item);
         }

@@ -13,7 +13,7 @@ public:
     using const_reference = typename TUnderlyingIter::const_reference;
 
     template <typename TSelf>
-    using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
+    using result_t = typename TUnderlyingIter::template result_t<TSelf>;
 
     static constexpr bool is_sized = false;
     static constexpr bool is_common = TUnderlyingIter::is_common;
@@ -27,27 +27,27 @@ public:
         , underlying_iter(std::forward<UUnderlyingIter>(underlying_iter)) {}
 
     template <typename TSelf>
-    ref_t<TSelf> next(this TSelf&& self) {
+    result_t<TSelf> next(this TSelf&& self) {
         self.ff();
         return self.underlying_iter.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> next_back(this TSelf&& self) {
+    result_t<TSelf> next_back(this TSelf&& self) {
         self.ff();
         return self.underlying_iter.next_back();
     }
 
     template <typename TSelf>
-    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         self.ff();
         return self.underlying_iter.advance(n);
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         if (!std::exchange(self.dropped, true)) {
             for (auto item = self.underlying_iter.back(); item; item = self.underlying_iter.advance_back(1)) {
                 if (!std::invoke(self.fn, *item)) {
@@ -59,14 +59,14 @@ public:
     }
 
     template <typename TSelf>
-    ref_t<TSelf> front(this TSelf&& self) {
+    result_t<TSelf> front(this TSelf&& self) {
         self.ff();
         return self.underlying_iter.front();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> back(this TSelf&& self) {
+    result_t<TSelf> back(this TSelf&& self) {
         if (!self.dropped) {
             return self.advance_back(0);
         }

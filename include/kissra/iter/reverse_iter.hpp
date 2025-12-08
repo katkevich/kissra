@@ -17,7 +17,7 @@ public:
     using const_reference = typename TUnderlyingIter::const_reference;
 
     template <typename TSelf>
-    using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
+    using result_t = typename TUnderlyingIter::template result_t<TSelf>;
 
     static constexpr bool is_sized = TUnderlyingIter::is_sized;
     static constexpr bool is_common = TUnderlyingIter::is_common;
@@ -31,34 +31,34 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> next(this TSelf&& self) {
+    result_t<TSelf> next(this TSelf&& self) {
         return self.underlying_iter.next_back();
     }
 
     template <typename TSelf>
-    ref_t<TSelf> next_back(this TSelf&& self) {
+    result_t<TSelf> next_back(this TSelf&& self) {
         return self.underlying_iter.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         return self.underlying_iter.advance_back(n);
     }
 
     template <typename TSelf>
-    ref_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         return self.underlying_iter.advance(n);
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    ref_t<TSelf> front(this TSelf&& self) {
+    result_t<TSelf> front(this TSelf&& self) {
         return self.underlying_iter.back();
     }
 
     template <typename TSelf>
-    ref_t<TSelf> back(this TSelf&& self) {
+    result_t<TSelf> back(this TSelf&& self) {
         return self.underlying_iter.front();
     }
 
