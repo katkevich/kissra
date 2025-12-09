@@ -1,12 +1,11 @@
 #pragma once
-#include "kissra/misc/optional.hpp"
-#include "kissra/registered_mixins_fwd.hpp"
+#include "kissra/iter/iter_base.hpp"
 #include <functional>
 
 namespace kissra {
 template <typename TBaseIter, typename TFn, typename TMixins>
     requires std::regular_invocable<TFn, typename TBaseIter::reference>
-class drop_last_while_iter : public TMixins {
+class drop_last_while_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
@@ -26,7 +25,7 @@ public:
 
     template <typename UBaseIter>
     drop_last_while_iter(UBaseIter&& base_iter, TFn fn)
-        : base_iter(std::forward<UBaseIter>(base_iter))
+        : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
     template <typename TSelf>
@@ -70,7 +69,6 @@ private:
     }
 
 private:
-    TBaseIter base_iter;
     TFn fn;
     bool dropped{};
 };

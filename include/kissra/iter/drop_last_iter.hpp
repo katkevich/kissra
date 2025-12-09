@@ -1,11 +1,10 @@
 #pragma once
-#include "kissra/misc/optional.hpp"
-#include "kissra/registered_mixins_fwd.hpp"
+#include "kissra/iter/iter_base.hpp"
 #include <functional>
 
 namespace kissra {
 template <typename TBaseIter, typename TMixins>
-class drop_last_iter : public TMixins {
+class drop_last_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
@@ -25,7 +24,7 @@ public:
 
     template <typename UBaseIter>
     drop_last_iter(UBaseIter&& base_iter, std::size_t n)
-        : base_iter(std::forward<UBaseIter>(base_iter))
+        : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , curr_n(n)
         , n(n) {}
 
@@ -73,7 +72,6 @@ private:
     }
 
 private:
-    TBaseIter base_iter;
     std::size_t curr_n;
     std::size_t n;
 };

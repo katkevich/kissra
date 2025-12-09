@@ -12,6 +12,7 @@
 #include "kissra/fn/convert.hpp"
 #include "kissra/fn/misc.hpp"
 #include "kissra/fn/num.hpp"
+#include "kissra/iter/iter_base.hpp"
 #include "kissra/iter/all_iter.hpp"
 #include "kissra/iter/drop_iter.hpp"
 #include "kissra/iter/drop_last_iter.hpp"

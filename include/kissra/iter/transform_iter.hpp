@@ -1,14 +1,13 @@
 #pragma once
 #include "kissra/algo/size_mixin.hpp"
-#include "kissra/misc/optional.hpp"
-#include "kissra/registered_mixins_fwd.hpp"
+#include "kissra/iter/iter_base.hpp"
 #include <algorithm>
 #include <type_traits>
 
 namespace kissra {
 template <typename TBaseIter, typename TFn, typename TMixins>
     requires std::regular_invocable<TFn, typename TBaseIter::reference>
-class transform_iter : public size_mixin, public TMixins {
+class transform_iter : public iter_base<TBaseIter>, public size_mixin, public TMixins {
     friend class size_mixin;
 
 public:
@@ -30,7 +29,7 @@ public:
 
     template <typename UBaseIter>
     transform_iter(UBaseIter&& base_iter, TFn fn)
-        : base_iter(std::forward<UBaseIter>(base_iter))
+        : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
     template <typename TSelf>
@@ -68,7 +67,6 @@ public:
     }
 
 private:
-    TBaseIter base_iter;
     TFn fn;
 };
 

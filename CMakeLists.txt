@@ -19,6 +19,7 @@ set(MORFO_HEADERS
     include/kissra/type_traits.hpp
     include/kissra/concepts.hpp
     include/kissra/registered_mixins_fwd.hpp
+    include/kissra/iter/iter_base.hpp
     include/kissra/iter/all_iter.hpp
     include/kissra/iter/drop_iter.hpp
     include/kissra/iter/drop_last_iter.hpp

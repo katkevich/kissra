@@ -1,12 +1,11 @@
 #pragma once
+#include "kissra/iter/iter_base.hpp"
 #include "kissra/algo/size_mixin.hpp"
-#include "kissra/misc/optional.hpp"
-#include "kissra/registered_mixins_fwd.hpp"
 #include <functional>
 
 namespace kissra {
 template <typename TBaseIter, typename TMixins>
-class reverse_iter : public size_mixin, public TMixins {
+class reverse_iter : public iter_base<TBaseIter>, public size_mixin, public TMixins {
     friend struct size_mixin;
 
 public:
@@ -28,7 +27,7 @@ public:
 
     template <typename UBaseIter>
     reverse_iter(UBaseIter&& base_iter)
-        : base_iter(std::forward<UBaseIter>(base_iter)) {}
+        : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter)) {}
 
     template <typename TSelf>
         requires is_common && is_bidir
@@ -51,9 +50,6 @@ public:
     result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         return self.base_iter.advance(n);
     }
-
-private:
-    TBaseIter base_iter;
 };
 
 struct reverse_mixin {
