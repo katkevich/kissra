@@ -29,7 +29,7 @@ public:
         , fn(fn) {}
 
     template <typename TSelf>
-    result_t<TSelf> next(this TSelf&& self) {
+    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
         while (auto item = self.base_iter.next()) {
             if (std::invoke(self.fn, *item)) {
                 return item;
@@ -40,7 +40,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    result_t<TSelf> next_back(this TSelf&& self) {
+    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
         while (auto item = self.base_iter.next_back()) {
             if (std::invoke(self.fn, *item)) {
                 return item;
@@ -50,9 +50,22 @@ public:
     }
 
     template <typename TSelf>
-    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        auto item = self.base_iter.front();
-        for (; item; item = self.base_iter.nth(1)) {
+    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
+        for (auto item = self.base_iter.front(); item; item = self.base_iter.nth(1)) {
+            if (std::invoke(self.fn, *item)) {
+                if (n-- == 0) {
+                    return item;
+                }
+            }
+        }
+        return {};
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
+        auto item = self.base_iter.back();
+        for (; item; item = self.base_iter.nth_back(1)) {
             if (std::invoke(self.fn, *item)) {
                 if (n-- == 0) {
                     break;
@@ -63,17 +76,30 @@ public:
     }
 
     template <typename TSelf>
-        requires is_common && is_bidir
-    result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        auto item = self.base_iter.back();
-        for (; item; item = self.base_iter.nth_back(1)) {
+    std::size_t advance(this TSelf&& self, std::size_t n) {
+        std::size_t offset = 0;
+        for (auto item = self.base_iter.front(); item; item = self.base_iter.nth(1)) {
             if (std::invoke(self.fn, *item)) {
-                if (n-- == 0) {
+                if (offset++ == n) {
                     break;
                 }
             }
         }
-        return item;
+        return offset;
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    std::size_t advance_back(this TSelf&& self, std::size_t n) {
+        std::size_t offset = 0;
+        for (auto item = self.base_iter.back(); item; item = self.base_iter.nth_back(1)) {
+            if (std::invoke(self.fn, *item)) {
+                if (offset++ == n) {
+                    break;
+                }
+            }
+        }
+        return offset;
     }
 
 private:

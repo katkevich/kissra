@@ -33,7 +33,7 @@ public:
         , fn(fn) {}
 
     template <typename TSelf>
-    result_t<TSelf> next(this TSelf&& self) {
+    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
         if (auto item = self.base_iter.next()) {
             return std::invoke(self.fn, *item);
         }
@@ -42,7 +42,7 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    result_t<TSelf> next_back(this TSelf&& self) {
+    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
         if (auto item = self.base_iter.next_back()) {
             return std::invoke(self.fn, *item);
         }
@@ -50,7 +50,7 @@ public:
     }
 
     template <typename TSelf>
-    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
         if (auto item = self.base_iter.nth(n)) {
             return std::invoke(self.fn, *item);
         }
@@ -59,11 +59,22 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
         if (auto item = self.base_iter.nth_back(n)) {
             return std::invoke(self.fn, *item);
         }
         return {};
+    }
+
+    template <typename TSelf>
+    std::size_t advance(this TSelf&& self, std::size_t n) {
+        return self.base_iter.advance(n);
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    std::size_t advance_back(this TSelf&& self, std::size_t n) {
+        return self.base_iter.advance_back(n);
     }
 
 private:

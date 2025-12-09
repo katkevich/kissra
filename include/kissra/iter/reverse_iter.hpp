@@ -31,24 +31,35 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    result_t<TSelf> next(this TSelf&& self) {
+    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
         return self.base_iter.next_back();
     }
 
     template <typename TSelf>
-    result_t<TSelf> next_back(this TSelf&& self) {
+    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
         return self.base_iter.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
-    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
         return self.base_iter.nth_back(n);
     }
 
     template <typename TSelf>
-    result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
         return self.base_iter.nth(n);
+    }
+
+    template <typename TSelf>
+        requires is_common && is_bidir
+    std::size_t advance(this TSelf&& self, std::size_t n) {
+        return self.base_iter.advance_back(n);
+    }
+
+    template <typename TSelf>
+    std::size_t advance_back(this TSelf&& self, std::size_t n) {
+        return self.base_iter.advance(n);
     }
 };
 
