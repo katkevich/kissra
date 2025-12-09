@@ -22,7 +22,7 @@ FetchContent_MakeAvailable(benchmark)
 add_executable(kissra_bench_tests
     src/benchmarks.cpp
     src/num_to_string.cpp
-    src/front_vs_advance.cpp
+    src/front_vs_nth.cpp
 )
 target_compile_features(kissra_bench_tests PRIVATE cxx_std_23)
 target_link_libraries(kissra_bench_tests kissra::kissra benchmark::benchmark_main)

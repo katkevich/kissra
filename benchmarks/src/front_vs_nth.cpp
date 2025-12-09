@@ -76,7 +76,7 @@ static void BM_AdvanceZero(benchmark::State& state) {
             .drop_last(1)
             .filter(kissra::fn::even)
             .reverse()
-            .advance(0);
+            .nth(0);
         // clang-format on
 
         // item === 8

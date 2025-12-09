@@ -50,9 +50,9 @@ public:
     }
 
     template <typename TSelf>
-    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
         auto item = self.base_iter.front();
-        for (; item; item = self.base_iter.advance(1)) {
+        for (; item; item = self.base_iter.nth(1)) {
             if (std::invoke(self.fn, *item)) {
                 if (n-- == 0) {
                     break;
@@ -64,9 +64,9 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
         auto item = self.base_iter.back();
-        for (; item; item = self.base_iter.advance_back(1)) {
+        for (; item; item = self.base_iter.nth_back(1)) {
             if (std::invoke(self.fn, *item)) {
                 if (n-- == 0) {
                     break;

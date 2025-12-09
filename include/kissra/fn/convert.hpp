@@ -62,7 +62,7 @@ struct to_chars_c_t {
 };
 
 /**
- * It is impossible to tell in advance how big buffer should be (in case of a fixed format). It could be huge.
+ * It is impossible to tell in nth how big buffer should be (in case of a fixed format). It could be huge.
  * 64 bytes estimate should be enough in most cases. If not then pass bigger buffer size manually.
  * Precision being equal to '-1' means no particular precision was specified - the shortest FP representation will be chosen instead.
  */

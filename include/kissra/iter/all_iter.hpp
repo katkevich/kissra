@@ -48,7 +48,7 @@ public:
 
     template <typename TSelf>
         requires is_random
-    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
         self.cursor += std::min(n, std::size_t(self.sentinel - self.cursor));
         if (self.cursor != self.sentinel) {
             return *self.cursor;
@@ -57,7 +57,7 @@ public:
     }
 
     template <typename TSelf>
-    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
         while (n != 0 && self.cursor != self.sentinel) {
             ++self.cursor;
             --n;
@@ -70,7 +70,7 @@ public:
 
     template <typename TSelf>
         requires is_random
-    result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
         self.sentinel -= std::min(n, std::size_t(self.sentinel - self.cursor));
         if (self.cursor != self.sentinel) {
             auto sentinel_copy = self.sentinel;
@@ -81,7 +81,7 @@ public:
 
     template <typename TSelf>
         requires(is_common && is_bidir && !is_random)
-    result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
+    result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
         while (n != 0 && self.cursor != self.sentinel) {
             --self.sentinel;
             --n;

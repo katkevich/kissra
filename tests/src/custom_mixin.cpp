@@ -64,8 +64,8 @@ public:
     }
 
     template <typename TSelf>
-    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        if (auto item = self.base_iter.advance(n)) {
+    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
+        if (auto item = self.base_iter.nth(n)) {
             self.idx += n;
             return ref_t<TSelf>{ self.idx, *item };
         }

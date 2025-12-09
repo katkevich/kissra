@@ -42,13 +42,13 @@ public:
 
     template <typename TSelf>
         requires is_common && is_bidir
-    result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        return self.base_iter.advance_back(n);
+    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
+        return self.base_iter.nth_back(n);
     }
 
     template <typename TSelf>
-    result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
-        return self.base_iter.advance(n);
+    result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
+        return self.base_iter.nth(n);
     }
 };
 

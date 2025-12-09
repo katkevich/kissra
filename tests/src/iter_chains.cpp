@@ -48,7 +48,7 @@ TEST_CASE("filter + transform + reverse + transform + filter") {
     REQUIRE_EQ(actual, expected);
 }
 
-TEST_CASE("transform + filter + drop (without 'advance' shortcut coz 'filter' isn't random access)") {
+TEST_CASE("transform + filter + drop (without 'nth' shortcut coz 'filter' isn't random access)") {
     std::array arr = { "1"s, "22"s, "333"s, "4444"s, "55555"s, "666666"s, "0"s };
 
     auto iter = kissra::all(arr)
@@ -65,7 +65,7 @@ TEST_CASE("transform + filter + drop (without 'advance' shortcut coz 'filter' is
     REQUIRE_EQ(actual, expected);
 }
 
-TEST_CASE("transform + drop (with 'advance' shortcut coz 'transform' is random access)") {
+TEST_CASE("transform + drop (with 'nth' shortcut coz 'transform' is random access)") {
     std::array arr = { "1"s, "22"s, "333"s, "4444"s, "55555"s, "666666"s, "0"s };
 
     auto iter = kissra::all(arr) //
