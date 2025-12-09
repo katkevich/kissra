@@ -4,63 +4,63 @@
 #include <functional>
 
 namespace kissra {
-template <typename TUnderlyingIter, typename TMixins>
+template <typename TBaseIter, typename TMixins>
 class drop_iter : public TMixins {
 public:
-    using value_type = typename TUnderlyingIter::value_type;
-    using reference = typename TUnderlyingIter::reference;
-    using const_reference = typename TUnderlyingIter::const_reference;
+    using value_type = typename TBaseIter::value_type;
+    using reference = typename TBaseIter::reference;
+    using const_reference = typename TBaseIter::const_reference;
 
     template <typename TSelf>
-    using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
+    using ref_t = typename TBaseIter::template ref_t<TSelf>;
 
     template <typename TSelf>
-    using result_t = typename TUnderlyingIter::template result_t<TSelf>;
+    using result_t = typename TBaseIter::template result_t<TSelf>;
 
-    static constexpr bool is_sized = TUnderlyingIter::is_sized;
-    static constexpr bool is_common = TUnderlyingIter::is_common;
-    static constexpr bool is_forward = TUnderlyingIter::is_forward;
-    static constexpr bool is_bidir = TUnderlyingIter::is_bidir;
-    static constexpr bool is_random = TUnderlyingIter::is_random;
+    static constexpr bool is_sized = TBaseIter::is_sized;
+    static constexpr bool is_common = TBaseIter::is_common;
+    static constexpr bool is_forward = TBaseIter::is_forward;
+    static constexpr bool is_bidir = TBaseIter::is_bidir;
+    static constexpr bool is_random = TBaseIter::is_random;
 
-    template <typename UUnderlyingIter>
-    drop_iter(UUnderlyingIter&& underlying_iter, std::size_t n)
-        : underlying_iter(std::forward<UUnderlyingIter>(underlying_iter))
+    template <typename UBaseIter>
+    drop_iter(UBaseIter&& base_iter, std::size_t n)
+        : base_iter(std::forward<UBaseIter>(base_iter))
         , curr_n(n)
         , n(n) {}
 
     template <typename TSelf>
     result_t<TSelf> next(this TSelf&& self) {
         self.ff();
-        return self.underlying_iter.next();
+        return self.base_iter.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
     result_t<TSelf> next_back(this TSelf&& self) {
         self.ff();
-        return self.underlying_iter.next_back();
+        return self.base_iter.next_back();
     }
 
     template <typename TSelf>
     result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
         const auto total = self.curr_n + n;
         self.curr_n = 0;
-        return self.underlying_iter.advance(total);
+        return self.base_iter.advance(total);
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
     result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
         self.ff();
-        return self.underlying_iter.advance_back(n);
+        return self.base_iter.advance_back(n);
     }
 
     template <typename TSelf>
         requires is_sized
     auto size(this TSelf&& self) {
-        const std::size_t underlying_size = self.underlying_iter.size();
-        return underlying_size - std::min(underlying_size, self.curr_n);
+        const std::size_t base_size = self.base_iter.size();
+        return base_size - std::min(base_size, self.curr_n);
     }
 
 private:
@@ -72,7 +72,7 @@ private:
     }
 
 private:
-    TUnderlyingIter underlying_iter;
+    TBaseIter base_iter;
     std::size_t curr_n;
     std::size_t n;
 };

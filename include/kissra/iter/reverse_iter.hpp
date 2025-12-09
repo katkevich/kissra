@@ -5,55 +5,55 @@
 #include <functional>
 
 namespace kissra {
-template <typename TUnderlyingIter, typename TMixins>
+template <typename TBaseIter, typename TMixins>
 class reverse_iter : public size_mixin, public TMixins {
     friend struct size_mixin;
 
 public:
-    using value_type = typename TUnderlyingIter::value_type;
-    using reference = typename TUnderlyingIter::reference;
-    using const_reference = typename TUnderlyingIter::const_reference;
+    using value_type = typename TBaseIter::value_type;
+    using reference = typename TBaseIter::reference;
+    using const_reference = typename TBaseIter::const_reference;
 
     template <typename TSelf>
-    using ref_t = typename TUnderlyingIter::template ref_t<TSelf>;
+    using ref_t = typename TBaseIter::template ref_t<TSelf>;
 
     template <typename TSelf>
-    using result_t = typename TUnderlyingIter::template result_t<TSelf>;
+    using result_t = typename TBaseIter::template result_t<TSelf>;
 
-    static constexpr bool is_sized = TUnderlyingIter::is_sized;
-    static constexpr bool is_common = TUnderlyingIter::is_common;
-    static constexpr bool is_forward = TUnderlyingIter::is_forward;
-    static constexpr bool is_bidir = TUnderlyingIter::is_bidir;
-    static constexpr bool is_random = TUnderlyingIter::is_random;
+    static constexpr bool is_sized = TBaseIter::is_sized;
+    static constexpr bool is_common = TBaseIter::is_common;
+    static constexpr bool is_forward = TBaseIter::is_forward;
+    static constexpr bool is_bidir = TBaseIter::is_bidir;
+    static constexpr bool is_random = TBaseIter::is_random;
 
-    template <typename UUnderlyingIter>
-    reverse_iter(UUnderlyingIter&& underlying_iter)
-        : underlying_iter(std::forward<UUnderlyingIter>(underlying_iter)) {}
+    template <typename UBaseIter>
+    reverse_iter(UBaseIter&& base_iter)
+        : base_iter(std::forward<UBaseIter>(base_iter)) {}
 
     template <typename TSelf>
         requires is_common && is_bidir
     result_t<TSelf> next(this TSelf&& self) {
-        return self.underlying_iter.next_back();
+        return self.base_iter.next_back();
     }
 
     template <typename TSelf>
     result_t<TSelf> next_back(this TSelf&& self) {
-        return self.underlying_iter.next();
+        return self.base_iter.next();
     }
 
     template <typename TSelf>
         requires is_common && is_bidir
     result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        return self.underlying_iter.advance_back(n);
+        return self.base_iter.advance_back(n);
     }
 
     template <typename TSelf>
     result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
-        return self.underlying_iter.advance(n);
+        return self.base_iter.advance(n);
     }
 
 private:
-    TUnderlyingIter underlying_iter;
+    TBaseIter base_iter;
 };
 
 struct reverse_mixin {

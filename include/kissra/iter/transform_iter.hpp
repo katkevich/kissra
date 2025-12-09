@@ -6,13 +6,13 @@
 #include <type_traits>
 
 namespace kissra {
-template <typename TUnderlyingIter, typename TFn, typename TMixins>
-    requires std::regular_invocable<TFn, typename TUnderlyingIter::reference>
+template <typename TBaseIter, typename TFn, typename TMixins>
+    requires std::regular_invocable<TFn, typename TBaseIter::reference>
 class transform_iter : public size_mixin, public TMixins {
     friend class size_mixin;
 
 public:
-    using value_type = std::invoke_result_t<TFn, typename TUnderlyingIter::reference>;
+    using value_type = std::invoke_result_t<TFn, typename TBaseIter::reference>;
     using reference = value_type;
     using const_reference = value_type;
 
@@ -22,20 +22,20 @@ public:
     template <typename TSelf>
     using result_t = kissra::optional<ref_t<TSelf>>;
 
-    static constexpr bool is_sized = TUnderlyingIter::is_sized;
-    static constexpr bool is_common = TUnderlyingIter::is_common;
-    static constexpr bool is_forward = TUnderlyingIter::is_forward;
-    static constexpr bool is_bidir = TUnderlyingIter::is_bidir;
-    static constexpr bool is_random = TUnderlyingIter::is_random;
+    static constexpr bool is_sized = TBaseIter::is_sized;
+    static constexpr bool is_common = TBaseIter::is_common;
+    static constexpr bool is_forward = TBaseIter::is_forward;
+    static constexpr bool is_bidir = TBaseIter::is_bidir;
+    static constexpr bool is_random = TBaseIter::is_random;
 
-    template <typename UUnderlyingIter>
-    transform_iter(UUnderlyingIter&& underlying_iter, TFn fn)
-        : underlying_iter(std::forward<UUnderlyingIter>(underlying_iter))
+    template <typename UBaseIter>
+    transform_iter(UBaseIter&& base_iter, TFn fn)
+        : base_iter(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
     template <typename TSelf>
     result_t<TSelf> next(this TSelf&& self) {
-        if (auto item = self.underlying_iter.next()) {
+        if (auto item = self.base_iter.next()) {
             return std::invoke(self.fn, *item);
         }
         return {};
@@ -44,7 +44,7 @@ public:
     template <typename TSelf>
         requires is_common && is_bidir
     result_t<TSelf> next_back(this TSelf&& self) {
-        if (auto item = self.underlying_iter.next_back()) {
+        if (auto item = self.base_iter.next_back()) {
             return std::invoke(self.fn, *item);
         }
         return {};
@@ -52,7 +52,7 @@ public:
 
     template <typename TSelf>
     result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        if (auto item = self.underlying_iter.advance(n)) {
+        if (auto item = self.base_iter.advance(n)) {
             return std::invoke(self.fn, *item);
         }
         return {};
@@ -61,14 +61,14 @@ public:
     template <typename TSelf>
         requires is_common && is_bidir
     result_t<TSelf> advance_back(this TSelf&& self, std::size_t n) {
-        if (auto item = self.underlying_iter.advance_back(n)) {
+        if (auto item = self.base_iter.advance_back(n)) {
             return std::invoke(self.fn, *item);
         }
         return {};
     }
 
 private:
-    TUnderlyingIter underlying_iter;
+    TBaseIter base_iter;
     TFn fn;
 };
 

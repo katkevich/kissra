@@ -14,22 +14,22 @@
 #include <vector>
 
 namespace custom_ns {
-template <typename TUnderlyingIter, typename TMixins>
+template <typename TBaseIter, typename TMixins>
 /**
  * `size_mixin` isn't builtin coz you cannot implement it generically for ANY kind of iterators in O(1)
  * It may require custom logic in you iterator (see `drop_iterator` for instance).
  *
  * But, for iterators which DO NOT filter items in any way (`enumerate`/`transform` etc.) it is enough to just delegate
- * `size` functionality to underlying iterator (which is exactly what `kissra::size_mixin` does)
+ * `size` functionality to base iterator (which is exactly what `kissra::size_mixin` does)
  */
 class custom_enumerate_iter : public kissra::size_mixin, public TMixins {
-    /* Should be friend to access `underlying_iter` */
+    /* Should be friend to access `base_iter` */
     friend class kissra::size_mixin;
 
 public:
-    using value_type = std::tuple<std::int64_t, typename TUnderlyingIter::reference>;
-    using reference = std::tuple<std::int64_t, typename TUnderlyingIter::reference>;
-    using const_reference = std::tuple<std::int64_t, typename TUnderlyingIter::const_reference>;
+    using value_type = std::tuple<std::int64_t, typename TBaseIter::reference>;
+    using reference = std::tuple<std::int64_t, typename TBaseIter::reference>;
+    using const_reference = std::tuple<std::int64_t, typename TBaseIter::const_reference>;
 
     template <typename TSelf>
     using ref_t = std::conditional_t<std::is_const_v<std::remove_reference_t<TSelf>>, const_reference, reference>;
@@ -51,13 +51,13 @@ public:
     static constexpr bool is_bidir = false;
     static constexpr bool is_random = false;
 
-    template <typename UUnderlyingIter>
-    custom_enumerate_iter(UUnderlyingIter&& underlying_iter)
-        : underlying_iter(std::forward<UUnderlyingIter>(underlying_iter)) {}
+    template <typename UBaseIter>
+    custom_enumerate_iter(UBaseIter&& base_iter)
+        : base_iter(std::forward<UBaseIter>(base_iter)) {}
 
     template <typename TSelf>
     result_t<TSelf> next(this TSelf&& self) {
-        if (auto item = self.underlying_iter.next()) {
+        if (auto item = self.base_iter.next()) {
             return ref_t<TSelf>{ self.idx++, *item };
         }
         return {};
@@ -65,7 +65,7 @@ public:
 
     template <typename TSelf>
     result_t<TSelf> advance(this TSelf&& self, std::size_t n) {
-        if (auto item = self.underlying_iter.advance(n)) {
+        if (auto item = self.base_iter.advance(n)) {
             self.idx += n;
             return ref_t<TSelf>{ self.idx, *item };
         }
@@ -73,7 +73,7 @@ public:
     }
 
 private:
-    TUnderlyingIter underlying_iter;
+    TBaseIter base_iter;
     std::int64_t idx{};
 };
 
