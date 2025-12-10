@@ -5,7 +5,9 @@ namespace kissra {
 struct empty_mixin {
     template <typename TSelf>
     bool empty(this TSelf&& self) {
-        return static_cast<bool>(self.nth(0));
+        self.advance(0);
+        const auto subrange = self.underlying_subrange();
+        return subrange.empty();
     }
 };
 } // namespace kissra

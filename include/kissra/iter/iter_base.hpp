@@ -12,13 +12,23 @@ public:
         : base_iter(std::forward<UBaseIter>(base_iter)) {}
 
     template <typename TSelf>
-    auto underlying_front(this TSelf&& self) {
-        return self.base_iter.underlying_front();
+    auto underlying_subrange(this TSelf&& self) {
+        return self.base_iter.underlying_subrange();
     }
 
     template <typename TSelf>
-    auto underlying_back(this TSelf&& self) {
-        return self.base_iter.underlying_back();
+    auto underlying_cursor(this TSelf&& self) {
+        return self.base_iter.underlying_cursor();
+    }
+
+    template <typename TSelf>
+    auto underlying_sentinel(this TSelf&& self) {
+        return self.base_iter.underlying_sentinel();
+    }
+
+    template <typename TSelf, typename TIt>
+    void underlying_subrange_override(this TSelf&& self, std::ranges::subrange<TIt> subrange) {
+        self.base_iter.underlying_subrange_override(subrange);
     }
 
 protected:

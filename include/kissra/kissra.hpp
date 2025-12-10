@@ -14,6 +14,7 @@
 #include "kissra/fn/num.hpp"
 #include "kissra/iter/iter_base.hpp"
 #include "kissra/iter/all_iter.hpp"
+#include "kissra/iter/chunk_iter.hpp"
 #include "kissra/iter/drop_iter.hpp"
 #include "kissra/iter/drop_last_iter.hpp"
 #include "kissra/iter/drop_last_while_iter.hpp"
@@ -29,6 +30,7 @@ namespace kissra {
 struct builtin_mixins : filter_mixin,
                         transform_mixin,
                         reverse_mixin,
+                        chunk_mixin,
                         drop_mixin,
                         drop_last_mixin,
                         drop_while_mixin,

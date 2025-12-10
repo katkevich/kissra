@@ -15,15 +15,18 @@ FetchContent_Declare(doctest
 FetchContent_MakeAvailable(doctest)
 
 add_executable(kissra_tests
-    src/iter_chains.cpp
-    src/filter.cpp
-    src/drop.cpp
-    src/drop_while.cpp
+    src/chunk.cpp
     src/collect.cpp
-    src/size.cpp
     src/convert.cpp
     src/custom_mixin.cpp
+    src/drop_while.cpp
+    src/drop.cpp
+    src/empty.cpp
+    src/filter.cpp
     src/find.cpp
+    src/iter_chains.cpp
+    src/size.cpp
+    src/transform.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_23)
 target_link_libraries(kissra_tests kissra::kissra doctest::doctest_with_main)

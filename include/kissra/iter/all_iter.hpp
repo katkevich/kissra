@@ -18,6 +18,7 @@ public:
     template <typename TSelf>
     using result_t = kissra::optional<ref_t<TSelf>>;
 
+    /* We need to be able to evaluate the size from iterators. Having member `size` is not enough in a general case. */
     static constexpr bool is_sized = std::ranges::random_access_range<TContainer>;
     static constexpr bool is_common = std::ranges::common_range<TContainer>;
     static constexpr bool is_forward = std::ranges::forward_range<TContainer>;
@@ -110,6 +111,27 @@ public:
         requires is_sized
     auto size(this TSelf&& self) {
         return std::size_t(self.sentinel - self.cursor);
+    }
+
+    template <typename TSelf>
+    auto underlying_subrange(this TSelf&& self) {
+        return std::ranges::subrange{ self.cursor, self.sentinel };
+    }
+
+    template <typename TSelf>
+    auto underlying_cursor(this TSelf&& self) {
+        return self.cursor;
+    }
+
+    template <typename TSelf>
+    auto underlying_sentinel(this TSelf&& self) {
+        return self.sentinel;
+    }
+
+    template <typename TSelf, typename TIt>
+    void underlying_subrange_override(this TSelf&& self, std::ranges::subrange<TIt> subrange) {
+        self.cursor = subrange.begin();
+        self.sentinel = subrange.end();
     }
 
 private:

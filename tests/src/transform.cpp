@@ -10,7 +10,7 @@
 namespace kissra::test {
 using namespace std::string_literals;
 
-TEST_CASE("transform().drop(N).back() should not call projection more than once per item") {
+TEST_CASE("transform().drop(N).back() should NOT call projection more than once per item") {
     std::array arr = { 1, 2, 3, 4, 5 };
 
     int counter = 0;
@@ -35,7 +35,7 @@ TEST_CASE("transform().drop(N).back() should not call projection more than once 
     }
 }
 
-TEST_CASE("transform().drop_last(N).front() should not call projection more than once per item") {
+TEST_CASE("transform().drop_last(N).front() should NOT call projection more than once per item") {
     std::array arr = { 1, 2, 3, 4, 5 };
 
     int counter = 0;
@@ -50,12 +50,12 @@ TEST_CASE("transform().drop_last(N).front() should not call projection more than
 
     {
         const auto item = iter.front();
-        CHECK_EQ(*item, 5);
+        CHECK_EQ(*item, 1);
         CHECK_EQ(counter, 1);
     }
     {
         const auto item = iter.front();
-        CHECK_EQ(*item, 5);
+        CHECK_EQ(*item, 1);
         CHECK_EQ(counter, 2);
     }
 }

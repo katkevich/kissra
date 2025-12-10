@@ -64,15 +64,14 @@ public:
     template <typename TSelf>
         requires is_common && is_bidir
     [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        auto item = self.base_iter.back();
-        for (; item; item = self.base_iter.nth_back(1)) {
+        for (auto item = self.base_iter.back(); item; item = self.base_iter.nth_back(1)) {
             if (std::invoke(self.fn, *item)) {
                 if (n-- == 0) {
-                    break;
+                    return item;
                 }
             }
         }
-        return item;
+        return {};
     }
 
     template <typename TSelf>
