@@ -52,7 +52,7 @@ public:
     }
 
     template <typename TSelf>
-        requires is_common && is_bidir
+        requires is_bidir
     std::size_t advance(this TSelf&& self, std::size_t n) {
         return self.base_iter.advance_back(n);
     }

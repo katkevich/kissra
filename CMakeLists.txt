@@ -11,7 +11,7 @@ FetchContent_Declare(beman_optional
 FetchContent_MakeAvailable(beman_optional)
 target_compile_features(beman_optional INTERFACE cxx_std_23)
 
-project(kissra VERSION 0.6.0)
+project(kissra VERSION 0.7.0)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(MORFO_HEADERS

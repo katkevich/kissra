@@ -62,9 +62,8 @@ public:
         return self.base_iter.advance(n);
     }
 
-    // TODO: advance_back ain't require is_common in fact
     template <typename TSelf>
-        requires is_common && is_bidir
+        requires is_bidir
     std::size_t advance_back(this TSelf&& self, std::size_t n) {
         return self.base_iter.advance_back(n);
     }

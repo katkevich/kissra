@@ -63,7 +63,7 @@ public:
     }
 
     template <typename TSelf>
-        requires is_common && is_bidir
+        requires is_bidir
     std::size_t advance_back(this TSelf&& self, std::size_t n) {
         const auto total = self.curr_n + n;
         self.curr_n = 0;

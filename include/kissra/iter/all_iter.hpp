@@ -97,7 +97,7 @@ public:
     }
 
     template <typename TSelf>
-        requires(is_common && is_bidir && !is_random)
+        requires(is_bidir && !is_random)
     std::size_t advance_back(this TSelf&& self, std::size_t n) {
         std::size_t offset = 0;
         while (offset != n && self.cursor != self.sentinel) {
