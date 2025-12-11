@@ -138,7 +138,7 @@ private:
     std::ranges::sentinel_t<TContainer> sentinel{};
 };
 
-template <typename TContainer, typename DeferInstantiation = void>
+template <std::ranges::range TContainer, typename DeferInstantiation = void>
 auto all(TContainer& container) {
     auto mixins = registered_mixins<DeferInstantiation>();
     return all_iter<TContainer, decltype(mixins)>{ container };

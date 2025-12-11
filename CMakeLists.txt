@@ -9,7 +9,7 @@ FetchContent_Declare(beman_optional
     FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(beman_optional)
-target_compile_features(beman_optional INTERFACE cxx_std_23)
+target_compile_features(beman_optional INTERFACE cxx_std_26)
 
 project(kissra VERSION 0.7.0)
 
@@ -29,6 +29,7 @@ set(MORFO_HEADERS
     include/kissra/iter/filter_iter.hpp
     include/kissra/iter/reverse_iter.hpp
     include/kissra/iter/transform_iter.hpp
+    include/kissra/iter/zip_iter.hpp
     include/kissra/algo/collect_mixin.hpp
     include/kissra/algo/size_mixin.hpp
     include/kissra/algo/front_mixin.hpp
@@ -41,13 +42,15 @@ set(MORFO_HEADERS
     include/kissra/fn/convert.hpp
     include/kissra/fn/misc.hpp
     include/kissra/misc/fwd.hpp
-    include/kissra/misc/static_string.hpp
+    include/kissra/misc/into_iter.hpp
     include/kissra/misc/optional.hpp
+    include/kissra/misc/static_string.hpp
+    include/kissra/misc/type_list.hpp
 )
 
 add_library(kissra INTERFACE)
 add_library(kissra::kissra ALIAS kissra)
-target_compile_features(kissra INTERFACE cxx_std_23)
+target_compile_features(kissra INTERFACE cxx_std_26)
 target_link_libraries(kissra INTERFACE beman_optional)
 
 
