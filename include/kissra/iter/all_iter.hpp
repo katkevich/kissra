@@ -26,8 +26,7 @@ public:
     static constexpr bool is_random = std::ranges::random_access_range<TContainer>;
 
     all_iter(TContainer& container)
-        : container(std::addressof(container))
-        , cursor(std::ranges::begin(container))
+        : cursor(std::ranges::begin(container))
         , sentinel(std::ranges::end(container)) {}
 
     template <typename TSelf>
@@ -135,7 +134,6 @@ public:
     }
 
 private:
-    TContainer* container{};
     std::ranges::iterator_t<TContainer> cursor{};
     std::ranges::sentinel_t<TContainer> sentinel{};
 };
