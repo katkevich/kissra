@@ -24,6 +24,7 @@ add_executable(kissra_tests
     src/empty.cpp
     src/filter.cpp
     src/find.cpp
+    src/functional.cpp
     src/iter_chains.cpp
     src/size.cpp
     src/transform.cpp

@@ -41,11 +41,12 @@ set(MORFO_HEADERS
     include/kissra/fn/num.hpp
     include/kissra/fn/convert.hpp
     include/kissra/fn/misc.hpp
-    include/kissra/misc/fwd.hpp
+    include/kissra/misc/functional.hpp
     include/kissra/misc/into_iter.hpp
     include/kissra/misc/optional.hpp
     include/kissra/misc/static_string.hpp
     include/kissra/misc/type_list.hpp
+    include/kissra/misc/utility.hpp
 )
 
 add_library(kissra INTERFACE)

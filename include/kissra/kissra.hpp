@@ -22,8 +22,9 @@
 #include "kissra/iter/reverse_iter.hpp"
 #include "kissra/iter/transform_iter.hpp"
 #include "kissra/iter/zip_iter.hpp"
+#include "kissra/misc/functional.hpp"
 #include "kissra/misc/optional.hpp"
-#include "kissra/registered_mixins_fwd.hpp"
+#include "kissra/concepts.hpp"
 #include "kissra/type_traits.hpp"
 
 namespace kissra {

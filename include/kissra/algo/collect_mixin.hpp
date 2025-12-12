@@ -1,6 +1,6 @@
 #pragma once
 #include "kissra/concepts.hpp"
-#include "kissra/misc/fwd.hpp"
+#include "kissra/misc/utility.hpp"
 #include "kissra/type_traits.hpp"
 #include <vector>
 

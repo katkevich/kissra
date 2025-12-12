@@ -1,6 +1,6 @@
 #pragma once
-#include "kissra/misc/fwd.hpp"
 #include "kissra/misc/static_string.hpp"
+#include "kissra/misc/utility.hpp"
 #include <cmath>
 #include <cstddef>
 #include <format>

@@ -127,4 +127,88 @@ TEST_CASE("two opposite consecutive filters filter out all elements") {
         REQUIRE_FALSE(iter.front());
     }
 }
+
+TEST_CASE("filter_iter predicate should be callable with destructured aggregate arg (lvalue binds to lvalue arg)") {
+    struct aggregate {
+        std::string s{};
+        int i{};
+    };
+    std::array arr = {
+        aggregate{ "1"s, 1 },
+        aggregate{ "22"s, 2 },
+    };
+
+    auto iter = kissra::all(arr).filter([](std::string& s, int& i) { return s.size() == i; });
+    REQUIRE_EQ(iter.front()->i, 1);
+    REQUIRE_EQ(iter.back()->i, 2);
+}
+
+TEST_CASE("filter_iter predicate should be callable with destructured aggregate arg (prvalue binds to rvalue arg)") {
+    struct aggregate {
+        std::string s{};
+        int i{};
+    };
+    std::array arr = {
+        aggregate{ "1"s, 1 },
+        aggregate{ "22"s, 2 },
+    };
+
+    auto iter = kissra::all(arr) //
+                    .transform([](aggregate& a) { return a; })
+                    .filter([](std::string&& s, int&& i) { return s.size() == i; });
+    REQUIRE_EQ(iter.front()->i, 1);
+    REQUIRE_EQ(iter.back()->i, 2);
+}
+
+TEST_CASE("filter_iter predicate should be callable with destructured aggregate arg (xvalue binds to rvalue arg)") {
+    struct aggregate {
+        std::string s{};
+        int i{};
+    };
+    std::array arr = {
+        aggregate{ "1"s, 1 },
+        aggregate{ "22"s, 2 },
+    };
+
+    auto iter = kissra::all(arr) //
+                    .transform([](aggregate& a) -> aggregate&& { return std::move(a); })
+                    .filter([](std::string&& s, int&& i) { return s.size() == i; });
+    REQUIRE_EQ(iter.front()->i, 1);
+    REQUIRE_EQ(iter.back()->i, 2);
+}
+
+TEST_CASE(
+    "filter_iter predicate should be callable with destructured aggregate arg (xvalue binds to const lvalue arg)") {
+    struct aggregate {
+        std::string s{};
+        int i{};
+    };
+    std::array arr = {
+        aggregate{ "1"s, 1 },
+        aggregate{ "22"s, 2 },
+    };
+
+    auto iter = kissra::all(arr) //
+                    .transform([](aggregate& a) -> aggregate&& { return std::move(a); })
+                    .filter([](const std::string& s, const int& i) { return s.size() == i; });
+    REQUIRE_EQ(iter.front()->i, 1);
+    REQUIRE_EQ(iter.back()->i, 2);
+}
+
+TEST_CASE("filter_iter predicate should be callable with destructured tuple arg (prvalue binds to rvalue arg)") {
+    struct aggregate {
+        std::string s{};
+        int i{};
+    };
+    std::array arr = {
+        aggregate{ "1"s, 1 },
+        aggregate{ "22"s, 2 },
+    };
+
+    auto iter = kissra::all(arr) //
+                    .transform([](aggregate& a) { return std::make_tuple(a.s, a.i); })
+                    .filter([](std::string&& s, int i) { return s.size() == i; });
+    REQUIRE_EQ(std::get<1>(*iter.front()), 1);
+}
+
 } // namespace kissra::test

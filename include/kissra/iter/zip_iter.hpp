@@ -1,9 +1,9 @@
 #pragma once
 #include "kissra/iter/all_iter.hpp"
 #include "kissra/iter/iter_base.hpp"
-#include "kissra/misc/fwd.hpp"
 #include "kissra/misc/into_iter.hpp"
 #include "kissra/misc/type_list.hpp"
+#include "kissra/misc/utility.hpp"
 #include <algorithm>
 #include <type_traits>
 
@@ -12,7 +12,7 @@ template <typename TBaseIter, typename TItersTypeList, typename TMixins>
 class zip_iter;
 
 template <typename TBaseIter, typename... TIters, typename TMixins>
-class zip_iter<TBaseIter, type_list<TIters...>, TMixins> : public iter_base<TBaseIter>, public TMixins {
+class zip_iter<TBaseIter, tmp::type_list<TIters...>, TMixins> : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = std::tuple<typename TBaseIter::reference, typename TIters::reference...>;
     using reference = value_type;
@@ -141,7 +141,7 @@ struct zip_mixin {
         using mixins_t = decltype(registered_mixins<DeferInstantiation>());
 
         using iters_type_list =
-            type_list<std::remove_reference_t<decltype(into_kissra_iter<mixins_t>(KISSRA_FWD(containers_or_kissra_iters)))>...>;
+            tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<mixins_t>(KISSRA_FWD(containers_or_kissra_iters)))>...>;
 
         return zip_iter<std::remove_cvref_t<TSelf>, iters_type_list, mixins_t>{ KISSRA_FWD(self),
             into_kissra_iter<mixins_t>(KISSRA_FWD(containers_or_kissra_iters))... };
