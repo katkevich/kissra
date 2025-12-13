@@ -23,10 +23,46 @@ concept iterator = requires(T t) {
     { t.nth(0uz) } -> std::same_as<typename T::result_t>;
     { t.advance(0uz) } -> std::same_as<std::size_t>;
 };
+
+template <typename T>
+concept sized_iterator = iterator<T> && is_sized_v<T> && requires(const T t) {
+    { t.size() } -> std::same_as<std::size_t>;
+};
+
+template <typename T>
+concept common_iterator = iterator<T> && is_common_v<T>;
+
+template <typename T>
+concept forward_iterator = iterator<T> && is_forward_v<T>;
+
+template <typename T>
+concept bidir_iterator = forward_iterator<T> && is_bidir_v<T> && is_common_v<T> && requires(T t) {
+    { t.next_back() } -> std::same_as<typename T::result_t>;
+    { t.nth_back(0uz) } -> std::same_as<typename T::result_t>;
+    { t.advance_back(0uz) } -> std::same_as<std::size_t>;
+};
+
+template <typename T>
+concept random_iterator = bidir_iterator<T> && is_random_v<T>;
 } // namespace impl
 
 template <typename T>
 concept iterator = impl::iterator<std::remove_reference_t<T>>;
+
+template <typename T>
+concept sized_iterator = impl::sized_iterator<std::remove_reference_t<T>>;
+
+template <typename T>
+concept common_iterator = impl::common_iterator<std::remove_reference_t<T>>;
+
+template <typename T>
+concept forward_iterator = impl::forward_iterator<std::remove_reference_t<T>>;
+
+template <typename T>
+concept bidir_iterator = impl::bidir_iterator<std::remove_reference_t<T>>;
+
+template <typename T>
+concept random_iterator = impl::random_iterator<std::remove_reference_t<T>>;
 
 /* Type `T` can be used as source sequence for kissra iterators (either range or kissra iterator itself). */
 template <typename T>
