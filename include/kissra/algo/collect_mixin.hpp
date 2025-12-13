@@ -6,7 +6,7 @@
 
 namespace kissra {
 struct collect_mixin {
-    template <template <typename...> typename TTo = std::vector, typename TSelf>
+    template <template <typename...> typename TTo = std::vector, kissra::mut TSelf>
     auto collect(this TSelf&& self) {
         using val_t = kissra::iter_value_t<TSelf>;
         using container_t = TTo<val_t>;

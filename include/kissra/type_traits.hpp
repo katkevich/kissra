@@ -26,9 +26,6 @@ template <typename TIt>
 using iter_reference_t = typename iter_reference<TIt>::type;
 
 template <typename TIt>
-using iter_const_reference_t = typename iter_const_reference<TIt>::type;
-
-template <typename TIt>
 using iter_result_t = typename iter_result<TIt>::type;
 
 template <typename T>

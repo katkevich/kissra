@@ -1,13 +1,10 @@
 #pragma once
-#include "kissra/algo/size_mixin.hpp"
 #include "kissra/iter/iter_base.hpp"
 #include <functional>
 
 namespace kissra {
 template <typename TBaseIter, typename TMixins>
-class reverse_iter : public iter_base<TBaseIter>, public size_mixin, public TMixins {
-    friend struct size_mixin;
-
+class reverse_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
@@ -51,6 +48,12 @@ public:
 
     std::size_t advance_back(std::size_t n) {
         return this->base_iter.advance(n);
+    }
+
+    auto size() const
+        requires is_sized
+    {
+        return this->base_iter.size();
     }
 };
 

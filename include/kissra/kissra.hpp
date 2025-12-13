@@ -4,7 +4,6 @@
 #include "kissra/algo/empty_mixin.hpp"
 #include "kissra/algo/find_mixin.hpp"
 #include "kissra/algo/front_mixin.hpp"
-#include "kissra/algo/size_mixin.hpp"
 #include "kissra/algo/ssize_mixin.hpp"
 #include "kissra/concepts.hpp"
 #include "kissra/fn/cmp.hpp"

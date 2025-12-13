@@ -31,7 +31,6 @@ set(MORFO_HEADERS
     include/kissra/iter/transform_iter.hpp
     include/kissra/iter/zip_iter.hpp
     include/kissra/algo/collect_mixin.hpp
-    include/kissra/algo/size_mixin.hpp
     include/kissra/algo/front_mixin.hpp
     include/kissra/algo/back_mixin.hpp
     include/kissra/algo/empty_mixin.hpp

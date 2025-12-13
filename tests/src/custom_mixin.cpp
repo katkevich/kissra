@@ -15,17 +15,7 @@
 
 namespace custom_ns {
 template <typename TBaseIter, typename TMixins>
-/**
- * `size_mixin` isn't builtin coz you cannot implement it generically for ANY kind of iterators in O(1)
- * It may require custom logic in you iterator (see `drop_iterator` for instance).
- *
- * But, for iterators which DO NOT filter items in any way (`enumerate`/`transform` etc.) it is enough to just delegate
- * `size` functionality to base iterator (which is exactly what `kissra::size_mixin` does)
- */
-class custom_enumerate_iter : public kissra::size_mixin, public TMixins {
-    /* Should be friend to access `base_iter` */
-    friend class kissra::size_mixin;
-
+class custom_enumerate_iter : public TMixins {
 public:
     using value_type = std::tuple<std::int64_t, typename TBaseIter::reference>;
     using reference = std::tuple<std::int64_t, typename TBaseIter::reference>;
@@ -62,6 +52,12 @@ public:
             return reference{ this->idx, *item };
         }
         return {};
+    }
+
+    auto size() const
+        requires is_sized
+    {
+        return this->base_iter.size();
     }
 
 private:

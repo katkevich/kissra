@@ -1,8 +1,9 @@
 #pragma once
+#include "kissra/concepts.hpp"
 
 namespace kissra {
 struct front_mixin {
-    template <typename TSelf>
+    template <kissra::mut TSelf>
     auto front(this TSelf&& self) {
         return self.nth(0);
     }

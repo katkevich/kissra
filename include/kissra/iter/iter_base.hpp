@@ -28,6 +28,11 @@ public:
         this->base_iter.underlying_subrange_override(subrange);
     }
 
+    template<typename TSelf>
+    auto& base(this TSelf&& self) {
+        return self.base_iter;
+    }
+
 protected:
     TBaseIter base_iter;
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include "kissra/misc/functional.hpp"
 #include "kissra/misc/type_list.hpp"
+#include "kissra/type_traits.hpp"
 #include <concepts>
 #include <ranges>
 #include <utility>
@@ -27,6 +28,9 @@ concept iterator = impl::iterator<std::remove_reference_t<T>>;
 /* Type `T` can be used as source sequence for kissra iterators (either range or kissra iterator itself). */
 template <typename T>
 concept iterator_compatible = std::ranges::range<T> && std::is_lvalue_reference_v<T> || kissra::iterator<T>;
+
+template <typename T>
+concept mut = !std::is_const<std::remove_reference_t<T>>::value;
 
 template <typename T, typename TValue>
 concept can_push_back = std::ranges::range<T> && requires(T rng, TValue val) { rng.push_back(val); };

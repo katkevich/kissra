@@ -1,5 +1,4 @@
 #pragma once
-#include "kissra/algo/size_mixin.hpp"
 #include "kissra/iter/iter_base.hpp"
 #include <algorithm>
 #include <type_traits>
@@ -7,9 +6,7 @@
 namespace kissra {
 template <typename TBaseIter, typename TFn, typename TMixins>
     requires std::regular_invocable<TFn, typename TBaseIter::reference>
-class transform_iter : public iter_base<TBaseIter>, public size_mixin, public TMixins {
-    friend class size_mixin;
-
+class transform_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = std::invoke_result_t<TFn, typename TBaseIter::reference>;
     using reference = value_type;
@@ -66,6 +63,12 @@ public:
         requires is_bidir
     {
         return this->base_iter.advance_back(n);
+    }
+
+    auto size() const
+        requires is_sized
+    {
+        return this->base_iter.size();
     }
 
 private:

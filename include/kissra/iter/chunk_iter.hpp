@@ -5,10 +5,9 @@
 namespace kissra {
 
 template <typename TBaseIter, typename TMixins>
-class chunk : public iter_base<TBaseIter>, public size_mixin, public TMixins {
+class chunk : public iter_base<TBaseIter>, public TMixins {
     template <typename UBaseIter, typename UMixins>
     friend class chunk_iter;
-    friend struct size_mixin;
 
 public:
     using value_type = typename TBaseIter::value_type;
@@ -57,6 +56,12 @@ public:
         requires is_bidir
     {
         return this->base_iter.advance_back(n);
+    }
+
+    auto size() const
+        requires is_sized
+    {
+        return this->base_iter.size();
     }
 };
 
