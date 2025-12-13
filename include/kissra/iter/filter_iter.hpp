@@ -12,13 +12,7 @@ class filter_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
-    using const_reference = typename TBaseIter::const_reference;
-
-    template <typename TSelf>
-    using ref_t = typename TBaseIter::template ref_t<TSelf>;
-
-    template <typename TSelf>
-    using result_t = typename TBaseIter::template result_t<TSelf>;
+    using result_t = typename TBaseIter::result_t;
 
     static constexpr bool is_sized = false;
     static constexpr bool is_common = TBaseIter::is_common;
@@ -31,31 +25,29 @@ public:
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
-        while (auto item = self.base_iter.next()) {
-            if (kissra::invoke(self.fn, std::forward_like<ref_t<TSelf>>(*item))) {
+    [[nodiscard]] result_t next() {
+        while (auto item = this->base_iter.next()) {
+            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
                 return item;
             }
         }
         return {};
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t next_back()
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
-        while (auto item = self.base_iter.next_back()) {
-            if (kissra::invoke(self.fn, std::forward_like<ref_t<TSelf>>(*item))) {
+    {
+        while (auto item = this->base_iter.next_back()) {
+            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
                 return item;
             }
         }
         return {};
     }
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        for (auto item = self.base_iter.front(); item; item = self.base_iter.nth(1)) {
-            if (kissra::invoke(self.fn, std::forward_like<ref_t<TSelf>>(*item))) {
+    [[nodiscard]] result_t nth(std::size_t n) {
+        for (auto item = this->base_iter.front(); item; item = this->base_iter.nth(1)) {
+            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
                 if (n-- == 0) {
                     return item;
                 }
@@ -64,11 +56,11 @@ public:
         return {};
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t nth_back(std::size_t n)
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        for (auto item = self.base_iter.back(); item; item = self.base_iter.nth_back(1)) {
-            if (kissra::invoke(self.fn, std::forward_like<ref_t<TSelf>>(*item))) {
+    {
+        for (auto item = this->base_iter.back(); item; item = this->base_iter.nth_back(1)) {
+            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
                 if (n-- == 0) {
                     return item;
                 }
@@ -77,11 +69,10 @@ public:
         return {};
     }
 
-    template <typename TSelf>
-    std::size_t advance(this TSelf&& self, std::size_t n) {
+    std::size_t advance(std::size_t n) {
         std::size_t offset = 0;
-        for (auto item = self.base_iter.front(); item; item = self.base_iter.nth(1)) {
-            if (kissra::invoke(self.fn, std::forward_like<ref_t<TSelf>>(*item))) {
+        for (auto item = this->base_iter.front(); item; item = this->base_iter.nth(1)) {
+            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
                 if (offset++ == n) {
                     break;
                 }
@@ -90,12 +81,12 @@ public:
         return offset;
     }
 
-    template <typename TSelf>
+    std::size_t advance_back(std::size_t n)
         requires is_common && is_bidir
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
+    {
         std::size_t offset = 0;
-        for (auto item = self.base_iter.back(); item; item = self.base_iter.nth_back(1)) {
-            if (kissra::invoke(self.fn, std::forward_like<ref_t<TSelf>>(*item))) {
+        for (auto item = this->base_iter.back(); item; item = this->base_iter.nth_back(1)) {
+            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
                 if (offset++ == n) {
                     break;
                 }

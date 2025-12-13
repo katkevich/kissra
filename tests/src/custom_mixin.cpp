@@ -29,13 +29,7 @@ class custom_enumerate_iter : public kissra::size_mixin, public TMixins {
 public:
     using value_type = std::tuple<std::int64_t, typename TBaseIter::reference>;
     using reference = std::tuple<std::int64_t, typename TBaseIter::reference>;
-    using const_reference = std::tuple<std::int64_t, typename TBaseIter::const_reference>;
-
-    template <typename TSelf>
-    using ref_t = std::conditional_t<std::is_const_v<std::remove_reference_t<TSelf>>, const_reference, reference>;
-
-    template <typename TSelf>
-    using result_t = kissra::optional<ref_t<TSelf>>;
+    using result_t = kissra::optional<reference>;
 
     /**
      * Add support for "size" to illustrate the possibility to intermix custom mixins with builtin ones.
@@ -55,19 +49,17 @@ public:
     custom_enumerate_iter(UBaseIter&& base_iter)
         : base_iter(std::forward<UBaseIter>(base_iter)) {}
 
-    template <typename TSelf>
-    result_t<TSelf> next(this TSelf&& self) {
-        if (auto item = self.base_iter.next()) {
-            return ref_t<TSelf>{ self.idx++, *item };
+    result_t next() {
+        if (auto item = this->base_iter.next()) {
+            return reference{ this->idx++, *item };
         }
         return {};
     }
 
-    template <typename TSelf>
-    result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        if (auto item = self.base_iter.nth(n)) {
-            self.idx += n;
-            return ref_t<TSelf>{ self.idx, *item };
+    result_t nth(std::size_t n) {
+        if (auto item = this->base_iter.nth(n)) {
+            this->idx += n;
+            return reference{ this->idx, *item };
         }
         return {};
     }
@@ -86,7 +78,7 @@ struct custom_enumerate_mixin {
 };
 
 struct custom_collect_mixin {
-    template <template <typename...> typename TTo = std::vector, typename TSelf>
+    template <typename TSelf, template <typename...> typename TTo = std::vector>
     auto custom_push_back(this TSelf&& self) {
         using val_t = kissra::iter_value_t<TSelf>;
         using container_t = TTo<val_t>;

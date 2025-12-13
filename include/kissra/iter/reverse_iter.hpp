@@ -1,6 +1,6 @@
 #pragma once
-#include "kissra/iter/iter_base.hpp"
 #include "kissra/algo/size_mixin.hpp"
+#include "kissra/iter/iter_base.hpp"
 #include <functional>
 
 namespace kissra {
@@ -11,13 +11,7 @@ class reverse_iter : public iter_base<TBaseIter>, public size_mixin, public TMix
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
-    using const_reference = typename TBaseIter::const_reference;
-
-    template <typename TSelf>
-    using ref_t = typename TBaseIter::template ref_t<TSelf>;
-
-    template <typename TSelf>
-    using result_t = typename TBaseIter::template result_t<TSelf>;
+    using result_t = typename TBaseIter::result_t;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
     static constexpr bool is_common = TBaseIter::is_common;
@@ -29,37 +23,34 @@ public:
     reverse_iter(UBaseIter&& base_iter)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter)) {}
 
-    template <typename TSelf>
+    [[nodiscard]] result_t next()
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
-        return self.base_iter.next_back();
+    {
+        return this->base_iter.next_back();
     }
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
-        return self.base_iter.next();
+    [[nodiscard]] result_t next_back() {
+        return this->base_iter.next();
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t nth(std::size_t n)
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        return self.base_iter.nth_back(n);
+    {
+        return this->base_iter.nth_back(n);
     }
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        return self.base_iter.nth(n);
+    [[nodiscard]] result_t nth_back(std::size_t n) {
+        return this->base_iter.nth(n);
     }
 
-    template <typename TSelf>
+    std::size_t advance(std::size_t n)
         requires is_bidir
-    std::size_t advance(this TSelf&& self, std::size_t n) {
-        return self.base_iter.advance_back(n);
+    {
+        return this->base_iter.advance_back(n);
     }
 
-    template <typename TSelf>
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
-        return self.base_iter.advance(n);
+    std::size_t advance_back(std::size_t n) {
+        return this->base_iter.advance(n);
     }
 };
 

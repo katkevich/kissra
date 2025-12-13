@@ -13,13 +13,7 @@ class transform_iter : public iter_base<TBaseIter>, public size_mixin, public TM
 public:
     using value_type = std::invoke_result_t<TFn, typename TBaseIter::reference>;
     using reference = value_type;
-    using const_reference = value_type;
-
-    template <typename TSelf>
-    using ref_t = reference;
-
-    template <typename TSelf>
-    using result_t = kissra::optional<ref_t<TSelf>>;
+    using result_t = kissra::optional<reference>;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
     static constexpr bool is_common = TBaseIter::is_common;
@@ -32,49 +26,46 @@ public:
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
-        if (auto item = self.base_iter.next()) {
-            return std::invoke(self.fn, *item);
+    [[nodiscard]] result_t next() {
+        if (auto item = this->base_iter.next()) {
+            return std::invoke(this->fn, *item);
         }
         return {};
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t next_back()
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
-        if (auto item = self.base_iter.next_back()) {
-            return std::invoke(self.fn, *item);
+    {
+        if (auto item = this->base_iter.next_back()) {
+            return std::invoke(this->fn, *item);
         }
         return {};
     }
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        if (auto item = self.base_iter.nth(n)) {
-            return std::invoke(self.fn, *item);
+    [[nodiscard]] result_t nth(std::size_t n) {
+        if (auto item = this->base_iter.nth(n)) {
+            return std::invoke(this->fn, *item);
         }
         return {};
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t nth_back(std::size_t n)
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        if (auto item = self.base_iter.nth_back(n)) {
-            return std::invoke(self.fn, *item);
+    {
+        if (auto item = this->base_iter.nth_back(n)) {
+            return std::invoke(this->fn, *item);
         }
         return {};
     }
 
-    template <typename TSelf>
-    std::size_t advance(this TSelf&& self, std::size_t n) {
-        return self.base_iter.advance(n);
+    std::size_t advance(std::size_t n) {
+        return this->base_iter.advance(n);
     }
 
-    template <typename TSelf>
+    std::size_t advance_back(std::size_t n)
         requires is_bidir
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
-        return self.base_iter.advance_back(n);
+    {
+        return this->base_iter.advance_back(n);
     }
 
 private:

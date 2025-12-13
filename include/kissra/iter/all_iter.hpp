@@ -10,13 +10,7 @@ class all_iter : public TMixins {
 public:
     using value_type = typename TContainer::value_type;
     using reference = typename TContainer::reference;
-    using const_reference = typename TContainer::const_reference;
-
-    template <typename TSelf>
-    using ref_t = std::conditional_t<std::is_const_v<std::remove_reference_t<TSelf>>, const_reference, reference>;
-
-    template <typename TSelf>
-    using result_t = kissra::optional<ref_t<TSelf>>;
+    using result_t = kissra::optional<reference>;
 
     /* We need to be able to evaluate the size from iterators. Having member `size` is not enough in a general case. */
     static constexpr bool is_sized = std::ranges::random_access_range<TContainer>;
@@ -29,108 +23,101 @@ public:
         : cursor(std::ranges::begin(container))
         , sentinel(std::ranges::end(container)) {}
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
-        if (self.cursor != self.sentinel) {
-            return *self.cursor++;
+    [[nodiscard]] result_t next() {
+        if (this->cursor != this->sentinel) {
+            return *this->cursor++;
         }
         return {};
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t next_back()
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
-        if (self.cursor != self.sentinel) {
-            return *--self.sentinel;
+    {
+        if (this->cursor != this->sentinel) {
+            return *--this->sentinel;
         }
         return {};
     }
 
-    template <typename TSelf>
-        requires is_random
-    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        self.advance(n);
+    [[nodiscard]] result_t nth(std::size_t n) {
+        this->advance(n);
 
-        if (self.cursor != self.sentinel) {
-            return *self.cursor;
+        if (this->cursor != this->sentinel) {
+            return *this->cursor;
         }
         return {};
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t nth_back(std::size_t n)
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        self.advance_back(n);
+    {
+        this->advance_back(n);
 
-        if (self.cursor != self.sentinel) {
-            auto sentinel_copy = self.sentinel;
+        if (this->cursor != this->sentinel) {
+            auto sentinel_copy = this->sentinel;
             return *--sentinel_copy;
         }
         return {};
     }
 
-    template <typename TSelf>
+    std::size_t advance(std::size_t n)
         requires is_random
-    std::size_t advance(this TSelf&& self, std::size_t n) {
-        const auto offset = std::min(n, std::size_t(self.sentinel - self.cursor));
-        self.cursor += offset;
+    {
+        const auto offset = std::min(n, std::size_t(this->sentinel - this->cursor));
+        this->cursor += offset;
         return offset;
     }
 
-    template <typename TSelf>
-    std::size_t advance(this TSelf&& self, std::size_t n) {
+    std::size_t advance(std::size_t n) {
         std::size_t offset = 0;
-        while (offset != n && self.cursor != self.sentinel) {
-            ++self.cursor;
+        while (offset != n && this->cursor != this->sentinel) {
+            ++this->cursor;
             ++offset;
         }
         return offset;
     }
 
-    template <typename TSelf>
+    std::size_t advance_back(std::size_t n)
         requires is_random
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
-        const auto offset = std::min(n, std::size_t(self.sentinel - self.cursor));
-        self.sentinel -= offset;
+    {
+        const auto offset = std::min(n, std::size_t(this->sentinel - this->cursor));
+        this->sentinel -= offset;
         return offset;
     }
 
-    template <typename TSelf>
+    std::size_t advance_back(std::size_t n)
         requires(is_bidir && !is_random)
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
+    {
         std::size_t offset = 0;
-        while (offset != n && self.cursor != self.sentinel) {
-            --self.sentinel;
+        while (offset != n && this->cursor != this->sentinel) {
+            --this->sentinel;
             ++offset;
         }
         return offset;
     }
 
-    template <typename TSelf>
+    auto size() const
         requires is_sized
-    auto size(this TSelf&& self) {
-        return std::size_t(self.sentinel - self.cursor);
+    {
+        return std::size_t(this->sentinel - this->cursor);
     }
 
-    template <typename TSelf>
-    auto underlying_subrange(this TSelf&& self) {
-        return std::ranges::subrange{ self.cursor, self.sentinel };
+    auto underlying_subrange() const {
+        return std::ranges::subrange{ this->cursor, this->sentinel };
     }
 
-    template <typename TSelf>
-    auto underlying_cursor(this TSelf&& self) {
-        return self.cursor;
+    auto underlying_cursor() const {
+        return this->cursor;
     }
 
-    template <typename TSelf>
-    auto underlying_sentinel(this TSelf&& self) {
-        return self.sentinel;
+    auto underlying_sentinel() const {
+        return this->sentinel;
     }
 
-    template <typename TSelf, typename TIt>
-    void underlying_subrange_override(this TSelf&& self, std::ranges::subrange<TIt> subrange) {
-        self.cursor = subrange.begin();
-        self.sentinel = subrange.end();
+    template <typename TIt>
+    void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
+        this->cursor = subrange.begin();
+        this->sentinel = subrange.end();
     }
 
 private:

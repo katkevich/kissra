@@ -9,13 +9,7 @@ class drop_last_while_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
-    using const_reference = typename TBaseIter::const_reference;
-
-    template <typename TSelf>
-    using ref_t = typename TBaseIter::template ref_t<TSelf>;
-
-    template <typename TSelf>
-    using result_t = typename TBaseIter::template result_t<TSelf>;
+    using result_t = typename TBaseIter::result_t;
 
     static constexpr bool is_sized = false;
     static constexpr bool is_common = TBaseIter::is_common;
@@ -28,58 +22,59 @@ public:
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
-        self.ff();
-        return self.base_iter.next();
-    }
-
-    template <typename TSelf>
+    [[nodiscard]] result_t next()
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
-        self.ff();
-        return self.base_iter.next_back();
+    {
+        this->ff();
+        return this->base_iter.next();
     }
 
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        self.ff();
-        return self.base_iter.nth(n);
-    }
-
-    template <typename TSelf>
+    [[nodiscard]] result_t next_back()
         requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        self.ff_self();
-        return self.base_iter.nth_back(n);
+    {
+        this->ff();
+        return this->base_iter.next_back();
     }
 
-    template <typename TSelf>
-    std::size_t advance(this TSelf&& self, std::size_t n) {
-        self.ff();
-        return self.base_iter.advance(n);
-    }
-
-    template <typename TSelf>
+    [[nodiscard]] result_t nth(std::size_t n)
         requires is_common && is_bidir
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
-        self.ff_self();
-        return self.base_iter.advance_back(n);
+    {
+        this->ff();
+        return this->base_iter.nth(n);
+    }
+
+    [[nodiscard]] result_t nth_back(std::size_t n)
+        requires is_common && is_bidir
+    {
+        this->ff_self();
+        return this->base_iter.nth_back(n);
+    }
+
+    std::size_t advance(std::size_t n)
+        requires is_common && is_bidir
+    {
+        this->ff();
+        return this->base_iter.advance(n);
+    }
+
+    std::size_t advance_back(std::size_t n)
+        requires is_common && is_bidir
+    {
+        this->ff_self();
+        return this->base_iter.advance_back(n);
     }
 
 private:
-    template <typename TSelf>
-    void ff(this TSelf&& self) {
-        if (!self.dropped) {
-            self.advance_back(0);
+    void ff() {
+        if (!this->dropped) {
+            this->advance_back(0);
         }
     }
 
-    template <typename TSelf>
-    void ff_self(this TSelf&& self) {
-        if (!std::exchange(self.dropped, true)) {
-            for (auto item = self.base_iter.back(); item; item = self.base_iter.nth_back(1)) {
-                if (!std::invoke(self.fn, *item)) {
+    void ff_self() {
+        if (!std::exchange(this->dropped, true)) {
+            for (auto item = this->base_iter.back(); item; item = this->base_iter.nth_back(1)) {
+                if (!std::invoke(this->fn, *item)) {
                     break;
                 }
             }

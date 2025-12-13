@@ -11,24 +11,21 @@ public:
     iter_base(UBaseIter&& base_iter)
         : base_iter(std::forward<UBaseIter>(base_iter)) {}
 
-    template <typename TSelf>
-    auto underlying_subrange(this TSelf&& self) {
-        return self.base_iter.underlying_subrange();
+    auto underlying_subrange() const {
+        return this->base_iter.underlying_subrange();
     }
 
-    template <typename TSelf>
-    auto underlying_cursor(this TSelf&& self) {
-        return self.base_iter.underlying_cursor();
+    auto underlying_cursor() const {
+        return this->base_iter.underlying_cursor();
     }
 
-    template <typename TSelf>
-    auto underlying_sentinel(this TSelf&& self) {
-        return self.base_iter.underlying_sentinel();
+    auto underlying_sentinel() const {
+        return this->base_iter.underlying_sentinel();
     }
 
-    template <typename TSelf, typename TIt>
-    void underlying_subrange_override(this TSelf&& self, std::ranges::subrange<TIt> subrange) {
-        self.base_iter.underlying_subrange_override(subrange);
+    template <typename TIt>
+    void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
+        this->base_iter.underlying_subrange_override(subrange);
     }
 
 protected:

@@ -15,13 +15,8 @@ struct iter_reference {
 };
 
 template <typename TIt>
-struct iter_const_reference {
-    using type = typename std::remove_reference_t<TIt>::const_reference;
-};
-
-template <typename TIt>
 struct iter_result {
-    using type = typename std::remove_reference_t<TIt>::template result_t<TIt>;
+    using type = typename std::remove_reference_t<TIt>::result_t;
 };
 
 template <typename TIt>

@@ -6,26 +6,23 @@
 #include <utility>
 
 namespace kissra {
-
+namespace impl {
 template <typename T>
 concept iterator = requires(T& t) {
     typename T::value_type;
     typename T::reference;
-    typename T::const_reference;
+    typename T::result_t;
     { T::is_sized } -> std::same_as<const bool&>;
     { T::is_common } -> std::same_as<const bool&>;
     { T::is_forward } -> std::same_as<const bool&>;
     { T::is_bidir } -> std::same_as<const bool&>;
     { T::is_random } -> std::same_as<const bool&>;
-    typename T::template ref_t<T&>;
-    typename T::template ref_t<const T&>;
-    typename T::template ref_t<T>;
-    typename T::template result_t<T&>;
-    typename T::template result_t<const T&>;
-    typename T::template result_t<T>;
-    { t.next() } -> std::same_as<typename T::template result_t<T&>>;
-    { std::declval<T>().next() } -> std::same_as<typename T::template result_t<T>>;
+    { t.next() } -> std::same_as<typename T::result_t>;
 };
+} // namespace impl
+
+template <typename T>
+concept iterator = impl::iterator<std::remove_reference_t<T>>;
 
 /* Type `T` can be used as source sequence for kissra iterators (either range or kissra iterator itself). */
 template <typename T>

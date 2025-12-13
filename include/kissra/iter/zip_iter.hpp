@@ -16,13 +16,7 @@ class zip_iter<TBaseIter, tmp::type_list<TIters...>, TMixins> : public iter_base
 public:
     using value_type = std::tuple<typename TBaseIter::reference, typename TIters::reference...>;
     using reference = value_type;
-    using const_reference = value_type;
-
-    template <typename TSelf>
-    using ref_t = reference;
-
-    template <typename TSelf>
-    using result_t = kissra::optional<ref_t<TSelf>>;
+    using result_t = kissra::optional<reference>;
 
     static constexpr bool is_sized = TBaseIter::is_sized && (TIters::is_sized && ...);
     static constexpr bool is_common = TBaseIter::is_common && (TIters::is_common && ...);
@@ -36,12 +30,12 @@ public:
         , iters(std::move(iters)...) {}
 
     template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
+    [[nodiscard]] result_t next(this TSelf&& self) {
         auto& [... iters_pack] = self.iters;
         auto [... nexts_pack] = std::tuple{ self.base_iter.next(), iters_pack.next()... };
 
         if ((nexts_pack.has_value() && ...)) {
-            return ref_t<TSelf>{ KISSRA_FWD(*nexts_pack)... };
+            return reference{ KISSRA_FWD(*nexts_pack)... };
         }
 
         return {};
@@ -49,7 +43,7 @@ public:
 
     template <typename TSelf>
         requires is_sized && is_bidir && is_common && ((is_sized_v<TIters> && is_bidir_v<TIters> && is_common_v<TIters>) && ...)
-    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
+    [[nodiscard]] result_t next_back(this TSelf&& self) {
         /* align the tails */
         self.advance_back(0);
 
@@ -57,19 +51,19 @@ public:
         auto [... next_backs_pack] = std::tuple{ self.base_iter.next_back(), iters_pack.next_back()... };
 
         if ((next_backs_pack.has_value() && ...)) {
-            return ref_t<TSelf>{ KISSRA_FWD(*next_backs_pack)... };
+            return reference{ KISSRA_FWD(*next_backs_pack)... };
         }
 
         return {};
     }
 
     template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] result_t nth(this TSelf&& self, std::size_t n) {
         auto& [... iters_pack] = self.iters;
         auto [... nths_pack] = std::tuple{ self.base_iter.nth(n), iters_pack.nth(n)... };
 
         if ((nths_pack.has_value() && ...)) {
-            return ref_t<TSelf>{ KISSRA_FWD(*nths_pack)... };
+            return reference{ KISSRA_FWD(*nths_pack)... };
         }
 
         return {};
@@ -77,7 +71,7 @@ public:
 
     template <typename TSelf>
         requires is_sized && is_bidir && is_common && ((is_sized_v<TIters> && is_bidir_v<TIters> && is_common_v<TIters>) && ...)
-    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] result_t nth_back(this TSelf&& self, std::size_t n) {
         /* align the tails */
         self.advance_back(0);
 
@@ -85,7 +79,7 @@ public:
         auto [... next_backs_pack] = std::tuple{ self.base_iter.nth_back(n), iters_pack.nth_back(n)... };
 
         if ((next_backs_pack.has_value() && ...)) {
-            return ref_t<TSelf>{ KISSRA_FWD(*next_backs_pack)... };
+            return reference{ KISSRA_FWD(*next_backs_pack)... };
         }
 
         return {};
@@ -121,7 +115,7 @@ public:
 
     template <typename TSelf>
         requires is_sized
-    auto size(this TSelf&& self) {
+    auto size(this const TSelf& self) {
         auto& [... iters_pack] = self.iters;
         const auto sizes = std::array{ self.base_iter.size(), iters_pack.size()... };
 

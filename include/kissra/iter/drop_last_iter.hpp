@@ -8,13 +8,7 @@ class drop_last_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
-    using const_reference = typename TBaseIter::const_reference;
-
-    template <typename TSelf>
-    using ref_t = typename TBaseIter::template ref_t<TSelf>;
-
-    template <typename TSelf>
-    using result_t = typename TBaseIter::template result_t<TSelf>;
+    using result_t = typename TBaseIter::result_t;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
     static constexpr bool is_common = TBaseIter::is_common;
@@ -28,60 +22,61 @@ public:
         , curr_n(n)
         , n(n) {}
 
-    template <typename TSelf>
-        requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> next(this TSelf&& self) {
-        self.ff();
-        return self.base_iter.next();
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> next_back(this TSelf&& self) {
-        self.ff();
-        return self.base_iter.next_back();
-    }
-
-    template <typename TSelf>
-    [[nodiscard]] result_t<TSelf> nth(this TSelf&& self, std::size_t n) {
-        self.ff();
-        return self.base_iter.nth(n);
-    }
-
-    template <typename TSelf>
-        requires is_common && is_bidir
-    [[nodiscard]] result_t<TSelf> nth_back(this TSelf&& self, std::size_t n) {
-        const auto total = self.curr_n + n;
-        self.curr_n = 0;
-        return self.base_iter.nth_back(total);
-    }
-
-    template <typename TSelf>
-    std::size_t advance(this TSelf&& self, std::size_t n) {
-        self.ff();
-        return self.base_iter.advance(n);
-    }
-
-    template <typename TSelf>
+    [[nodiscard]] result_t next()
         requires is_bidir
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
-        const auto total = self.curr_n + n;
-        self.curr_n = 0;
-        return self.base_iter.advance_back(total);
+    {
+        this->ff();
+        return this->base_iter.next();
     }
 
-    template <typename TSelf>
+    [[nodiscard]] result_t next_back()
+        requires is_common && is_bidir
+    {
+        this->ff();
+        return this->base_iter.next_back();
+    }
+
+    [[nodiscard]] result_t nth(std::size_t n)
+        requires is_bidir
+    {
+        this->ff();
+        return this->base_iter.nth(n);
+    }
+
+    [[nodiscard]] result_t nth_back(std::size_t n)
+        requires is_common && is_bidir
+    {
+        const auto total = this->curr_n + n;
+        this->curr_n = 0;
+        return this->base_iter.nth_back(total);
+    }
+
+    std::size_t advance(std::size_t n)
+        requires is_bidir
+    {
+        this->ff();
+        return this->base_iter.advance(n);
+    }
+
+    std::size_t advance_back(std::size_t n)
+        requires is_bidir
+    {
+        const auto total = this->curr_n + n;
+        this->curr_n = 0;
+        return this->base_iter.advance_back(total);
+    }
+
+    auto size() const
         requires is_sized
-    auto size(this TSelf&& self) {
-        const std::size_t base_size = self.base_iter.size();
-        return base_size - std::min(base_size, self.curr_n);
+    {
+        const std::size_t base_size = this->base_iter.size();
+        return base_size - std::min(base_size, this->curr_n);
     }
 
 private:
-    template <typename TSelf>
-    void ff(this TSelf&& self) {
-        if (self.curr_n) {
-            self.advance_back(0);
+    void ff() {
+        if (this->curr_n) {
+            this->advance_back(0);
         }
     }
 
