@@ -4,7 +4,7 @@
 #include <type_traits>
 
 namespace kissra {
-template <typename TBaseIter, typename TFn, typename TMixins>
+template <typename TBaseIter, typename TFn, typename TMixins = builtin_mixins>
     requires std::regular_invocable<TFn, typename TBaseIter::reference>
 class transform_iter : public iter_base<TBaseIter>, public TMixins {
 public:

@@ -3,7 +3,7 @@
 #include <functional>
 
 namespace kissra {
-template <typename TBaseIter, typename TMixins>
+template <typename TBaseIter, typename TMixins = builtin_mixins>
 class reverse_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;
@@ -17,7 +17,7 @@ public:
     static constexpr bool is_random = TBaseIter::is_random;
 
     template <typename UBaseIter>
-    reverse_iter(UBaseIter&& base_iter)
+    explicit reverse_iter(UBaseIter&& base_iter)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter)) {}
 
     [[nodiscard]] result_t next()

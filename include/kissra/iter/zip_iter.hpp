@@ -8,7 +8,7 @@
 #include <type_traits>
 
 namespace kissra {
-template <typename TBaseIter, typename TItersTypeList, typename TMixins>
+template <typename TBaseIter, typename TItersTypeList, typename TMixins = builtin_mixins>
 class zip_iter;
 
 template <typename TBaseIter, typename... TIters, typename TMixins>
@@ -25,7 +25,7 @@ public:
     static constexpr bool is_random = TBaseIter::is_random && (TIters::is_random && ...);
 
     template <typename UBaseIter, typename... UIters>
-    zip_iter(UBaseIter&& base_iter, UIters&&... iters)
+    explicit zip_iter(UBaseIter&& base_iter, UIters&&... iters)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , iters(std::move(iters)...) {}
 

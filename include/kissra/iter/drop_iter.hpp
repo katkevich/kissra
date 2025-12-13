@@ -3,7 +3,7 @@
 #include <functional>
 
 namespace kissra {
-template <typename TBaseIter, typename TMixins>
+template <typename TBaseIter, typename TMixins = builtin_mixins>
 class drop_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = typename TBaseIter::value_type;

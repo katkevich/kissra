@@ -4,7 +4,7 @@
 
 namespace kissra {
 
-template <typename TBaseIter, typename TMixins>
+template <typename TBaseIter, typename TMixins = builtin_mixins>
 class chunk : public iter_base<TBaseIter>, public TMixins {
     template <typename UBaseIter, typename UMixins>
     friend class chunk_iter;
@@ -65,7 +65,7 @@ public:
     }
 };
 
-template <typename TBaseIter, typename TMixins>
+template <typename TBaseIter, typename TMixins = builtin_mixins>
 class chunk_iter : public iter_base<TBaseIter>, public TMixins {
 public:
     using value_type = chunk<TBaseIter, TMixins>;

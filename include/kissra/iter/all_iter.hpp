@@ -5,7 +5,7 @@
 #include <ranges>
 
 namespace kissra {
-template <std::ranges::range TContainer, typename TMixins>
+template <std::ranges::range TContainer, typename TMixins = builtin_mixins>
 class all_iter : public TMixins {
 public:
     using value_type = typename TContainer::value_type;
@@ -19,7 +19,7 @@ public:
     static constexpr bool is_bidir = std::ranges::bidirectional_range<TContainer>;
     static constexpr bool is_random = std::ranges::random_access_range<TContainer>;
 
-    all_iter(TContainer& container)
+    explicit all_iter(TContainer& container)
         : cursor(std::ranges::begin(container))
         , sentinel(std::ranges::end(container)) {}
 

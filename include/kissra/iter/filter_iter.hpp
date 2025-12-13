@@ -6,7 +6,7 @@
 #include <utility>
 
 namespace kissra {
-template <typename TBaseIter, typename TFn, typename TMixins>
+template <typename TBaseIter, typename TFn, typename TMixins = builtin_mixins>
     requires kissra::regular_invocable<TFn, typename TBaseIter::reference>
 class filter_iter : public iter_base<TBaseIter>, public TMixins {
 public:
