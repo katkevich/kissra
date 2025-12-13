@@ -3,13 +3,14 @@
 #include "kissra/misc/type_list.hpp"
 #include "kissra/type_traits.hpp"
 #include <concepts>
+#include <cstddef>
 #include <ranges>
 #include <utility>
 
 namespace kissra {
 namespace impl {
 template <typename T>
-concept iterator = requires(T& t) {
+concept iterator = requires(T t) {
     typename T::value_type;
     typename T::reference;
     typename T::result_t;
@@ -19,6 +20,8 @@ concept iterator = requires(T& t) {
     { T::is_bidir } -> std::same_as<const bool&>;
     { T::is_random } -> std::same_as<const bool&>;
     { t.next() } -> std::same_as<typename T::result_t>;
+    { t.nth(0uz) } -> std::same_as<typename T::result_t>;
+    { t.advance(0uz) } -> std::same_as<std::size_t>;
 };
 } // namespace impl
 
