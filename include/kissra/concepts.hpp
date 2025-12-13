@@ -27,6 +27,10 @@ concept iterator = requires(T& t) {
     { std::declval<T>().next() } -> std::same_as<typename T::template result_t<T>>;
 };
 
+/* Type `T` can be used as source sequence for kissra iterators (either range or kissra iterator itself). */
+template <typename T>
+concept iterator_compatible = std::ranges::range<T> && std::is_lvalue_reference_v<T> || kissra::iterator<T>;
+
 template <typename T, typename TValue>
 concept can_push_back = std::ranges::range<T> && requires(T rng, TValue val) { rng.push_back(val); };
 
@@ -43,7 +47,7 @@ template <typename TFn, typename TTypeList>
 concept invocable_with_type_list = is_invocable_with_type_list_v<TFn, TTypeList>;
 
 /**
- * Destructure `TArg` (like so: auto&& [...xs] = ...) and check invocability of `TFn` with those `...xs`.
+ * Destructure `TArg` (like so: `auto&& [...xs] = ...`) and check invocability of `TFn` with those `...xs`.
  * Basically `TArg` should be either an aggregate or implement tuple protocol (`std::tuple_size<TArg>`)
  */
 template <typename TFn, typename TArg>

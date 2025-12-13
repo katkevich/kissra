@@ -198,7 +198,8 @@ TEST_CASE("all(A).zip(lvalue_producing, rvalue_producing) should return correct 
     }
 }
 
-TEST_CASE("all(A).zip(lvalue_producing, rvalue_producing).reverse() should return correct value categories as a result)") {
+TEST_CASE(
+    "all(A).zip(lvalue_producing, rvalue_producing).reverse() should return correct value categories as a result)") {
     namespace kss = kissra;
     std::array a = { 1, 2, 3 };
     std::array b = { 4, 5, 6, 7, 8 };
@@ -215,6 +216,45 @@ TEST_CASE("all(A).zip(lvalue_producing, rvalue_producing).reverse() should retur
     while (auto item = iter.next()) {
         static_assert(std::is_same_v<decltype(item), kissra::optional<std::tuple<int&, int&, std::string>>>);
 
+        CHECK_EQ(*item, *expected_it++);
+    }
+}
+
+TEST_CASE("all(A).zip(lvalue_producing, rvalue_producing).filter(<destructure_arg>) should work)") {
+    namespace kss = kissra;
+    std::array a = { 1, 2, 3 };
+    std::array b = { 1, 2, 333, 4444, 55555 };
+
+    auto iter = kss::all(a) //
+                    .zip(b, kss::all(b).transform(fn::to_chars))
+                    .filter([](int ai, int& bi, std::string&& bs) { return ai == bs.size(); });
+
+    std::vector expected = {
+        std::tuple{ 1, 1, "1"s },
+        std::tuple{ 3, 333, "333"s },
+    };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*item, *expected_it++);
+    }
+}
+
+TEST_CASE("free function `zip(all(A), lvalue_producing, rvalue_producing).filter(<destructure_arg>)` should work)") {
+    namespace kss = kissra;
+    std::array a = { 1, 2, 3 };
+    std::array b = { 1, 2, 333, 4444, 55555 };
+
+    auto iter = kissra::zip(a, b, kissra::all(b).transform(fn::to_chars)) //
+                    .filter([](int ai, int& bi, std::string&& bs) { return ai == bs.size(); });
+
+    std::vector expected = {
+        std::tuple{ 1, 1, "1"s },
+        std::tuple{ 3, 333, "333"s },
+    };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
         CHECK_EQ(*item, *expected_it++);
     }
 }

@@ -100,7 +100,7 @@ public:
         self.base_iter.advance(0);
         /**
          * Underlying cursor & sentinel now point to "real" iteratable positions.
-         * `self.base_iter state is potentially being updated (see `drop_iter` for instance).
+         * `self.base_iter` state is potentially being updated (see `drop_iter` for instance).
          */
 
         const auto chunk_begin = self.base_iter.underlying_cursor();

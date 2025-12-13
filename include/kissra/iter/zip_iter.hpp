@@ -132,19 +132,24 @@ private:
     std::tuple<TIters...> iters;
 };
 
+
+template <kissra::iterator_compatible T, kissra::iterator_compatible... Ts, typename DeferInstantiation = void>
+auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
+    using mixins_t = decltype(registered_mixins<DeferInstantiation>());
+
+    using self_iter = std::remove_reference_t<decltype(into_kissra_iter<mixins_t>(KISSRA_FWD(rng_or_kissra_iter)))>;
+    using iters_type_list =
+        tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<mixins_t>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
+
+    return zip_iter<self_iter, iters_type_list, mixins_t>{ //
+        into_kissra_iter<mixins_t>(KISSRA_FWD(rng_or_kissra_iter)), into_kissra_iter<mixins_t>(KISSRA_FWD(rngs_or_kissra_iters))...
+    };
+}
+
 struct zip_mixin {
-    template <typename TSelf, typename... TContainersOrKissraIters, typename DeferInstantiation = void>
-        requires(((std::ranges::range<TContainersOrKissraIters> && std::is_lvalue_reference_v<TContainersOrKissraIters>) ||
-                     kissra::iterator<TContainersOrKissraIters>) &&
-            ...)
-    auto zip(this TSelf&& self, TContainersOrKissraIters&&... containers_or_kissra_iters) {
-        using mixins_t = decltype(registered_mixins<DeferInstantiation>());
-
-        using iters_type_list =
-            tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<mixins_t>(KISSRA_FWD(containers_or_kissra_iters)))>...>;
-
-        return zip_iter<std::remove_cvref_t<TSelf>, iters_type_list, mixins_t>{ KISSRA_FWD(self),
-            into_kissra_iter<mixins_t>(KISSRA_FWD(containers_or_kissra_iters))... };
+    template <kissra::iterator_compatible TSelf, kissra::iterator_compatible... Ts>
+    auto zip(this TSelf&& self, Ts&&... rngs_or_kissra_iters) {
+        return kissra::zip(KISSRA_FWD(self), KISSRA_FWD(rngs_or_kissra_iters)...);
     }
 };
 } // namespace kissra
