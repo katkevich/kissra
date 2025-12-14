@@ -14,8 +14,8 @@
 #include <vector>
 
 namespace custom_ns {
-template <typename TBaseIter, typename TMixins>
-class custom_enumerate_iter : public TMixins {
+template <typename TBaseIter, template <typename> typename... TMixins>
+class custom_enumerate_iter : public kissra::builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = std::tuple<std::int64_t, typename TBaseIter::reference>;
     using reference = std::tuple<std::int64_t, typename TBaseIter::reference>;
@@ -65,14 +65,17 @@ private:
     std::int64_t idx{};
 };
 
+template <typename Tag>
 struct custom_enumerate_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     auto custom_enumerate(this TSelf&& self) {
-        auto mixins = kissra::registered_mixins<DeferInstantiation>();
-        return custom_enumerate_iter<std::remove_cvref_t<TSelf>, decltype(mixins)>{ std::forward<TSelf>(self) };
+        return kissra::with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return custom_enumerate_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self) };
+        });
     }
 };
 
+template <typename Tag>
 struct custom_collect_mixin {
     template <typename TSelf, template <typename...> typename TTo = std::vector>
     auto custom_push_back(this TSelf&& self) {
@@ -89,19 +92,22 @@ struct custom_collect_mixin {
 };
 } // namespace custom_ns
 
-/* Just register it with a macro before any kissra iterator instantiation in current TU.
- *
- * If you're alergic to macros or you're using modularized target (hopefully it will be done soon)
- * then you can specialize mixins traits instead (basically the guts of a macro):
- *
+/**
+ * To hook into the library's mixins system and add support for your custom mixins, you need to specialize the
+ * kissra::custom_mixins_traits<void> trait and define the inner `mixins` template struct.
  * ```
- *   template <>
- *   struct kissra::registered_mixins_traits<void> {
- *       struct type : kissra::builtin_mixins, custom_ns::custom_enumerate_mixin, custom_ns::custom_collect_mixin {};
- *   };
+ *     template <>
+ *     struct kissra::registered_mixins_traits<void> {
+ *         template<typename Tag>
+ *         struct mixins : custom_ns::custom_enumerate_mixin<Tag>, custom_ns::custom_collect_mixin<Tag> {};
+ *     };
  * ```
  */
-KISSRA_REGISTER_CUSTOM_MIXINS(custom_ns::custom_enumerate_mixin, custom_ns::custom_collect_mixin)
+template <>
+struct kissra::custom_mixins_traits<void> {
+    template <typename Tag>
+    struct mixins : custom_ns::custom_enumerate_mixin<Tag>, custom_ns::custom_collect_mixin<Tag> {};
+};
 
 namespace kissra::test {
 using namespace std::string_literals;

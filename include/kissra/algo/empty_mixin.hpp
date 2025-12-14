@@ -3,6 +3,7 @@
 #include "kissra/type_traits.hpp"
 
 namespace kissra {
+template <typename Tag>
 struct empty_mixin {
     template <kissra::mut TSelf>
     bool empty(this TSelf&& self) {

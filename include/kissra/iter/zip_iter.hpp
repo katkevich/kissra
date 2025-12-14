@@ -8,11 +8,12 @@
 #include <type_traits>
 
 namespace kissra {
-template <typename TBaseIter, typename TItersTypeList, typename TMixins = builtin_mixins>
+template <typename TBaseIter, typename TItersTypeList, template <typename> typename... TMixins>
 class zip_iter;
 
-template <typename TBaseIter, typename... TIters, typename TMixins>
-class zip_iter<TBaseIter, tmp::type_list<TIters...>, TMixins> : public iter_base<TBaseIter>, public TMixins {
+template <typename TBaseIter, typename... TIters, template <typename> typename... TMixins>
+class zip_iter<TBaseIter, tmp::type_list<TIters...>, TMixins...>
+    : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = std::tuple<typename TBaseIter::reference, typename TIters::reference...>;
     using reference = value_type;
@@ -129,17 +130,19 @@ private:
 
 template <kissra::iterator_compatible T, kissra::iterator_compatible... Ts, typename DeferInstantiation = void>
 auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
-    using mixins_t = decltype(registered_mixins<DeferInstantiation>());
+    return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+        using self_iter = std::remove_reference_t<decltype(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rng_or_kissra_iter)))>;
+        using iters_type_list =
+            tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
 
-    using self_iter = std::remove_reference_t<decltype(into_kissra_iter<mixins_t>(KISSRA_FWD(rng_or_kissra_iter)))>;
-    using iters_type_list =
-        tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<mixins_t>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
-
-    return zip_iter<self_iter, iters_type_list, mixins_t>{ //
-        into_kissra_iter<mixins_t>(KISSRA_FWD(rng_or_kissra_iter)), into_kissra_iter<mixins_t>(KISSRA_FWD(rngs_or_kissra_iters))...
-    };
+        return zip_iter<self_iter, iters_type_list, CustomMixins...>{ //
+            into_kissra_iter<CustomMixins...>(KISSRA_FWD(rng_or_kissra_iter)),
+            into_kissra_iter<CustomMixins...>(KISSRA_FWD(rngs_or_kissra_iters))...
+        };
+    });
 }
 
+template <typename Tag>
 struct zip_mixin {
     template <kissra::iterator_compatible TSelf, kissra::iterator_compatible... Ts>
     auto zip(this TSelf&& self, Ts&&... rngs_or_kissra_iters) {

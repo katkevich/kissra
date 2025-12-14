@@ -1,6 +1,6 @@
 #pragma once
+#include "kissra/custom_mixins_fwd.hpp"
 #include "kissra/misc/optional.hpp"
-#include "kissra/registered_mixins_fwd.hpp"
 #include <utility>
 
 namespace kissra {
@@ -28,7 +28,7 @@ public:
         this->base_iter.underlying_subrange_override(subrange);
     }
 
-    template<typename TSelf>
+    template <typename TSelf>
     auto& base(this TSelf&& self) {
         return self.base_iter;
     }

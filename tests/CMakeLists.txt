@@ -29,6 +29,7 @@ add_executable(kissra_tests
     src/size.cpp
     src/transform.cpp
     src/zip.cpp
+    src/sizeof.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
 target_link_libraries(kissra_tests kissra::kissra doctest::doctest_with_main)

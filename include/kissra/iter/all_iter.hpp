@@ -1,12 +1,12 @@
 #pragma once
+#include "kissra/custom_mixins_fwd.hpp"
 #include "kissra/misc/optional.hpp"
-#include "kissra/registered_mixins_fwd.hpp"
 #include <memory>
 #include <ranges>
 
 namespace kissra {
-template <std::ranges::range TContainer, typename TMixins = builtin_mixins>
-class all_iter : public TMixins {
+template <std::ranges::range TContainer, template <typename> typename... TMixins>
+class all_iter : public builtin_mixins<TContainer>, public TMixins<TContainer>... {
 public:
     using value_type = typename TContainer::value_type;
     using reference = typename TContainer::reference;
@@ -127,7 +127,8 @@ private:
 
 template <std::ranges::range TContainer, typename DeferInstantiation = void>
 auto all(TContainer& container) {
-    auto mixins = registered_mixins<DeferInstantiation>();
-    return all_iter<TContainer, decltype(mixins)>{ container };
+    return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> { //
+        return all_iter<TContainer, CustomMixins...>{ container };
+    });
 }
 } // namespace kissra

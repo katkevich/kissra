@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace kissra {
+template <typename Tag>
 struct collect_mixin {
     template <template <typename...> typename TTo = std::vector, kissra::mut TSelf>
     auto collect(this TSelf&& self) {

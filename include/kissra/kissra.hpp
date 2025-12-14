@@ -23,44 +23,42 @@
 #include "kissra/iter/zip_iter.hpp"
 #include "kissra/misc/functional.hpp"
 #include "kissra/misc/optional.hpp"
-#include "kissra/concepts.hpp"
+#include "kissra/misc/utility.hpp"
+#include "kissra/custom_mixins_fwd.hpp"
 #include "kissra/type_traits.hpp"
 
 namespace kissra {
-struct builtin_mixins : filter_mixin,
-                        transform_mixin,
-                        zip_mixin,
-                        reverse_mixin,
-                        chunk_mixin,
-                        drop_mixin,
-                        drop_last_mixin,
-                        drop_while_mixin,
-                        drop_last_while_mixin,
-                        collect_mixin,
-                        front_mixin,
-                        back_mixin,
-                        find_mixin,
-                        empty_mixin,
-                        ssize_mixin {};
+template <typename Tag>
+struct builtin_mixins : filter_mixin<Tag>,
+                        transform_mixin<Tag>,
+                        zip_mixin<Tag>,
+                        reverse_mixin<Tag>,
+                        chunk_mixin<Tag>,
+                        drop_mixin<Tag>,
+                        drop_last_mixin<Tag>,
+                        drop_while_mixin<Tag>,
+                        drop_last_while_mixin<Tag>,
+                        collect_mixin<Tag>,
+                        front_mixin<Tag>,
+                        back_mixin<Tag>,
+                        find_mixin<Tag>,
+                        empty_mixin<Tag>,
+                        ssize_mixin<Tag> {};
 
-template <typename T>
-struct registered_mixins_traits {
-    using type = builtin_mixins;
+/**
+ * To hook into the library's mixins system and add support for your custom mixins, you need to specialize the
+ * kissra::custom_mixins_traits<void> trait and define the inner `mixins` template struct.
+ * ```
+ *     template <>
+ *     struct kissra::registered_mixins_traits<void> {
+ *         template<typename Tag>
+ *         struct mixins : custom_ns::custom_enumerate_mixin<Tag>, custom_ns::custom_collect_mixin<Tag> {};
+ *     };
+ * ```
+ */
+template <typename DeferInstantiation>
+struct custom_mixins_traits {
+    template <typename Tag>
+    using mixins = no_custom_mixins<Tag>;
 };
-
-template <typename DeferInstantiation = void>
-auto registered_mixins() {
-    return typename registered_mixins_traits<DeferInstantiation>::type{};
-}
 } // namespace kissra
-
-
-#define KISSRA_REGISTER_CUSTOM_MIXINS(...)                    \
-    namespace kissra {                                        \
-    struct custom_mixins __VA_OPT__( :) __VA_ARGS__{};        \
-    struct mixins : kissra::builtin_mixins, custom_mixins {}; \
-    template <>                                               \
-    struct registered_mixins_traits<void> {                   \
-        using type = mixins;                                  \
-    };                                                        \
-    }

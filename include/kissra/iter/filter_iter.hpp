@@ -6,9 +6,9 @@
 #include <utility>
 
 namespace kissra {
-template <typename TBaseIter, typename TFn, typename TMixins = builtin_mixins>
+template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
     requires kissra::regular_invocable<TFn, typename TBaseIter::reference>
-class filter_iter : public iter_base<TBaseIter>, public TMixins {
+class filter_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
@@ -27,7 +27,7 @@ public:
 
     [[nodiscard]] result_t next() {
         while (auto item = this->base_iter.next()) {
-            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
+            if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 return item;
             }
         }
@@ -38,7 +38,7 @@ public:
         requires is_common && is_bidir
     {
         while (auto item = this->base_iter.next_back()) {
-            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
+            if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 return item;
             }
         }
@@ -47,7 +47,7 @@ public:
 
     [[nodiscard]] result_t nth(std::size_t n) {
         for (auto item = this->base_iter.front(); item; item = this->base_iter.nth(1)) {
-            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
+            if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 if (n-- == 0) {
                     return item;
                 }
@@ -60,7 +60,7 @@ public:
         requires is_common && is_bidir
     {
         for (auto item = this->base_iter.back(); item; item = this->base_iter.nth_back(1)) {
-            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
+            if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 if (n-- == 0) {
                     return item;
                 }
@@ -72,7 +72,7 @@ public:
     std::size_t advance(std::size_t n) {
         std::size_t offset = 0;
         for (auto item = this->base_iter.front(); item; item = this->base_iter.nth(1)) {
-            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
+            if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 if (offset++ == n) {
                     break;
                 }
@@ -86,7 +86,7 @@ public:
     {
         std::size_t offset = 0;
         for (auto item = this->base_iter.back(); item; item = this->base_iter.nth_back(1)) {
-            if (kissra::invoke(this->fn, std::forward_like<reference>(*item))) {
+            if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 if (offset++ == n) {
                     break;
                 }
@@ -96,14 +96,16 @@ public:
     }
 
 private:
-    TFn fn;
+    [[no_unique_address]] functor_ebo<TFn, TBaseIter> fn;
 };
 
+template <typename Tag>
 struct filter_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     auto filter(this TSelf&& self, TFn fn) {
-        auto mixins = registered_mixins<DeferInstantiation>();
-        return filter_iter<std::remove_cvref_t<TSelf>, TFn, decltype(mixins)>{ std::forward<TSelf>(self), fn };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return filter_iter<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{ std::forward<TSelf>(self), fn };
+        });
     }
 };
 } // namespace kissra

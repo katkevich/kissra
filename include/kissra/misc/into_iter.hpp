@@ -5,12 +5,12 @@
 #include <utility>
 
 namespace kissra {
-template <typename TMixins, std::ranges::range TContainer>
+template <template <typename> typename... TMixins, std::ranges::range TContainer>
 auto into_kissra_iter(TContainer& container) {
-    return all_iter<TContainer, TMixins>{ container };
+    return all_iter<TContainer, TMixins...>{ container };
 }
 
-template <typename TMixins, kissra::iterator TIter>
+template <template <typename> typename... TMixins, kissra::iterator TIter>
 decltype(auto) into_kissra_iter(TIter&& iter) {
     return std::forward<TIter>(iter);
 }

@@ -4,9 +4,9 @@
 
 namespace kissra {
 
-template <typename TBaseIter, typename TMixins = builtin_mixins>
-class chunk : public iter_base<TBaseIter>, public TMixins {
-    template <typename UBaseIter, typename UMixins>
+template <typename TBaseIter, template <typename> typename... TMixins>
+class chunk : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
+    template <typename UBaseIter, template <typename> typename... UMixins>
     friend class chunk_iter;
 
 public:
@@ -65,10 +65,10 @@ public:
     }
 };
 
-template <typename TBaseIter, typename TMixins = builtin_mixins>
-class chunk_iter : public iter_base<TBaseIter>, public TMixins {
+template <typename TBaseIter, template <typename> typename... TMixins>
+class chunk_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
-    using value_type = chunk<TBaseIter, TMixins>;
+    using value_type = chunk<TBaseIter, TMixins...>;
     using reference = value_type;
     using result_t = kissra::optional<reference>;
 
@@ -100,7 +100,7 @@ public:
         }
         const auto chunk_end = this->base_iter.underlying_cursor();
 
-        return chunk<TBaseIter, TMixins>{ this->base_iter, std::ranges::subrange{ chunk_begin, chunk_end } };
+        return reference{ this->base_iter, std::ranges::subrange{ chunk_begin, chunk_end } };
     }
 
     [[nodiscard]] result_t next_back()
@@ -117,7 +117,7 @@ public:
         }
         const auto chunk_begin = this->base_iter.underlying_sentinel();
 
-        return chunk<TBaseIter, TMixins>{ this->base_iter, std::ranges::subrange{ chunk_begin, chunk_end } };
+        return reference{ this->base_iter, std::ranges::subrange{ chunk_begin, chunk_end } };
     }
 
     [[nodiscard]] result_t nth(std::size_t n)
@@ -133,7 +133,7 @@ public:
         }
         const auto chunk_end = this->base_iter.underlying_cursor();
 
-        chunk<TBaseIter, TMixins> nth_chunk{ this->base_iter, std::ranges::subrange{ underlying_subrange_before.begin(), chunk_end } };
+        reference nth_chunk{ this->base_iter, std::ranges::subrange{ underlying_subrange_before.begin(), chunk_end } };
 
         /* Chunk advancement consumed elements (moved the underlying cursor), so we need to restore cursor old position. */
         this->underlying_subrange_override(underlying_subrange_before);
@@ -158,8 +158,7 @@ public:
         }
         const auto chunk_begin = this->base_iter.underlying_sentinel();
 
-        chunk<TBaseIter, TMixins> nth_chunk{ this->base_iter,
-            std::ranges::subrange{ chunk_begin, underlying_subrange_before.end() } };
+        reference nth_chunk{ this->base_iter, std::ranges::subrange{ chunk_begin, underlying_subrange_before.end() } };
 
         /* Chunk advancement consumed elements (moved the underlying sentinel), so we need to restore sentinel old position. */
         this->underlying_subrange_override(underlying_subrange_before);
@@ -200,11 +199,13 @@ private:
     std::size_t n;
 };
 
+template <typename Tag>
 struct chunk_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     auto chunk(this TSelf&& self, std::size_t n) {
-        auto mixins = registered_mixins<DeferInstantiation>();
-        return chunk_iter<std::remove_cvref_t<TSelf>, decltype(mixins)>{ std::forward<TSelf>(self), n };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return chunk_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self), n };
+        });
     }
 };
 } // namespace kissra

@@ -30,4 +30,23 @@ inline constexpr decltype(auto) invoke(TFn&& fn, TArgs&&... args) {
             "(cannot decompose - sizeof...(TArgs) != 1 or TArgs...[0] is not an aggregate)");
     }
 }
+
+template <typename TFn, typename Tag>
+struct functor_ebo {
+    functor_ebo(TFn fn)
+        : inst(fn) {}
+    TFn inst;
+};
+
+
+/**
+ * Tag your functor with unique `Tag` so that `functor_ebo<TFn, Tag>` member is subject EBO (Empty Base Optimization)
+ * if used together with `[[no_unique_address]]` (note: your functor should be empty and default-constructible)
+ */
+template <typename TFn, typename Tag>
+    requires std::is_empty_v<TFn> && std::is_default_constructible_v<TFn>
+struct functor_ebo<TFn, Tag> {
+    functor_ebo(TFn) {}
+    static constexpr TFn inst{};
+};
 } // namespace kissra

@@ -5,6 +5,7 @@
 #include <functional>
 
 namespace kissra {
+template <typename Tag>
 struct find_mixin {
     template <kissra::mut TSelf, typename TValue>
     auto find(this TSelf&& self, const TValue& value) {

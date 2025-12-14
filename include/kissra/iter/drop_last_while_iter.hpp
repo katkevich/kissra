@@ -1,11 +1,12 @@
 #pragma once
 #include "kissra/iter/iter_base.hpp"
+#include "kissra/misc/functional.hpp"
 #include <functional>
 
 namespace kissra {
-template <typename TBaseIter, typename TFn, typename TMixins = builtin_mixins>
+template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
     requires std::regular_invocable<TFn, typename TBaseIter::reference>
-class drop_last_while_iter : public iter_base<TBaseIter>, public TMixins {
+class drop_last_while_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
@@ -74,7 +75,7 @@ private:
     void ff_self() {
         if (!std::exchange(this->dropped, true)) {
             for (auto item = this->base_iter.back(); item; item = this->base_iter.nth_back(1)) {
-                if (!std::invoke(this->fn, *item)) {
+                if (!std::invoke(this->fn.inst, *item)) {
                     break;
                 }
             }
@@ -82,15 +83,17 @@ private:
     }
 
 private:
-    TFn fn;
+    [[no_unique_address]] functor_ebo<TFn, TBaseIter> fn;
     bool dropped{};
 };
 
+template <typename Tag>
 struct drop_last_while_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     auto drop_last_while(this TSelf&& self, TFn fn) {
-        auto mixins = registered_mixins<DeferInstantiation>();
-        return drop_last_while_iter<std::remove_cvref_t<TSelf>, TFn, decltype(mixins)>{ std::forward<TSelf>(self), fn };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return drop_last_while_iter<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{ std::forward<TSelf>(self), fn };
+        });
     }
 };
 } // namespace kissra

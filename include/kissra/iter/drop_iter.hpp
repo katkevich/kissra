@@ -3,8 +3,8 @@
 #include <functional>
 
 namespace kissra {
-template <typename TBaseIter, typename TMixins = builtin_mixins>
-class drop_iter : public iter_base<TBaseIter>, public TMixins {
+template <typename TBaseIter, template <typename> typename... TMixins>
+class drop_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
@@ -79,11 +79,13 @@ private:
     std::size_t n;
 };
 
+template <typename Tag>
 struct drop_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     auto drop(this TSelf&& self, std::size_t n) {
-        auto mixins = registered_mixins<DeferInstantiation>();
-        return drop_iter<std::remove_cvref_t<TSelf>, decltype(mixins)>{ std::forward<TSelf>(self), n };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return drop_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self), n };
+        });
     }
 };
 } // namespace kissra

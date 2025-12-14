@@ -3,6 +3,7 @@
 #include "kissra/type_traits.hpp"
 
 namespace kissra {
+template <typename Tag>
 struct back_mixin {
     template <kissra::mut TSelf>
         requires is_common_v<TSelf> && is_bidir_v<TSelf>

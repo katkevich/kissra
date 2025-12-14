@@ -4,9 +4,9 @@
 #include <type_traits>
 
 namespace kissra {
-template <typename TBaseIter, typename TFn, typename TMixins = builtin_mixins>
+template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
     requires std::regular_invocable<TFn, typename TBaseIter::reference>
-class transform_iter : public iter_base<TBaseIter>, public TMixins {
+class transform_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = std::invoke_result_t<TFn, typename TBaseIter::reference>;
     using reference = value_type;
@@ -25,7 +25,7 @@ public:
 
     [[nodiscard]] result_t next() {
         if (auto item = this->base_iter.next()) {
-            return std::invoke(this->fn, *item);
+            return std::invoke(this->fn.inst, *item);
         }
         return {};
     }
@@ -34,14 +34,14 @@ public:
         requires is_common && is_bidir
     {
         if (auto item = this->base_iter.next_back()) {
-            return std::invoke(this->fn, *item);
+            return std::invoke(this->fn.inst, *item);
         }
         return {};
     }
 
     [[nodiscard]] result_t nth(std::size_t n) {
         if (auto item = this->base_iter.nth(n)) {
-            return std::invoke(this->fn, *item);
+            return std::invoke(this->fn.inst, *item);
         }
         return {};
     }
@@ -50,7 +50,7 @@ public:
         requires is_common && is_bidir
     {
         if (auto item = this->base_iter.nth_back(n)) {
-            return std::invoke(this->fn, *item);
+            return std::invoke(this->fn.inst, *item);
         }
         return {};
     }
@@ -72,14 +72,16 @@ public:
     }
 
 private:
-    TFn fn;
+    [[no_unique_address]] functor_ebo<TFn, TBaseIter> fn;
 };
 
+template <typename Tag>
 struct transform_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     auto transform(this TSelf&& self, TFn fn) {
-        auto mixins = registered_mixins<DeferInstantiation>();
-        return transform_iter<std::remove_cvref_t<TSelf>, TFn, decltype(mixins)>{ std::forward<TSelf>(self), fn };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return transform_iter<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{ std::forward<TSelf>(self), fn };
+        });
     }
 };
 } // namespace kissra
