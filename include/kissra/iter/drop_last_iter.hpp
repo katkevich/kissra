@@ -19,7 +19,6 @@ public:
     template <typename UBaseIter>
     drop_last_iter(UBaseIter&& base_iter, std::size_t n)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
-        , curr_n(n)
         , n(n) {}
 
     [[nodiscard]] result_t next()
@@ -46,8 +45,8 @@ public:
     [[nodiscard]] result_t nth_back(std::size_t n)
         requires is_common && is_bidir
     {
-        const auto total = this->curr_n + n;
-        this->curr_n = 0;
+        const auto total = this->n + n;
+        this->n = 0;
         return this->base_iter.nth_back(total);
     }
 
@@ -61,8 +60,8 @@ public:
     std::size_t advance_back(std::size_t n)
         requires is_bidir
     {
-        const auto total = this->curr_n + n;
-        this->curr_n = 0;
+        const auto total = this->n + n;
+        this->n = 0;
         return this->base_iter.advance_back(total);
     }
 
@@ -70,18 +69,17 @@ public:
         requires is_sized
     {
         const std::size_t base_size = this->base_iter.size();
-        return base_size - std::min(base_size, this->curr_n);
+        return base_size - std::min(base_size, this->n);
     }
 
 private:
     void ff() {
-        if (this->curr_n) {
+        if (this->n) {
             this->advance_back(0);
         }
     }
 
 private:
-    std::size_t curr_n;
     std::size_t n;
 };
 

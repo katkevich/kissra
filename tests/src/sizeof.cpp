@@ -41,10 +41,10 @@ TEST_CASE("filter_iter::nth(0) should filter out an element but not move the cur
                     .zip(arr);
 
     constexpr auto s0 = sizeof(iter);
-    // 16 'all' + 16 'x2 drop_while' + 16 'x2 drop_last_while' + 32 'x2 drop' + 32 'x2 drop_last' +
+    // 16 'all' + 16 'x2 drop_while' + 16 'x2 drop_last_while' + 16 'x2 drop' + 16 'x2 drop_last' +
     // 16 'x2 chunk' + 48 'x3 zip'
-    static_assert(sizeof(iter) == 16 + 16 + 16 + 32 + 32 + 16 + 48); // 176
-    CHECK_EQ(sizeof(iter), 176);
+    static_assert(sizeof(iter) == 16 + 16 + 16 + 16 + 16 + 16 + 48); // 144
+    CHECK_EQ(sizeof(iter), 144);
 
     // clang-format off
     auto view = arr

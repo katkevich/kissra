@@ -8,6 +8,7 @@
 namespace kissra {
 template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
     requires kissra::regular_invocable<TFn, typename TBaseIter::reference>
+// TODO: MSVC EBO is broken. Test MSVC specific intrinsics to fix that
 class filter_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
@@ -96,6 +97,7 @@ public:
     }
 
 private:
+    // TODO: MSVC [[no_unique_address]] (EBO basically) is broken. Test MSVC specific intrinsics (iirc there is msvc specific attribute as well) to fix that
     [[no_unique_address]] functor_ebo<TFn, TBaseIter> fn;
 };
 
