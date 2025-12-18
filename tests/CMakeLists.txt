@@ -15,6 +15,7 @@ FetchContent_Declare(doctest
 FetchContent_MakeAvailable(doctest)
 
 add_executable(kissra_tests
+    src/benchmark.cpp
     src/chunk.cpp
     src/collect.cpp
     src/compose.cpp
