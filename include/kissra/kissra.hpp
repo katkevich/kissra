@@ -35,6 +35,7 @@ template <typename Tag>
 struct builtin_mixins : filter_compose_mixin<Tag>,
                         transform_compose_mixin<Tag>,
                         reverse_compose_mixin<Tag>,
+                        chunk_compose_mixin<Tag>,
                         drop_compose_mixin<Tag>,
                         drop_last_compose_mixin<Tag>,
                         drop_while_compose_mixin<Tag>,
