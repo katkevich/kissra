@@ -84,4 +84,38 @@ struct transform_mixin {
         });
     }
 };
+
+namespace compo {
+template <typename TBaseCompose, typename TFn, template <typename> typename... TMixins>
+struct transform_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBaseCompose>... {
+    [[no_unique_address]] TBaseCompose base_comp;
+    [[no_unique_address]] functor_ebo<TFn, TBaseCompose> fn;
+
+    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+        return transform_iter<std::remove_cvref_t<UBaseIter>, TFn, UMixins...>{
+            std::forward<UBaseIter>(base_iter),
+            std::forward<TSelf>(self).fn.inst,
+        };
+    }
+};
+
+template <typename Tag>
+struct transform_compose_mixin {
+    template <typename TSelf, typename TFn, typename DeferInstantiation = void>
+    auto transform(this TSelf&& self, TFn fn) {
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return transform_compose<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{
+                .base_comp = std::forward<TSelf>(self),
+                .fn = fn,
+            };
+        });
+    }
+};
+
+template <typename TFn, typename DeferInstantiation = void>
+auto transform(TFn fn) {
+    return compose<DeferInstantiation>().transform(fn);
+}
+} // namespace compo
 } // namespace kissra

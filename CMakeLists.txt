@@ -17,8 +17,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(MORFO_HEADERS
     include/kissra/kissra.hpp
     include/kissra/type_traits.hpp
+    include/kissra/compose.hpp
     include/kissra/concepts.hpp
-    include/kissra/custom_mixins_fwd.hpp
+    include/kissra/impl/custom_mixins.hpp
     include/kissra/iter/iter_base.hpp
     include/kissra/iter/all_iter.hpp
     include/kissra/iter/chunk_iter.hpp
@@ -30,6 +31,7 @@ set(MORFO_HEADERS
     include/kissra/iter/reverse_iter.hpp
     include/kissra/iter/transform_iter.hpp
     include/kissra/iter/zip_iter.hpp
+    include/kissra/algo/apply_mixin.hpp
     include/kissra/algo/collect_mixin.hpp
     include/kissra/algo/front_mixin.hpp
     include/kissra/algo/back_mixin.hpp

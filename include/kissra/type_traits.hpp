@@ -79,4 +79,24 @@ template <typename TFn, typename TTypeList>
 constexpr bool is_invocable_with_type_list_v = is_invocable_with_type_list<TFn, TTypeList>::value;
 
 
+template <typename T, template <typename...> typename TTmpl>
+struct is_specialization_of : std::false_type {};
+
+template <typename... TArgs, template <typename...> typename TTmpl>
+struct is_specialization_of<TTmpl<TArgs...>, TTmpl> : std::true_type {};
+
+template <typename... TArgs, template <typename...> typename TTmpl>
+struct is_specialization_of<const TTmpl<TArgs...>, TTmpl> : std::true_type {};
+
+template <typename... TArgs, template <typename...> typename TTmpl>
+struct is_specialization_of<const TTmpl<TArgs...>&, TTmpl> : std::true_type {};
+
+template <typename... TArgs, template <typename...> typename TTmpl>
+struct is_specialization_of<TTmpl<TArgs...>&, TTmpl> : std::true_type {};
+
+template <typename... TArgs, template <typename...> typename TTmpl>
+struct is_specialization_of<TTmpl<TArgs...>&&, TTmpl> : std::true_type {};
+
+template <typename T, template <typename...> typename TTmpl>
+static constexpr bool is_specialization_of_v = is_specialization_of<T, TTmpl>::value;
 } // namespace kissra

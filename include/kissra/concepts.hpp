@@ -44,6 +44,18 @@ concept bidir_iterator = forward_iterator<T> && is_bidir_v<T> && is_common_v<T> 
 
 template <typename T>
 concept random_iterator = bidir_iterator<T> && is_random_v<T>;
+
+
+template <typename T>
+concept composition_root = requires {
+    { T::is_root };
+};
+
+template <typename T, typename ForIterator>
+concept composition_for = composition_root<T> || requires(T t, ForIterator base_iter) {
+    { t.make_iter(base_iter) } -> iterator;
+    { t.base_comp };
+};
 } // namespace impl
 
 template <typename T>
@@ -67,6 +79,14 @@ concept random_iterator = impl::random_iterator<std::remove_reference_t<T>>;
 /* Type `T` can be used as source sequence for kissra iterators (either range or kissra iterator itself). */
 template <typename T>
 concept iterator_compatible = std::ranges::range<T> && std::is_lvalue_reference_v<T> || kissra::iterator<T>;
+
+
+template <typename T>
+concept composition_root = impl::composition_root<std::remove_reference_t<T>>;
+
+template <typename T, typename ForIterator>
+concept composition_for = impl::composition_for<std::remove_reference_t<T>, ForIterator>;
+
 
 template <typename T>
 concept mut = !std::is_const<std::remove_reference_t<T>>::value;

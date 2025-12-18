@@ -17,6 +17,7 @@ FetchContent_MakeAvailable(doctest)
 add_executable(kissra_tests
     src/chunk.cpp
     src/collect.cpp
+    src/compose.cpp
     src/convert.cpp
     src/custom_mixin.cpp
     src/drop_while.cpp

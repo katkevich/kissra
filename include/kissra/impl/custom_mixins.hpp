@@ -25,4 +25,25 @@ auto with_custom_mixins(TMakeIterFn fn) {
     }
 }
 
+namespace compo {
+template <typename Tag>
+struct builtin_mixins;
+
+template <typename Tag>
+using no_custom_mixins = kissra::no_custom_mixins<Tag>;
+
+template <typename DeferInstantiation>
+inline consteval bool has_custom_mixins() {
+    return !std::is_same_v<typename custom_mixins_traits<DeferInstantiation>::template compose_mixins<DeferInstantiation>, no_custom_mixins<DeferInstantiation>>;
+}
+
+template <typename DeferInstantiation, typename TMakeComposePartFn>
+auto with_custom_mixins(TMakeComposePartFn fn) {
+    if constexpr (has_custom_mixins<DeferInstantiation>()) {
+        return fn.template operator()<custom_mixins_traits<DeferInstantiation>::template compose_mixins>();
+    } else {
+        return fn.template operator()<>();
+    }
+}
+} // namespace compo
 } // namespace kissra

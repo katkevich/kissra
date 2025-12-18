@@ -1,5 +1,6 @@
 #pragma once
-#include "kissra/custom_mixins_fwd.hpp"
+#include "kissra/concepts.hpp"
+#include "kissra/impl/custom_mixins.hpp"
 #include "kissra/misc/optional.hpp"
 #include <utility>
 
