@@ -1,6 +1,7 @@
 #pragma once
 #include "kissra/concepts.hpp"
 #include "kissra/impl/custom_mixins.hpp"
+#include "kissra/impl/into_iter.hpp"
 #include "kissra/type_traits.hpp"
 
 namespace kissra {

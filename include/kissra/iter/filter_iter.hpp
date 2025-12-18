@@ -1,10 +1,7 @@
 #pragma once
 #include "kissra/compose.hpp"
-#include "kissra/concepts.hpp"
 #include "kissra/iter/iter_base.hpp"
 #include "kissra/misc/functional.hpp"
-#include <functional>
-#include <utility>
 
 namespace kissra {
 template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
@@ -111,6 +108,7 @@ struct filter_mixin {
         });
     }
 };
+
 
 namespace compo {
 template <typename TBaseCompose, typename TFn, template <typename> typename... TMixins>

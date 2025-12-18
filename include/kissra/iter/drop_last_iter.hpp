@@ -1,4 +1,5 @@
 #pragma once
+#include "kissra/compose.hpp"
 #include "kissra/iter/iter_base.hpp"
 #include <functional>
 
@@ -92,4 +93,39 @@ struct drop_last_mixin {
         });
     }
 };
+
+
+namespace compo {
+template <typename TBaseCompose, template <typename> typename... TMixins>
+struct drop_last_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBaseCompose>... {
+    [[no_unique_address]] TBaseCompose base_comp;
+    std::size_t n;
+
+    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+        return drop_last_iter<std::remove_cvref_t<UBaseIter>, UMixins...>{
+            std::forward<UBaseIter>(base_iter),
+            self.n,
+        };
+    }
+};
+
+template <typename Tag>
+struct drop_last_compose_mixin {
+    template <typename TSelf, typename DeferInstantiation = void>
+    auto drop_last(this TSelf&& self, std::size_t n) {
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return drop_last_compose<std::remove_cvref_t<TSelf>, CustomMixins...>{
+                .base_comp = std::forward<TSelf>(self),
+                .n = n,
+            };
+        });
+    }
+};
+
+template <typename DeferInstantiation = void>
+auto drop_last(std::size_t n) {
+    return compose<DeferInstantiation>().drop_last(n);
+}
+} // namespace compo
 } // namespace kissra

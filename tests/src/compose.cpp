@@ -65,5 +65,59 @@ TEST_CASE("apply [kissra::compo::transform(...).filter(...)] should work") {
     }
 }
 
+TEST_CASE("apply [kissra::compo::drop_while(...).drop_last_while(...).reverse()] should work") {
+    std::array arr = { 1, 2, 10, 3, 4 };
+
+    auto comp = kissra::compo::drop_while(fn::odd) //
+                    .drop_last_while(fn::even)
+                    .filter(fn::lt_c<10>)
+                    .reverse();
+
+    auto iter = kissra::all(arr).apply(comp);
+
+    std::array expected = { 3, 2 };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*expected_it++, *item);
+    }
+}
+
+TEST_CASE("apply [kissra::compo::drop_while(...).drop_last_while(...)] + reverse() should work") {
+    std::array arr = { 1, 2, 10, 3, 4 };
+
+    auto comp = kissra::compo::drop_while(fn::odd) //
+                    .drop_last_while(fn::even)
+                    .filter(fn::lt_c<10>);
+
+    auto iter = kissra::apply(arr, comp).reverse();
+
+    std::array expected = { 3, 2 };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*expected_it++, *item);
+    }
+}
+
+TEST_CASE("apply [kissra::compo::drop(N).drop_while(...).drop_last(N).drop_last_while(...)] + reverse() should work") {
+    std::array arr = { 7, 1, 1, 2, 10, 3, 4, 9 };
+
+    auto comp = kissra::compo::drop(2) //
+                    .drop_while(fn::odd)
+                    .drop_last(1)
+                    .drop_last_while(fn::even)
+                    .filter(fn::lt_c<10>);
+
+    auto iter = kissra::apply(arr, comp).reverse();
+
+    std::array expected = { 3, 2 };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*expected_it++, *item);
+    }
+}
+
 
 } // namespace kissra::test

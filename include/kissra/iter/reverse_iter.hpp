@@ -1,6 +1,6 @@
 #pragma once
+#include "kissra/compose.hpp"
 #include "kissra/iter/iter_base.hpp"
-#include <functional>
 
 namespace kissra {
 template <typename TBaseIter, template <typename> typename... TMixins>
@@ -66,4 +66,32 @@ struct reverse_mixin {
         });
     }
 };
+
+
+namespace compo {
+template <typename TBaseCompose, template <typename> typename... TMixins>
+struct reverse_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBaseCompose>... {
+    [[no_unique_address]] TBaseCompose base_comp;
+
+    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+        return reverse_iter<std::remove_cvref_t<UBaseIter>, UMixins...>{ std::forward<UBaseIter>(base_iter) };
+    }
+};
+
+template <typename Tag>
+struct reverse_compose_mixin {
+    template <typename TSelf, typename DeferInstantiation = void>
+    auto reverse(this TSelf&& self) {
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
+            return reverse_compose<std::remove_cvref_t<TSelf>, CustomMixins...>{ .base_comp = std::forward<TSelf>(self) };
+        });
+    }
+};
+
+template <typename DeferInstantiation = void>
+auto reverse() {
+    return compose<DeferInstantiation>().reverse();
+}
+} // namespace compo
 } // namespace kissra

@@ -1,7 +1,7 @@
 #pragma once
 #include "kissra/iter/all_iter.hpp"
 #include "kissra/iter/iter_base.hpp"
-#include "kissra/misc/into_iter.hpp"
+#include "kissra/impl/into_iter.hpp"
 #include "kissra/misc/type_list.hpp"
 #include "kissra/misc/utility.hpp"
 #include <algorithm>

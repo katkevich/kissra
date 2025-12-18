@@ -20,6 +20,7 @@ set(MORFO_HEADERS
     include/kissra/compose.hpp
     include/kissra/concepts.hpp
     include/kissra/impl/custom_mixins.hpp
+    include/kissra/impl/into_iter.hpp
     include/kissra/iter/iter_base.hpp
     include/kissra/iter/all_iter.hpp
     include/kissra/iter/chunk_iter.hpp
@@ -43,7 +44,6 @@ set(MORFO_HEADERS
     include/kissra/fn/convert.hpp
     include/kissra/fn/misc.hpp
     include/kissra/misc/functional.hpp
-    include/kissra/misc/into_iter.hpp
     include/kissra/misc/optional.hpp
     include/kissra/misc/static_string.hpp
     include/kissra/misc/type_list.hpp
