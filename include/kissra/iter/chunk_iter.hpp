@@ -203,6 +203,7 @@ private:
 template <typename Tag>
 struct chunk_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
+        requires is_forward_v<TSelf>
     auto chunk(this TSelf&& self, std::size_t n) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return chunk_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self), n };

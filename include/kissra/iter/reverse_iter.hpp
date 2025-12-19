@@ -60,6 +60,7 @@ public:
 template <typename Tag>
 struct reverse_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
+        requires is_bidir_v<TSelf>
     auto reverse(this TSelf&& self) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return reverse_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self) };

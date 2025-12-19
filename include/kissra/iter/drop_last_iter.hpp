@@ -87,6 +87,7 @@ private:
 template <typename Tag>
 struct drop_last_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
+        requires is_bidir_v<TSelf>
     auto drop_last(this TSelf&& self, std::size_t n) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return drop_last_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self), n };
