@@ -119,5 +119,38 @@ TEST_CASE("apply [kissra::compo::drop(N).drop_while(...).drop_last(N).drop_last_
     }
 }
 
+TEST_CASE("apply [kissra::compo::zip(kissra_iter, rng)] + transform should work") {
+    std::array arr = { 7, 1, 2 };
+
+    auto comp = kissra::compo::zip(kissra::all(arr).reverse(), arr);
+
+    auto iter = kissra::apply(arr, comp) //
+                    .transform([](int x, int y, int z) { return x + y + z; });
+
+    std::array expected = { 7 + 2 + 7, 1 + 1 + 1, 2 + 7 + 2 };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*expected_it++, *item);
+    }
+}
+
+TEST_CASE("apply [kissra::compose(rng).zip(kissra_iter, rng)] + reverse + transform should work") {
+    std::array arr = { 7, 1, 2 };
+
+    auto comp = kissra::compose().zip(kissra::all(arr).reverse(), arr);
+
+    auto iter = kissra::apply(arr, comp) //
+                    .reverse()
+                    .transform([](int x, int y, int z) { return x + y + z; });
+
+    std::array expected = { 2 + 7 + 2, 1 + 1 + 1, 7 + 2 + 7 };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*expected_it++, *item);
+    }
+}
+
 
 } // namespace kissra::test

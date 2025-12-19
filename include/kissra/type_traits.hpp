@@ -69,34 +69,51 @@ template <typename TArg>
 using destructured_members_type_list_t = typename destructured_members_type_list<TArg>::type;
 
 
-template <typename TFn, typename TTypeList>
+/**
+ * `kissra::is_invocable_with_type_list<TFn, tmp::type_list<TArgs...>>` is equivalent to `std::is_invocable<TFn, TArgs...>`
+ */
+template <typename TFn, typename TArgsTypeList>
 struct is_invocable_with_type_list : std::false_type {};
 
 template <typename TFn, typename... Ts>
 struct is_invocable_with_type_list<TFn, tmp::type_list<Ts...>> : std::bool_constant<std::is_invocable_v<TFn, Ts...>> {};
 
-template <typename TFn, typename TTypeList>
-constexpr bool is_invocable_with_type_list_v = is_invocable_with_type_list<TFn, TTypeList>::value;
+template <typename TFn, typename TArgsTypeList>
+constexpr bool is_invocable_with_type_list_v = is_invocable_with_type_list<TFn, TArgsTypeList>::value;
 
 
-template <typename T, template <typename...> typename TTmpl>
-struct is_specialization_of : std::false_type {};
+/**
+ * `kissra::invoke_with_type_list_result<TFn, tmp::type_list<TArgs...>>` is equivalent to `std::invoke_result<TFn, TArgs...>`
+ */
+template <typename TFn, typename TArgsTypeList>
+struct invoke_with_type_list_result;
 
-template <typename... TArgs, template <typename...> typename TTmpl>
-struct is_specialization_of<TTmpl<TArgs...>, TTmpl> : std::true_type {};
+template <typename TFn, typename... Ts>
+struct invoke_with_type_list_result<TFn, tmp::type_list<Ts...>> {
+    using type = std::invoke_result_t<TFn, Ts...>;
+};
+template <typename TFn, typename TArgsTypeList>
+using invoke_with_type_list_result_t = typename invoke_with_type_list_result<TFn, TArgsTypeList>::type;
 
-template <typename... TArgs, template <typename...> typename TTmpl>
-struct is_specialization_of<const TTmpl<TArgs...>, TTmpl> : std::true_type {};
 
-template <typename... TArgs, template <typename...> typename TTmpl>
-struct is_specialization_of<const TTmpl<TArgs...>&, TTmpl> : std::true_type {};
+/**
+ * `kissra::invoke_with_destructured_arg_result<TFn, TAggregate>` is equivalent to `std::invoke_result<TFn, TAggregate::members...>`
+ * `TArg` should be an aggregate or should implement tuple protocol (`std::tuple_size<...>` & `std::tuple_element<...>`)
+ */
+template <typename TFn, typename TArg>
+struct invoke_with_destructured_arg_result {
+    using type = invoke_with_type_list_result_t<TFn, destructured_members_type_list_t<TArg>>;
+};
+template <typename TFn, typename TArg>
+using invoke_with_destructured_arg_result_t = typename invoke_with_destructured_arg_result<TFn, TArg>::type;
 
-template <typename... TArgs, template <typename...> typename TTmpl>
-struct is_specialization_of<TTmpl<TArgs...>&, TTmpl> : std::true_type {};
 
-template <typename... TArgs, template <typename...> typename TTmpl>
-struct is_specialization_of<TTmpl<TArgs...>&&, TTmpl> : std::true_type {};
-
-template <typename T, template <typename...> typename TTmpl>
-static constexpr bool is_specialization_of_v = is_specialization_of<T, TTmpl>::value;
+template <typename TFn, typename... TArgs>
+struct invoke_result {
+    using type = typename std::conditional_t<std::is_invocable_v<TFn, TArgs...> || (sizeof...(TArgs) > 1),
+        std::invoke_result<TFn, TArgs...>,
+        invoke_with_destructured_arg_result<TFn, tmp::front_t<TArgs...>>>::type;
+};
+template <typename TFn, typename... TArgs>
+using invoke_result_t = typename invoke_result<TFn, TArgs...>::type;
 } // namespace kissra

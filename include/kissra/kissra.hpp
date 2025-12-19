@@ -34,6 +34,7 @@ namespace compo {
 template <typename Tag>
 struct builtin_mixins : filter_compose_mixin<Tag>,
                         transform_compose_mixin<Tag>,
+                        zip_compose_mixin<Tag>,
                         reverse_compose_mixin<Tag>,
                         chunk_compose_mixin<Tag>,
                         drop_compose_mixin<Tag>,

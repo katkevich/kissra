@@ -5,10 +5,12 @@
 
 namespace kissra {
 template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
-    requires std::regular_invocable<TFn, typename TBaseIter::reference>
+    requires kissra::regular_invocable<TFn, typename TBaseIter::reference>
 class transform_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
+    using base_reference = typename TBaseIter::reference;
+
 public:
-    using value_type = std::invoke_result_t<TFn, typename TBaseIter::reference>;
+    using value_type = kissra::invoke_result_t<TFn, base_reference>;
     using reference = value_type;
     using result_t = kissra::optional<reference>;
 
@@ -25,7 +27,7 @@ public:
 
     [[nodiscard]] result_t next() {
         if (auto item = this->base_iter.next()) {
-            return std::invoke(this->fn.inst, *item);
+            return kissra::invoke(this->fn.inst, std::forward_like<base_reference>(*item));
         }
         return {};
     }
@@ -34,14 +36,14 @@ public:
         requires is_common && is_bidir
     {
         if (auto item = this->base_iter.next_back()) {
-            return std::invoke(this->fn.inst, *item);
+            return kissra::invoke(this->fn.inst, std::forward_like<base_reference>(*item));
         }
         return {};
     }
 
     [[nodiscard]] result_t nth(std::size_t n) {
         if (auto item = this->base_iter.nth(n)) {
-            return std::invoke(this->fn.inst, *item);
+            return kissra::invoke(this->fn.inst, std::forward_like<base_reference>(*item));
         }
         return {};
     }
@@ -50,7 +52,7 @@ public:
         requires is_common && is_bidir
     {
         if (auto item = this->base_iter.nth_back(n)) {
-            return std::invoke(this->fn.inst, *item);
+            return kissra::invoke(this->fn.inst, std::forward_like<base_reference>(*item));
         }
         return {};
     }
