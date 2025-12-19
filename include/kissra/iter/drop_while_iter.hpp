@@ -6,7 +6,7 @@
 
 namespace kissra {
 template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
-    requires std::regular_invocable<TFn, typename TBaseIter::reference>
+    requires kissra::regular_invocable<TFn, typename TBaseIter::reference>
 class drop_while_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
@@ -70,7 +70,7 @@ private:
     void ff_self() {
         if (!std::exchange(this->dropped, true)) {
             for (auto item = this->base_iter.front(); item; item = this->base_iter.nth(1)) {
-                if (!std::invoke(this->fn.inst, *item)) {
+                if (!kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                     break;
                 }
             }

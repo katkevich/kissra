@@ -54,4 +54,16 @@ TEST_CASE("drop_last_while(...).reverse().drop_last_while(...) should trim from 
     REQUIRE_EQ(kissra::all(arr).drop_last_while(fn::le_c<3>).reverse().drop_last_while(fn::le_c<3>).back(), 4);
     REQUIRE_EQ(kissra::all(arr).drop_last_while(fn::le_c<3>).reverse().drop_last_while(fn::le_c<3>).front(), 5);
 }
+
+TEST_CASE("drop_last_while(...).transform() with destructured arg should work") {
+    std::array arr = { std::tuple{ 1, "11"s }, std::tuple{ 2, "22"s }, std::tuple{ 3, "333"s } };
+    REQUIRE_EQ(kissra::all(arr).drop_last_while([](int n, std::string& s) { return s.size() == n; }).collect(),
+        (std::vector{ std::tuple{ 1, "11"s } }));
+}
+
+TEST_CASE("drop_while(...).transform() with destructured arg should work") {
+    std::array arr = { std::tuple{ 1, "11"s }, std::tuple{ 2, "22"s }, std::tuple{ 3, "333"s } };
+    REQUIRE_EQ(kissra::all(arr).drop_while([](int n, std::string& s) { return s.size() != n; }).collect(),
+        (std::vector{ std::tuple{ 2, "22"s }, std::tuple{ 3, "333"s } }));
+}
 } // namespace kissra::test

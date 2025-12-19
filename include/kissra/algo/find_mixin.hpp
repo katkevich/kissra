@@ -18,10 +18,10 @@ struct find_mixin {
     }
 
     template <kissra::mut TSelf, typename TFn>
-        requires std::regular_invocable<TFn, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TFn, iter_reference_t<TSelf>>
     auto find_if(this TSelf&& self, TFn fn) {
         while (auto item = self.next()) {
-            if (std::invoke(fn, *item)) {
+            if (kissra::invoke(fn, std::forward_like<iter_reference_t<TSelf>>(*item))) {
                 return item;
             }
         }
@@ -29,10 +29,10 @@ struct find_mixin {
     }
 
     template <kissra::mut TSelf, typename TValue, typename TProj>
-        requires std::regular_invocable<TProj, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TProj, iter_reference_t<TSelf>>
     auto find(this TSelf&& self, const TValue& value, TProj proj) {
         while (auto item = self.next()) {
-            if (eq(std::invoke(proj, *item), value)) {
+            if (eq(kissra::invoke(proj, std::forward_like<iter_reference_t<TSelf>>(*item)), value)) {
                 return item;
             }
         }
@@ -50,10 +50,10 @@ struct find_mixin {
     }
 
     template <kissra::mut TSelf, typename TFn>
-        requires std::regular_invocable<TFn, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TFn, iter_reference_t<TSelf>>
     auto find_if_not(this TSelf&& self, TFn fn) {
         while (auto item = self.next()) {
-            if (!std::invoke(fn, *item)) {
+            if (!kissra::invoke(fn, std::forward_like<iter_reference_t<TSelf>>(*item))) {
                 return item;
             }
         }
@@ -61,10 +61,10 @@ struct find_mixin {
     }
 
     template <kissra::mut TSelf, typename TValue, typename TProj>
-        requires std::regular_invocable<TProj, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TProj, iter_reference_t<TSelf>>
     auto find_not(this TSelf&& self, TValue&& value, TProj proj) {
         while (auto item = self.next()) {
-            if (!eq(std::invoke(proj, *item), value)) {
+            if (!eq(kissra::invoke(proj, std::forward_like<iter_reference_t<TSelf>>(*item)), value)) {
                 return item;
             }
         }
@@ -77,13 +77,13 @@ struct find_mixin {
     }
 
     template <kissra::mut TSelf, typename TFn>
-        requires std::regular_invocable<TFn, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TFn, iter_reference_t<TSelf>>
     bool contains_if(this TSelf&& self, TFn fn) {
         return self.find_if(fn).has_value();
     }
 
     template <kissra::mut TSelf, typename TValue, typename TProj>
-        requires std::regular_invocable<TProj, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TProj, iter_reference_t<TSelf>>
     bool contains(this TSelf&& self, const TValue& value, TProj proj) {
         return self.find(value, proj).has_value();
     }
@@ -94,13 +94,13 @@ struct find_mixin {
     }
 
     template <kissra::mut TSelf, typename TFn>
-        requires std::regular_invocable<TFn, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TFn, iter_reference_t<TSelf>>
     bool contains_if_not(this TSelf&& self, TFn fn) {
         return self.find_if_not(fn).has_value();
     }
 
     template <kissra::mut TSelf, typename TValue, typename TProj>
-        requires std::regular_invocable<TProj, iter_reference_t<TSelf>>
+        requires kissra::regular_invocable<TProj, iter_reference_t<TSelf>>
     bool contains_not(this TSelf&& self, const TValue& value, TProj proj) {
         return self.find_not(value, proj).has_value();
     }
