@@ -16,13 +16,15 @@ struct member_t {
         /**
          * T&.member& -> return member&
          * T&&.member& -> return member&
+         * T&.member&& -> return member&&
+         * T&&.member&& -> return member&&
          *
          * T&.member -> return member&
          * T&&.member -> return member
          */
         if constexpr (std::is_reference_v<member_t>) {
-            /* if `member` is a reference just return as-is (as a reference) */
-            return xs...[MemberIdx];
+            /* if `member` is a reference return it as a reference (as-is, preserving the value category). */
+            return std::forward<member_t>(xs...[MemberIdx]);
         } else {
             if constexpr (std::is_reference_v<T>) {
                 /* `return (<expr>)` is being deduced as a reference */
