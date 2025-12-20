@@ -1,6 +1,7 @@
 #include <doctest/doctest.h>
 
 #include "kissra/kissra.hpp"
+#include "kissra/noisy.hpp"
 #include <algorithm>
 #include <deque>
 #include <forward_list>
@@ -41,6 +42,24 @@ TEST_CASE("filter(<cond>).collect<std::forward_list>() should produce std::forwa
 TEST_CASE("filter(<cond>).collect<std::deque>() should produce std::deque") {
     std::array arr = { 1, 2, 2, 4, 5 };
     REQUIRE_EQ(kissra::all(arr).filter(kissra::fn::even).collect<std::deque>(), (std::deque{ 2, 2, 4 }));
+}
+
+TEST_CASE("all(<rvalue references>).collect() should move and NOT copy") {
+    tracker tracker;
+    noisy noisy{ tracker };
+
+    std::array arr = { std::tuple<test::noisy&&>{ std::move(noisy) } };
+    REQUIRE_EQ(tracker.copy_ctor, 0);
+    REQUIRE_EQ(tracker.move_ctor, 0);
+    REQUIRE_EQ(tracker.copy_op, 0);
+    REQUIRE_EQ(tracker.move_op, 0);
+
+    std::ignore = kissra::all(arr).members<0>().collect();
+
+    CHECK_EQ(tracker.copy_ctor, 0);
+    CHECK_EQ(tracker.move_ctor, 1);
+    CHECK_EQ(tracker.copy_op, 0);
+    CHECK_EQ(tracker.move_op, 0);
 }
 
 } // namespace kissra::test

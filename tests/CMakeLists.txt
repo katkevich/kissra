@@ -29,6 +29,7 @@ add_executable(kissra_tests
     src/functional.cpp
     src/iter_chains.cpp
     src/member.cpp
+    src/members.cpp
     src/size.cpp
     src/transform.cpp
     src/zip.cpp

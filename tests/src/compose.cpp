@@ -152,5 +152,39 @@ TEST_CASE("apply [kissra::compose(rng).zip(kissra_iter, rng)] + reverse + transf
     }
 }
 
+TEST_CASE("apply [kissra::compo::members<1>()] + reverse should work") {
+    struct Foo {
+        int i{};
+        int j{};
+    };
+    std::array arr = { Foo{ 0, 7 }, Foo{ 0, 1 }, Foo{ 0, 2 } };
 
+    auto comp = kissra::compo::members<1>().reverse();
+    auto iter = kissra::apply(arr, comp);
+
+    std::array expected = { 2, 1, 7 };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*expected_it++, *item);
+    }
+}
+
+TEST_CASE("apply [kissra::compose(rng).members<1>()] + reverse should work") {
+    struct Foo {
+        int i{};
+        int j{};
+    };
+    std::array arr = { Foo{ 0, 7 }, Foo{ 0, 1 }, Foo{ 0, 2 } };
+
+    auto comp = kissra::compose().members<1>().reverse();
+    auto iter = kissra::apply(arr, comp);
+
+    std::array expected = { 2, 1, 7 };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(*expected_it++, *item);
+    }
+}
 } // namespace kissra::test

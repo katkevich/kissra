@@ -22,6 +22,7 @@ set(MORFO_HEADERS
     include/kissra/impl/custom_mixins.hpp
     include/kissra/impl/into_iter.hpp
     include/kissra/iter/iter_base.hpp
+    include/kissra/iter/members_iter.hpp
     include/kissra/iter/all_iter.hpp
     include/kissra/iter/chunk_iter.hpp
     include/kissra/iter/drop_iter.hpp
