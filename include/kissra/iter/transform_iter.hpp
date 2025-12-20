@@ -21,18 +21,18 @@ public:
     static constexpr bool is_random = TBaseIter::is_random;
 
     template <typename UBaseIter>
-    transform_iter(UBaseIter&& base_iter, TFn fn)
+    constexpr transform_iter(UBaseIter&& base_iter, TFn fn)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
-    [[nodiscard]] result_t next() {
+    [[nodiscard]] constexpr result_t next() {
         if (auto item = this->base_iter.next()) {
             return kissra::invoke(this->fn.inst, std::forward_like<base_reference>(*item));
         }
         return {};
     }
 
-    [[nodiscard]] result_t next_back()
+    [[nodiscard]] constexpr result_t next_back()
         requires is_common && is_bidir
     {
         if (auto item = this->base_iter.next_back()) {
@@ -41,14 +41,14 @@ public:
         return {};
     }
 
-    [[nodiscard]] result_t nth(std::size_t n) {
+    [[nodiscard]] constexpr result_t nth(std::size_t n) {
         if (auto item = this->base_iter.nth(n)) {
             return kissra::invoke(this->fn.inst, std::forward_like<base_reference>(*item));
         }
         return {};
     }
 
-    [[nodiscard]] result_t nth_back(std::size_t n)
+    [[nodiscard]] constexpr result_t nth_back(std::size_t n)
         requires is_common && is_bidir
     {
         if (auto item = this->base_iter.nth_back(n)) {
@@ -57,17 +57,17 @@ public:
         return {};
     }
 
-    std::size_t advance(std::size_t n) {
+    constexpr std::size_t advance(std::size_t n) {
         return this->base_iter.advance(n);
     }
 
-    std::size_t advance_back(std::size_t n)
+    constexpr std::size_t advance_back(std::size_t n)
         requires is_bidir
     {
         return this->base_iter.advance_back(n);
     }
 
-    auto size() const
+    constexpr auto size() const
         requires is_sized
     {
         return this->base_iter.size();
@@ -80,7 +80,7 @@ private:
 template <typename Tag>
 struct transform_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
-    auto transform(this TSelf&& self, TFn fn) {
+    constexpr auto transform(this TSelf&& self, TFn fn) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return transform_iter<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{ std::forward<TSelf>(self), fn };
         });
@@ -94,7 +94,7 @@ struct transform_compose : public builtin_mixins<TBaseCompose>, public TMixins<T
     [[no_unique_address]] functor_ebo<TFn, TBaseCompose> fn;
 
     template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
-    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+    constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
         return transform_iter<std::remove_cvref_t<UBaseIter>, TFn, UMixins...>{
             std::forward<UBaseIter>(base_iter),
             std::forward<TSelf>(self).fn.inst,
@@ -105,7 +105,7 @@ struct transform_compose : public builtin_mixins<TBaseCompose>, public TMixins<T
 template <typename Tag>
 struct transform_compose_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
-    auto transform(this TSelf&& self, TFn fn) {
+    constexpr auto transform(this TSelf&& self, TFn fn) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return transform_compose<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{
                 .base_comp = std::forward<TSelf>(self),
@@ -116,7 +116,7 @@ struct transform_compose_mixin {
 };
 
 template <typename TFn, typename DeferInstantiation = void>
-auto transform(TFn fn) {
+constexpr auto transform(TFn fn) {
     return compose<DeferInstantiation>().transform(fn);
 }
 } // namespace compo

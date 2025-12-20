@@ -27,12 +27,12 @@ public:
     static constexpr bool is_random = TBaseIter::is_random && (TIters::is_random && ...);
 
     template <typename UBaseIter, typename... UIters>
-    explicit zip_iter(UBaseIter&& base_iter, UIters&&... iters)
+    constexpr explicit zip_iter(UBaseIter&& base_iter, UIters&&... iters)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , iters(std::move(iters)...) {}
 
     template <typename TSelf>
-    [[nodiscard]] result_t next(this TSelf&& self) {
+    [[nodiscard]] constexpr result_t next(this TSelf&& self) {
         auto& [... iters_pack] = self.iters;
         auto [... nexts_pack] = std::tuple{ self.base_iter.next(), iters_pack.next()... };
 
@@ -45,7 +45,7 @@ public:
 
     template <typename TSelf>
         requires is_sized && is_bidir && is_common && ((is_sized_v<TIters> && is_bidir_v<TIters> && is_common_v<TIters>) && ...)
-    [[nodiscard]] result_t next_back(this TSelf&& self) {
+    [[nodiscard]] constexpr result_t next_back(this TSelf&& self) {
         /* align the tails */
         self.advance_back(0);
 
@@ -60,7 +60,7 @@ public:
     }
 
     template <typename TSelf>
-    [[nodiscard]] result_t nth(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] constexpr result_t nth(this TSelf&& self, std::size_t n) {
         auto& [... iters_pack] = self.iters;
         auto [... nths_pack] = std::tuple{ self.base_iter.nth(n), iters_pack.nth(n)... };
 
@@ -73,7 +73,7 @@ public:
 
     template <typename TSelf>
         requires is_sized && is_bidir && is_common && ((is_sized_v<TIters> && is_bidir_v<TIters> && is_common_v<TIters>) && ...)
-    [[nodiscard]] result_t nth_back(this TSelf&& self, std::size_t n) {
+    [[nodiscard]] constexpr result_t nth_back(this TSelf&& self, std::size_t n) {
         /* align the tails */
         self.advance_back(0);
 
@@ -88,7 +88,7 @@ public:
     }
 
     template <typename TSelf>
-    std::size_t advance(this TSelf&& self, std::size_t n) {
+    constexpr std::size_t advance(this TSelf&& self, std::size_t n) {
         auto& [... iters_pack] = self.iters;
         std::array advancements{ self.base_iter.advance(n), iters_pack.advance(n)... };
 
@@ -97,7 +97,7 @@ public:
 
     template <typename TSelf>
         requires is_sized && is_bidir && ((is_sized_v<TIters> && is_bidir_v<TIters>) && ...)
-    std::size_t advance_back(this TSelf&& self, std::size_t n) {
+    constexpr std::size_t advance_back(this TSelf&& self, std::size_t n) {
         auto& [... iters_pack] = self.iters;
 
         const auto base_iter_size = self.base_iter.size();
@@ -117,7 +117,7 @@ public:
 
     template <typename TSelf>
         requires is_sized
-    auto size(this const TSelf& self) {
+    constexpr auto size(this const TSelf& self) {
         auto& [... iters_pack] = self.iters;
         const auto sizes = std::array{ self.base_iter.size(), iters_pack.size()... };
 
@@ -130,7 +130,7 @@ private:
 
 
 template <kissra::iterator_compatible T, kissra::iterator_compatible... Ts, typename DeferInstantiation = void>
-auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
+constexpr auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
     return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
         using fst_iter = std::remove_reference_t<decltype(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rng_or_kissra_iter)))>;
         using iters_type_list =
@@ -146,7 +146,7 @@ auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
 template <typename Tag>
 struct zip_mixin {
     template <kissra::iterator_compatible TSelf, kissra::iterator_compatible... Ts>
-    auto zip(this TSelf&& self, Ts&&... rngs_or_kissra_iters) {
+    constexpr auto zip(this TSelf&& self, Ts&&... rngs_or_kissra_iters) {
         return kissra::zip(KISSRA_FWD(self), KISSRA_FWD(rngs_or_kissra_iters)...);
     }
 };
@@ -163,7 +163,7 @@ struct zip_compose<TBaseCompose, tmp::type_list<TIters...>, TMixins...> : public
     [[no_unique_address]] std::tuple<TIters...> iters;
 
     template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
-    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+    constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
         auto&& [... iters] = KISSRA_FWD(self).iters;
 
         return zip_iter<std::remove_cvref_t<UBaseIter>, tmp::type_list<TIters...>, UMixins...>{
@@ -176,7 +176,7 @@ struct zip_compose<TBaseCompose, tmp::type_list<TIters...>, TMixins...> : public
 template <typename Tag>
 struct zip_compose_mixin {
     template <typename TSelf, kissra::iterator_compatible... Ts, typename DeferInstantiation = void>
-    auto zip(this TSelf&& self, Ts&&... rngs_or_kissra_iters) {
+    constexpr auto zip(this TSelf&& self, Ts&&... rngs_or_kissra_iters) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             using iters_type_list =
                 tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
@@ -190,7 +190,7 @@ struct zip_compose_mixin {
 };
 
 template <kissra::iterator_compatible T, kissra::iterator_compatible... Ts, typename DeferInstantiation = void>
-auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
+constexpr auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
     return compose<DeferInstantiation>().zip(KISSRA_FWD(rng_or_kissra_iter), KISSRA_FWD(rngs_or_kissra_iters)...);
 }
 } // namespace compo

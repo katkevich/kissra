@@ -20,11 +20,11 @@ public:
     static constexpr bool is_random = false;
 
     template <typename UBaseIter>
-    filter_iter(UBaseIter&& base_iter, TFn fn)
+    constexpr filter_iter(UBaseIter&& base_iter, TFn fn)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , fn(fn) {}
 
-    [[nodiscard]] result_t next() {
+    [[nodiscard]] constexpr result_t next() {
         while (auto item = this->base_iter.next()) {
             if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 return item;
@@ -33,7 +33,7 @@ public:
         return {};
     }
 
-    [[nodiscard]] result_t next_back()
+    [[nodiscard]] constexpr result_t next_back()
         requires is_common && is_bidir
     {
         while (auto item = this->base_iter.next_back()) {
@@ -44,7 +44,7 @@ public:
         return {};
     }
 
-    [[nodiscard]] result_t nth(std::size_t n) {
+    [[nodiscard]] constexpr result_t nth(std::size_t n) {
         for (auto item = this->base_iter.front(); item; item = this->base_iter.nth(1)) {
             if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
                 if (n-- == 0) {
@@ -55,7 +55,7 @@ public:
         return {};
     }
 
-    [[nodiscard]] result_t nth_back(std::size_t n)
+    [[nodiscard]] constexpr result_t nth_back(std::size_t n)
         requires is_common && is_bidir
     {
         for (auto item = this->base_iter.back(); item; item = this->base_iter.nth_back(1)) {
@@ -68,7 +68,7 @@ public:
         return {};
     }
 
-    std::size_t advance(std::size_t n) {
+    constexpr std::size_t advance(std::size_t n) {
         std::size_t offset = 0;
         for (auto item = this->base_iter.front(); item; item = this->base_iter.nth(1)) {
             if (kissra::invoke(this->fn.inst, std::forward_like<reference>(*item))) {
@@ -80,7 +80,7 @@ public:
         return offset;
     }
 
-    std::size_t advance_back(std::size_t n)
+    constexpr std::size_t advance_back(std::size_t n)
         requires is_common && is_bidir
     {
         std::size_t offset = 0;
@@ -102,7 +102,7 @@ private:
 template <typename Tag>
 struct filter_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
-    auto filter(this TSelf&& self, TFn fn) {
+    constexpr auto filter(this TSelf&& self, TFn fn) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return filter_iter<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{ std::forward<TSelf>(self), fn };
         });
@@ -117,7 +117,7 @@ struct filter_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBas
     [[no_unique_address]] functor_ebo<TFn, TBaseCompose> fn;
 
     template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
-    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+    constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
         return filter_iter<std::remove_cvref_t<UBaseIter>, TFn, UMixins...>{
             std::forward<UBaseIter>(base_iter),
             std::forward<TSelf>(self).fn.inst,
@@ -128,7 +128,7 @@ struct filter_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBas
 template <typename Tag>
 struct filter_compose_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
-    auto filter(this TSelf&& self, TFn fn) {
+    constexpr auto filter(this TSelf&& self, TFn fn) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return filter_compose<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{
                 .base_comp = std::forward<TSelf>(self),
@@ -139,7 +139,7 @@ struct filter_compose_mixin {
 };
 
 template <typename TFn, typename DeferInstantiation = void>
-auto filter(TFn fn) {
+constexpr auto filter(TFn fn) {
     return compose<DeferInstantiation>().filter(fn);
 }
 } // namespace compo

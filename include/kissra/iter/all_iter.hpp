@@ -19,18 +19,18 @@ public:
     static constexpr bool is_bidir = std::ranges::bidirectional_range<TRng>;
     static constexpr bool is_random = std::ranges::random_access_range<TRng>;
 
-    explicit all_iter(TRng& rng)
+    constexpr explicit all_iter(TRng& rng)
         : cursor(std::ranges::begin(rng))
         , sentinel(std::ranges::end(rng)) {}
 
-    [[nodiscard]] result_t next() {
+    [[nodiscard]] constexpr result_t next() {
         if (this->cursor != this->sentinel) {
             return *this->cursor++;
         }
         return {};
     }
 
-    [[nodiscard]] result_t next_back()
+    [[nodiscard]] constexpr result_t next_back()
         requires is_common && is_bidir
     {
         if (this->cursor != this->sentinel) {
@@ -39,7 +39,7 @@ public:
         return {};
     }
 
-    [[nodiscard]] result_t nth(std::size_t n) {
+    [[nodiscard]] constexpr result_t nth(std::size_t n) {
         this->advance(n);
 
         if (this->cursor != this->sentinel) {
@@ -48,7 +48,7 @@ public:
         return {};
     }
 
-    [[nodiscard]] result_t nth_back(std::size_t n)
+    [[nodiscard]] constexpr result_t nth_back(std::size_t n)
         requires is_common && is_bidir
     {
         this->advance_back(n);
@@ -60,7 +60,7 @@ public:
         return {};
     }
 
-    std::size_t advance(std::size_t n)
+    constexpr std::size_t advance(std::size_t n)
         requires is_random
     {
         const auto offset = std::min(n, std::size_t(this->sentinel - this->cursor));
@@ -68,7 +68,7 @@ public:
         return offset;
     }
 
-    std::size_t advance(std::size_t n) {
+    constexpr std::size_t advance(std::size_t n) {
         std::size_t offset = 0;
         while (offset != n && this->cursor != this->sentinel) {
             ++this->cursor;
@@ -77,7 +77,7 @@ public:
         return offset;
     }
 
-    std::size_t advance_back(std::size_t n)
+    constexpr std::size_t advance_back(std::size_t n)
         requires is_random
     {
         const auto offset = std::min(n, std::size_t(this->sentinel - this->cursor));
@@ -85,7 +85,7 @@ public:
         return offset;
     }
 
-    std::size_t advance_back(std::size_t n)
+    constexpr std::size_t advance_back(std::size_t n)
         requires(is_bidir && !is_random)
     {
         std::size_t offset = 0;
@@ -96,26 +96,26 @@ public:
         return offset;
     }
 
-    auto size() const
+    constexpr auto size() const
         requires is_sized
     {
         return std::size_t(this->sentinel - this->cursor);
     }
 
-    auto underlying_subrange() const {
+    constexpr auto underlying_subrange() const {
         return std::ranges::subrange{ this->cursor, this->sentinel };
     }
 
-    auto underlying_cursor() const {
+    constexpr auto underlying_cursor() const {
         return this->cursor;
     }
 
-    auto underlying_sentinel() const {
+    constexpr auto underlying_sentinel() const {
         return this->sentinel;
     }
 
     template <typename TIt>
-    void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
+    constexpr void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
         this->cursor = subrange.begin();
         this->sentinel = subrange.end();
     }
@@ -126,7 +126,7 @@ private:
 };
 
 template <std::ranges::range TRng, typename DeferInstantiation = void>
-auto all(TRng& rng) {
+constexpr auto all(TRng& rng) {
     return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> { //
         return all_iter<TRng, CustomMixins...>{ rng };
     });

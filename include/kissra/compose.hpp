@@ -12,7 +12,7 @@ struct root : builtin_mixins<DeferInstantiation>, TMixins<DeferInstantiation>...
 } // namespace compo
 
 template <typename DeferInstantiation = void>
-auto compose() {
+constexpr auto compose() {
     return compo::with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> { //
         return compo::root<DeferInstantiation, CustomMixins...>{};
     });

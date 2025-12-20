@@ -17,40 +17,40 @@ public:
     static constexpr bool is_random = TBaseIter::is_random;
 
     template <typename UBaseIter>
-    explicit reverse_iter(UBaseIter&& base_iter)
+    constexpr explicit reverse_iter(UBaseIter&& base_iter)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter)) {}
 
-    [[nodiscard]] result_t next()
+    [[nodiscard]] constexpr result_t next()
         requires is_common && is_bidir
     {
         return this->base_iter.next_back();
     }
 
-    [[nodiscard]] result_t next_back() {
+    [[nodiscard]] constexpr result_t next_back() {
         return this->base_iter.next();
     }
 
-    [[nodiscard]] result_t nth(std::size_t n)
+    [[nodiscard]] constexpr result_t nth(std::size_t n)
         requires is_common && is_bidir
     {
         return this->base_iter.nth_back(n);
     }
 
-    [[nodiscard]] result_t nth_back(std::size_t n) {
+    [[nodiscard]] constexpr result_t nth_back(std::size_t n) {
         return this->base_iter.nth(n);
     }
 
-    std::size_t advance(std::size_t n)
+    constexpr std::size_t advance(std::size_t n)
         requires is_bidir
     {
         return this->base_iter.advance_back(n);
     }
 
-    std::size_t advance_back(std::size_t n) {
+    constexpr std::size_t advance_back(std::size_t n) {
         return this->base_iter.advance(n);
     }
 
-    auto size() const
+    constexpr auto size() const
         requires is_sized
     {
         return this->base_iter.size();
@@ -61,7 +61,7 @@ template <typename Tag>
 struct reverse_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
         requires is_bidir_v<TSelf>
-    auto reverse(this TSelf&& self) {
+    constexpr auto reverse(this TSelf&& self) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return reverse_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self) };
         });
@@ -75,7 +75,7 @@ struct reverse_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBa
     [[no_unique_address]] TBaseCompose base_comp;
 
     template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
-    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+    constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
         return reverse_iter<std::remove_cvref_t<UBaseIter>, UMixins...>{ std::forward<UBaseIter>(base_iter) };
     }
 };
@@ -83,7 +83,7 @@ struct reverse_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBa
 template <typename Tag>
 struct reverse_compose_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
-    auto reverse(this TSelf&& self) {
+    constexpr auto reverse(this TSelf&& self) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return reverse_compose<std::remove_cvref_t<TSelf>, CustomMixins...>{ .base_comp = std::forward<TSelf>(self) };
         });
@@ -91,7 +91,7 @@ struct reverse_compose_mixin {
 };
 
 template <typename DeferInstantiation = void>
-auto reverse() {
+constexpr auto reverse() {
     return compose<DeferInstantiation>().reverse();
 }
 } // namespace compo

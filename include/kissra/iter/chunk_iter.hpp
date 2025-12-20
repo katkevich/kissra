@@ -23,43 +23,43 @@ public:
 
 private:
     template <typename TUnderlyingIt>
-    chunk(iter_base<TBaseIter> base_iter, std::ranges::subrange<TUnderlyingIt> subrange)
+    constexpr chunk(iter_base<TBaseIter> base_iter, std::ranges::subrange<TUnderlyingIt> subrange)
         : iter_base<TBaseIter>(std::move(base_iter)) {
         this->underlying_subrange_override(subrange);
     }
 
 public:
-    [[nodiscard]] result_t next() {
+    [[nodiscard]] constexpr result_t next() {
         return this->base_iter.next();
     }
 
-    [[nodiscard]] result_t next_back()
+    [[nodiscard]] constexpr result_t next_back()
         requires is_common && is_bidir
     {
         return this->base_iter.next_back();
     }
 
-    [[nodiscard]] result_t nth(std::size_t n) {
+    [[nodiscard]] constexpr result_t nth(std::size_t n) {
         return this->base_iter.nth(n);
     }
 
-    [[nodiscard]] result_t nth_back(std::size_t n)
+    [[nodiscard]] constexpr result_t nth_back(std::size_t n)
         requires is_common && is_bidir
     {
         return this->base_iter.nth_back(n);
     }
 
-    std::size_t advance(std::size_t n) {
+    constexpr std::size_t advance(std::size_t n) {
         return this->base_iter.advance(n);
     }
 
-    std::size_t advance_back(std::size_t n)
+    constexpr std::size_t advance_back(std::size_t n)
         requires is_bidir
     {
         return this->base_iter.advance_back(n);
     }
 
-    auto size() const
+    constexpr auto size() const
         requires is_sized
     {
         return this->base_iter.size();
@@ -80,11 +80,11 @@ public:
     static constexpr bool is_random = TBaseIter::is_random;
 
     template <typename UBaseIter>
-    chunk_iter(UBaseIter&& base_iter, std::size_t n)
+    constexpr chunk_iter(UBaseIter&& base_iter, std::size_t n)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , n(n) {}
 
-    [[nodiscard]] result_t next()
+    [[nodiscard]] constexpr result_t next()
         requires is_forward
     {
         /* Fast-forward underlying cursor & sentinel if needed. */
@@ -104,7 +104,7 @@ public:
         return reference{ this->base_iter, std::ranges::subrange{ chunk_begin, chunk_end } };
     }
 
-    [[nodiscard]] result_t next_back()
+    [[nodiscard]] constexpr result_t next_back()
         requires is_sized && is_bidir && is_common
     {
         const auto last_chunk_size = this->base_iter.size() % this->n;
@@ -121,7 +121,7 @@ public:
         return reference{ this->base_iter, std::ranges::subrange{ chunk_begin, chunk_end } };
     }
 
-    [[nodiscard]] result_t nth(std::size_t n)
+    [[nodiscard]] constexpr result_t nth(std::size_t n)
         requires is_forward
     {
         this->base_iter.advance(n * this->n);
@@ -142,7 +142,7 @@ public:
         return nth_chunk;
     }
 
-    [[nodiscard]] result_t nth_back(std::size_t n)
+    [[nodiscard]] constexpr result_t nth_back(std::size_t n)
         requires is_sized && is_bidir && is_common
     {
         const auto last_chunk_size = this->base_iter.size() % this->n;
@@ -167,7 +167,7 @@ public:
         return nth_chunk;
     }
 
-    std::size_t advance(std::size_t n) {
+    constexpr std::size_t advance(std::size_t n) {
         const auto offset = this->base_iter.advance(n * this->n);
         if (offset) {
             return (offset - 1) / this->n + 1;
@@ -175,7 +175,7 @@ public:
         return 0;
     }
 
-    std::size_t advance_back(std::size_t n)
+    constexpr std::size_t advance_back(std::size_t n)
         requires is_sized && is_bidir
     {
         const auto last_chunk_size = this->base_iter.size() % this->n;
@@ -189,7 +189,7 @@ public:
         return 0;
     }
 
-    auto size() const
+    constexpr auto size() const
         requires is_sized
     {
         const std::size_t base_size = this->base_iter.size();
@@ -204,7 +204,7 @@ template <typename Tag>
 struct chunk_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
         requires is_forward_v<TSelf>
-    auto chunk(this TSelf&& self, std::size_t n) {
+    constexpr auto chunk(this TSelf&& self, std::size_t n) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return chunk_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self), n };
         });
@@ -219,7 +219,7 @@ struct chunk_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBase
     std::size_t n;
 
     template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
-    auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
+    constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
         return chunk_iter<std::remove_cvref_t<UBaseIter>, UMixins...>{
             std::forward<UBaseIter>(base_iter),
             self.n,
@@ -230,7 +230,7 @@ struct chunk_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBase
 template <typename Tag>
 struct chunk_compose_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
-    auto chunk(this TSelf&& self, std::size_t n) {
+    constexpr auto chunk(this TSelf&& self, std::size_t n) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return chunk_compose<std::remove_cvref_t<TSelf>, CustomMixins...>{
                 .base_comp = std::forward<TSelf>(self),
@@ -241,7 +241,7 @@ struct chunk_compose_mixin {
 };
 
 template <typename DeferInstantiation = void>
-auto chunk(std::size_t n) {
+constexpr auto chunk(std::size_t n) {
     return compose<DeferInstantiation>().chunk(n);
 }
 } // namespace compo

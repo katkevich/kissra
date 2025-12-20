@@ -33,7 +33,7 @@ inline constexpr decltype(auto) invoke(TFn&& fn, TArgs&&... args) {
 
 template <typename TFn, typename Tag>
 struct functor_ebo {
-    functor_ebo(TFn fn)
+    constexpr functor_ebo(TFn fn)
         : inst(fn) {}
     TFn inst;
 };
@@ -46,7 +46,7 @@ struct functor_ebo {
 template <typename TFn, typename Tag>
     requires std::is_empty_v<TFn> && std::is_default_constructible_v<TFn>
 struct functor_ebo<TFn, Tag> {
-    functor_ebo(TFn) {}
+    constexpr functor_ebo(TFn) {}
     static constexpr TFn inst{};
 };
 } // namespace kissra

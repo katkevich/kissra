@@ -38,7 +38,7 @@ struct fmt_builder_t {
 template <int Base = 10>
 struct to_chars_c_t {
     template <std::integral T>
-    static std::string operator()(T x) noexcept {
+    static constexpr std::string operator()(T x) noexcept {
         /**
          * https://math.stackexchange.com/questions/1771457/how-to-determine-the-number-of-digits-needed-to-represent-a-number-in-different
          *

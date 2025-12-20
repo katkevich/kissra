@@ -8,7 +8,7 @@ namespace kissra {
 template <typename Tag>
 struct collect_mixin {
     template <template <typename...> typename TTo = std::vector, kissra::mut TSelf>
-    [[nodiscard]] auto collect(this TSelf&& self) {
+    [[nodiscard]] constexpr auto collect(this TSelf&& self) {
         using val_t = kissra::iter_value_t<TSelf>;
         using ref_t = kissra::iter_reference_t<TSelf>;
         using container_t = TTo<val_t>;

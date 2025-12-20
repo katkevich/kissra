@@ -11,7 +11,7 @@ using members_iter = transform_iter<TBaseIter, functor::member_t<MemberIdx>, TMi
 template <typename Tag>
 struct members_mixin {
     template <std::size_t MemberIdx, typename TSelf, typename DeferInstantiation = void>
-    auto members(this TSelf&& self) {
+    constexpr auto members(this TSelf&& self) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return members_iter<std::remove_cvref_t<TSelf>, MemberIdx, CustomMixins...>{
                 std::forward<TSelf>(self),
@@ -29,7 +29,7 @@ using members_compose = transform_compose<TBaseCompose, functor::member_t<Member
 template <typename Tag>
 struct members_compose_mixin {
     template <std::size_t MemberIdx, typename TSelf, typename DeferInstantiation = void>
-    auto members(this TSelf&& self) {
+    constexpr auto members(this TSelf&& self) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
             return members_compose<std::remove_cvref_t<TSelf>, MemberIdx, CustomMixins...>{
                 .base_comp = std::forward<TSelf>(self),
@@ -40,7 +40,7 @@ struct members_compose_mixin {
 };
 
 template <std::size_t MemberIdx, typename DeferInstantiation = void>
-auto members() {
+constexpr auto members() {
     return compose<DeferInstantiation>().template members<MemberIdx>();
 }
 } // namespace compo

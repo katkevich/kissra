@@ -9,35 +9,35 @@ struct tracker {
     int move_op{};
     int dtor{};
 
-    void reset() {
+    constexpr void reset() {
         *this = tracker{};
     }
 };
 
 struct noisy {
-    noisy(tracker& track)
+    constexpr noisy(tracker& track)
         : track(&track) {
         track.ctor++;
     }
-    noisy(const noisy& other)
+    constexpr noisy(const noisy& other)
         : track(other.track) {
         track->copy_ctor++;
     }
-    noisy(noisy&& other)
+    constexpr noisy(noisy&& other)
         : track(other.track) {
         track->move_ctor++;
     }
-    noisy& operator=(const noisy& other) {
+    constexpr noisy& operator=(const noisy& other) {
         track = other.track;
         track->copy_op++;
         return *this;
     }
-    noisy& operator=(noisy&& other) {
+    constexpr noisy& operator=(noisy&& other) {
         track = other.track;
         track->copy_op++;
         return *this;
     }
-    ~noisy() {
+    constexpr ~noisy() {
         track->dtor++;
     }
     tracker* track{};

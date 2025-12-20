@@ -7,7 +7,7 @@ template <typename Tag>
 struct back_mixin {
     template <kissra::mut TSelf>
         requires is_common_v<TSelf> && is_bidir_v<TSelf>
-    auto back(this TSelf&& self) {
+    constexpr auto back(this TSelf&& self) {
         return self.nth_back(0);
     }
 };

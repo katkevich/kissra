@@ -9,28 +9,28 @@ template <typename TBaseIter>
 class iter_base {
 public:
     template <typename UBaseIter>
-    iter_base(UBaseIter&& base_iter)
+    constexpr iter_base(UBaseIter&& base_iter)
         : base_iter(std::forward<UBaseIter>(base_iter)) {}
 
-    auto underlying_subrange() const {
+    constexpr auto underlying_subrange() const {
         return this->base_iter.underlying_subrange();
     }
 
-    auto underlying_cursor() const {
+    constexpr auto underlying_cursor() const {
         return this->base_iter.underlying_cursor();
     }
 
-    auto underlying_sentinel() const {
+    constexpr auto underlying_sentinel() const {
         return this->base_iter.underlying_sentinel();
     }
 
     template <typename TIt>
-    void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
+    constexpr void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
         this->base_iter.underlying_subrange_override(subrange);
     }
 
     template <typename TSelf>
-    auto& base(this TSelf&& self) {
+    constexpr auto& base(this TSelf&& self) {
         return self.base_iter;
     }
 

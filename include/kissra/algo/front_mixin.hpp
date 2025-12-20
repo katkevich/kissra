@@ -5,7 +5,7 @@ namespace kissra {
 template <typename Tag>
 struct front_mixin {
     template <kissra::mut TSelf>
-    auto front(this TSelf&& self) {
+    constexpr auto front(this TSelf&& self) {
         return self.nth(0);
     }
 };
