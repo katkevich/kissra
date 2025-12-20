@@ -2,9 +2,13 @@
 #include "kissra/impl/custom_mixins.hpp"
 #include "kissra/impl/into_iter.hpp"
 #include "kissra/misc/optional.hpp"
+
+#ifndef KISSRA_MODULE
 #include <memory>
 #include <ranges>
+#endif
 
+KISSRA_EXPORT()
 namespace kissra {
 template <std::ranges::range TRng, template <typename> typename... TMixins>
 class all_iter : public builtin_mixins<TRng>, public TMixins<TRng>... {

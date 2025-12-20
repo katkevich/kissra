@@ -14,6 +14,7 @@
 #include "kissra/impl/algo/ssize_mixin.hpp"
 #include "kissra/impl/compose.hpp"
 #include "kissra/impl/custom_mixins.hpp"
+#include "kissra/impl/export.hpp"
 #include "kissra/impl/iter/all_iter.hpp"
 #include "kissra/impl/iter/chunk_iter.hpp"
 #include "kissra/impl/iter/drop_iter.hpp"
@@ -31,6 +32,10 @@
 #include "kissra/misc/utility.hpp"
 #include "kissra/type_traits.hpp"
 
+#ifndef KISSRA_MODULE
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 namespace compo {
 template <typename Tag>

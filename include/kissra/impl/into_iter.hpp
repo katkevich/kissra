@@ -1,8 +1,13 @@
 #pragma once
 #include "kissra/concepts.hpp"
-#include <concepts>
-#include <utility>
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#include <ranges>
+#include <utility>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <std::ranges::range TRng, template <typename> typename... TMixins>
 class all_iter;

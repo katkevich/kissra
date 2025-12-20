@@ -1,8 +1,14 @@
 #pragma once
-#include <utility>
+#include "kissra/impl/export.hpp"
 
 #define KISSRA_FWD(x) std::forward<decltype(x)>(x)
 
+#ifndef KISSRA_MODULE
+#include <type_traits>
+#include <utility>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 // TArg&& + TMember&& -> rvalue
 // TArg&& + TMember&

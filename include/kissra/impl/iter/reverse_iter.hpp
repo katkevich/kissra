@@ -2,6 +2,12 @@
 #include "kissra/impl/compose.hpp"
 #include "kissra/impl/iter/iter_base.hpp"
 
+#ifndef KISSRA_MODULE
+#include <utility>
+#include <type_traits>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <typename TBaseIter, template <typename> typename... TMixins>
 class reverse_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {

@@ -1,8 +1,14 @@
 #pragma once
 #include "kissra/impl/compose.hpp"
 #include "kissra/impl/iter/iter_base.hpp"
-#include <functional>
 
+#ifndef KISSRA_MODULE
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <typename TBaseIter, template <typename> typename... TMixins>
 class drop_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {

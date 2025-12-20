@@ -3,6 +3,12 @@
 #include "kissra/impl/iter/iter_base.hpp"
 #include "kissra/misc/functional.hpp"
 
+#ifndef KISSRA_MODULE
+#include <type_traits>
+#include <utility>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <typename TBaseIter, typename TFn, template <typename> typename... TMixins>
     requires kissra::regular_invocable<TFn, typename TBaseIter::reference>

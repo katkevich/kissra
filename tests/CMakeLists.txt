@@ -36,7 +36,7 @@ add_executable(kissra_tests
     src/sizeof.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
-target_link_libraries(kissra_tests kissra::kissra doctest::doctest_with_main)
+target_link_libraries(kissra_tests kissra::kissra_classic doctest::doctest_with_main)
 target_compile_definitions(kissra_tests PUBLIC
     DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS
 )

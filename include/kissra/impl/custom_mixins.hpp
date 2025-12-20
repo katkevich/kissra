@@ -1,6 +1,11 @@
 #pragma once
-#include <type_traits>
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#include <type_traits>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <typename Tag>
 struct builtin_mixins;
@@ -34,7 +39,7 @@ using no_custom_mixins_compose = kissra::no_custom_mixins<Tag>;
 
 template <typename DeferInstantiation>
 consteval bool has_custom_mixins_compose() {
-    return !std::is_same_v<typename custom_mixins_traits<DeferInstantiation>::template compose_mixins<DeferInstantiation>, no_custom_mixins<DeferInstantiation>>;
+    return !std::is_same_v<typename custom_mixins_traits<DeferInstantiation>::template compose_mixins<DeferInstantiation>, no_custom_mixins_compose<DeferInstantiation>>;
 }
 
 template <typename DeferInstantiation, typename TMakeComposePartFn>

@@ -1,5 +1,10 @@
 #pragma once
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#endif
+
+KISSRA_EXPORT()
 namespace kissra::tmp {
 template <typename... Ts>
 struct type_list {};

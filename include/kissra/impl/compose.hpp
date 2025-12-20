@@ -1,8 +1,11 @@
 #pragma once
 #include "kissra/impl/custom_mixins.hpp"
-#include "kissra/misc/type_list.hpp"
-#include <tuple>
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 namespace compo {
 template <typename DeferInstantiation = void, template <typename> typename... TMixinsCompose>

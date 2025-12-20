@@ -5,9 +5,16 @@
 #include "kissra/impl/iter/iter_base.hpp"
 #include "kissra/misc/type_list.hpp"
 #include "kissra/misc/utility.hpp"
-#include <algorithm>
-#include <type_traits>
 
+#ifndef KISSRA_MODULE
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <typename TBaseIter, typename TItersTypeList, template <typename> typename... TMixins>
 class zip_iter;

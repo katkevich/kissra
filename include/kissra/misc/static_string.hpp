@@ -1,6 +1,11 @@
 #pragma once
-#include <cstddef>
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#include <cstddef>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <std::size_t N>
 struct static_string {

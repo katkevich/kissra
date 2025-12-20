@@ -1,11 +1,17 @@
 #pragma once
 #include "beman/optional/optional.hpp"
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 using nullopt_t = beman::optional::nullopt_t;
 constexpr auto nullopt = beman::optional::nullopt;
+} // namespace kissra
 
-namespace impl {
+namespace kissra::impl {
 template <typename T>
 class rvalue_optional;
 
@@ -15,7 +21,7 @@ public:
     using value_type = T;
 
     constexpr rvalue_optional() noexcept {}
-    constexpr rvalue_optional(nullopt_t) noexcept {}
+    constexpr rvalue_optional(kissra::nullopt_t) noexcept {}
 
     constexpr rvalue_optional(T&& value) noexcept
         : value(std::addressof(value)) {}
@@ -61,8 +67,11 @@ template <typename T>
 struct optional<T&&> {
     using type = impl::rvalue_optional<T&&>;
 };
-} // namespace impl
+} // namespace kissra::impl
 
+
+KISSRA_EXPORT()
+namespace kissra {
 template <typename T>
 using optional = typename impl::optional<T>::type;
 } // namespace kissra

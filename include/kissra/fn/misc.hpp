@@ -1,5 +1,12 @@
 #pragma once
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#include <array>
+#include <type_traits>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 namespace functor {
 

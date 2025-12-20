@@ -1,11 +1,16 @@
 #pragma once
+#include "kissra/impl/export.hpp"
 #include "kissra/misc/static_string.hpp"
 #include "kissra/misc/utility.hpp"
+
+#ifndef KISSRA_MODULE
 #include <cmath>
 #include <cstddef>
 #include <format>
 #include <string>
+#endif
 
+KISSRA_EXPORT()
 namespace kissra {
 namespace functor {
 template <kissra::static_string FmtString>

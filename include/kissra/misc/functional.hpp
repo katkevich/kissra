@@ -1,8 +1,14 @@
 #pragma once
+#include "kissra/impl/export.hpp"
 #include "kissra/misc/utility.hpp"
+
+#ifndef KISSRA_MODULE
+#include <utility>
 #include <functional>
 #include <type_traits>
+#endif
 
+KISSRA_EXPORT()
 namespace kissra {
 /**
  * Invoke `TFn` with either destructured aggregate or destructured tuple-like (`TArg` implements tuple protocol)

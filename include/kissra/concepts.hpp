@@ -1,12 +1,18 @@
 #pragma once
+#include "kissra/impl/export.hpp"
 #include "kissra/misc/functional.hpp"
 #include "kissra/misc/type_list.hpp"
 #include "kissra/type_traits.hpp"
+
+#ifndef KISSRA_MODULE
 #include <concepts>
 #include <cstddef>
 #include <ranges>
+#include <type_traits>
 #include <utility>
+#endif
 
+KISSRA_EXPORT()
 namespace kissra {
 namespace impl {
 template <typename T>

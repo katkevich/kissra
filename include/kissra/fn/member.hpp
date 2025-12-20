@@ -1,8 +1,13 @@
 #pragma once
 #include "kissra/concepts.hpp"
+#include "kissra/impl/export.hpp"
 #include "kissra/misc/utility.hpp"
-#include <cstddef>
 
+#ifndef KISSRA_MODULE
+#include <cstddef>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 namespace functor {
 template <std::size_t MemberIdx>

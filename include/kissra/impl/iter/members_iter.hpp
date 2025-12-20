@@ -1,9 +1,15 @@
 #pragma once
 #include "kissra/fn/member.hpp"
 #include "kissra/impl/iter/transform_iter.hpp"
-#include <algorithm>
-#include <type_traits>
 
+#ifndef KISSRA_MODULE
+#include <algorithm>
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <typename TBaseIter, std::size_t MemberIdx, template <typename> typename... TMixins>
 using members_iter = transform_iter<TBaseIter, functor::member_t<MemberIdx>, TMixins...>;

@@ -1,9 +1,14 @@
 #pragma once
 #include "kissra/concepts.hpp"
+#include "kissra/impl/export.hpp"
 #include "kissra/type_traits.hpp"
+
+#ifndef KISSRA_MODULE
 #include <concepts>
 #include <functional>
+#endif
 
+KISSRA_EXPORT()
 namespace kissra {
 template <typename Tag>
 struct find_mixin {

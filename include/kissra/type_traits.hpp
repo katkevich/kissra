@@ -1,8 +1,13 @@
 #pragma once
+#include "kissra/impl/export.hpp"
 #include "kissra/misc/type_list.hpp"
 #include "kissra/misc/utility.hpp"
-#include <type_traits>
 
+#ifndef KISSRA_MODULE
+#include <type_traits>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 template <typename TIt>
 struct iter_value {

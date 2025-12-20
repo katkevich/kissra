@@ -1,6 +1,11 @@
 #pragma once
-#include <utility>
+#include "kissra/impl/export.hpp"
 
+#ifndef KISSRA_MODULE
+#include <utility>
+#endif
+
+KISSRA_EXPORT()
 namespace kissra {
 namespace functor {
 /* operator < */
