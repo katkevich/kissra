@@ -21,25 +21,25 @@ set(MORFO_HEADERS
     include/kissra/concepts.hpp
     include/kissra/impl/custom_mixins.hpp
     include/kissra/impl/into_iter.hpp
-    include/kissra/iter/iter_base.hpp
-    include/kissra/iter/members_iter.hpp
-    include/kissra/iter/all_iter.hpp
-    include/kissra/iter/chunk_iter.hpp
-    include/kissra/iter/drop_iter.hpp
-    include/kissra/iter/drop_last_iter.hpp
-    include/kissra/iter/drop_last_while_iter.hpp
-    include/kissra/iter/drop_while_iter.hpp
-    include/kissra/iter/filter_iter.hpp
-    include/kissra/iter/reverse_iter.hpp
-    include/kissra/iter/transform_iter.hpp
-    include/kissra/iter/zip_iter.hpp
-    include/kissra/algo/apply_mixin.hpp
-    include/kissra/algo/collect_mixin.hpp
-    include/kissra/algo/front_mixin.hpp
-    include/kissra/algo/back_mixin.hpp
-    include/kissra/algo/empty_mixin.hpp
-    include/kissra/algo/find_mixin.hpp
-    include/kissra/algo/ssize_mixin.hpp
+    include/kissra/impl/iter/iter_base.hpp
+    include/kissra/impl/iter/members_iter.hpp
+    include/kissra/impl/iter/all_iter.hpp
+    include/kissra/impl/iter/chunk_iter.hpp
+    include/kissra/impl/iter/drop_iter.hpp
+    include/kissra/impl/iter/drop_last_iter.hpp
+    include/kissra/impl/iter/drop_last_while_iter.hpp
+    include/kissra/impl/iter/drop_while_iter.hpp
+    include/kissra/impl/iter/filter_iter.hpp
+    include/kissra/impl/iter/reverse_iter.hpp
+    include/kissra/impl/iter/transform_iter.hpp
+    include/kissra/impl/iter/zip_iter.hpp
+    include/kissra/impl/algo/apply_mixin.hpp
+    include/kissra/impl/algo/collect_mixin.hpp
+    include/kissra/impl/algo/front_mixin.hpp
+    include/kissra/impl/algo/back_mixin.hpp
+    include/kissra/impl/algo/empty_mixin.hpp
+    include/kissra/impl/algo/find_mixin.hpp
+    include/kissra/impl/algo/ssize_mixin.hpp
     include/kissra/fn/cmp.hpp
     include/kissra/fn/convert.hpp
     include/kissra/fn/member.hpp

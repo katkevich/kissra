@@ -1,6 +1,6 @@
 #pragma once
 #include "kissra/compose.hpp"
-#include "kissra/iter/iter_base.hpp"
+#include "kissra/impl/iter/iter_base.hpp"
 #include <functional>
 
 namespace kissra {

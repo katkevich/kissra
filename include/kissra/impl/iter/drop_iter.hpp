@@ -1,11 +1,11 @@
 #pragma once
 #include "kissra/compose.hpp"
-#include "kissra/iter/iter_base.hpp"
+#include "kissra/impl/iter/iter_base.hpp"
 #include <functional>
 
 namespace kissra {
 template <typename TBaseIter, template <typename> typename... TMixins>
-class drop_last_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
+class drop_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
@@ -18,13 +18,11 @@ public:
     static constexpr bool is_random = TBaseIter::is_random;
 
     template <typename UBaseIter>
-    constexpr drop_last_iter(UBaseIter&& base_iter, std::size_t n)
+    constexpr drop_iter(UBaseIter&& base_iter, std::size_t n)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
         , n(n) {}
 
-    [[nodiscard]] constexpr result_t next()
-        requires is_bidir
-    {
+    [[nodiscard]] constexpr result_t next() {
         this->ff();
         return this->base_iter.next();
     }
@@ -36,34 +34,30 @@ public:
         return this->base_iter.next_back();
     }
 
-    [[nodiscard]] constexpr result_t nth(std::size_t n)
-        requires is_bidir
-    {
-        this->ff();
-        return this->base_iter.nth(n);
+    [[nodiscard]] constexpr result_t nth(std::size_t n) {
+        const auto total = this->n + n;
+        this->n = 0;
+        return this->base_iter.nth(total);
     }
 
     [[nodiscard]] constexpr result_t nth_back(std::size_t n)
         requires is_common && is_bidir
     {
-        const auto total = this->n + n;
-        this->n = 0;
-        return this->base_iter.nth_back(total);
+        this->ff();
+        return this->base_iter.nth_back(n);
     }
 
-    constexpr std::size_t advance(std::size_t n)
-        requires is_bidir
-    {
-        this->ff();
-        return this->base_iter.advance(n);
+    constexpr std::size_t advance(std::size_t n) {
+        const auto total = this->n + n;
+        this->n = 0;
+        return this->base_iter.advance(total);
     }
 
     constexpr std::size_t advance_back(std::size_t n)
         requires is_bidir
     {
-        const auto total = this->n + n;
-        this->n = 0;
-        return this->base_iter.advance_back(total);
+        this->ff();
+        return this->base_iter.advance_back(n);
     }
 
     constexpr auto size() const
@@ -76,7 +70,7 @@ public:
 private:
     constexpr void ff() {
         if (this->n) {
-            this->advance_back(0);
+            this->advance(0);
         }
     }
 
@@ -85,12 +79,11 @@ private:
 };
 
 template <typename Tag>
-struct drop_last_mixin {
+struct drop_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
-        requires is_bidir_v<TSelf>
-    constexpr auto drop_last(this TSelf&& self, std::size_t n) {
+    constexpr auto drop(this TSelf&& self, std::size_t n) {
         return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
-            return drop_last_iter<std::remove_cvref_t<TSelf>, TMixins...>{ std::forward<TSelf>(self), n };
+            return drop_iter<std::remove_cvref_t<TSelf>, TMixins...>{ std::forward<TSelf>(self), n };
         });
     }
 };
@@ -98,13 +91,13 @@ struct drop_last_mixin {
 
 namespace compo {
 template <typename TBaseCompose, template <typename> typename... TMixinsCompose>
-struct drop_last_compose : public builtin_mixins_compose<TBaseCompose>, public TMixinsCompose<TBaseCompose>... {
+struct drop_compose : public builtin_mixins_compose<TBaseCompose>, public TMixinsCompose<TBaseCompose>... {
     [[no_unique_address]] TBaseCompose base_comp;
     std::size_t n;
 
     template <template <typename> typename... TMixins, typename TSelf, kissra::iterator UBaseIter>
     constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
-        return drop_last_iter<std::remove_cvref_t<UBaseIter>, TMixins...>{
+        return drop_iter<std::remove_cvref_t<UBaseIter>, TMixins...>{
             std::forward<UBaseIter>(base_iter),
             self.n,
         };
@@ -112,11 +105,11 @@ struct drop_last_compose : public builtin_mixins_compose<TBaseCompose>, public T
 };
 
 template <typename Tag>
-struct drop_last_compose_mixin {
+struct drop_compose_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
-    constexpr auto drop_last(this TSelf&& self, std::size_t n) {
+    constexpr auto drop(this TSelf&& self, std::size_t n) {
         return with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
-            return drop_last_compose<std::remove_cvref_t<TSelf>, TMixinsCompose...>{
+            return drop_compose<std::remove_cvref_t<TSelf>, TMixinsCompose...>{
                 .base_comp = std::forward<TSelf>(self),
                 .n = n,
             };
@@ -125,8 +118,8 @@ struct drop_last_compose_mixin {
 };
 
 template <typename DeferInstantiation = void>
-constexpr auto drop_last(std::size_t n) {
-    return compose<DeferInstantiation>().drop_last(n);
+constexpr auto drop(std::size_t n) {
+    return compose<DeferInstantiation>().drop(n);
 }
 } // namespace compo
 } // namespace kissra

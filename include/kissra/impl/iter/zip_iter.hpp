@@ -1,8 +1,8 @@
 #pragma once
 #include "kissra/compose.hpp"
 #include "kissra/impl/into_iter.hpp"
-#include "kissra/iter/all_iter.hpp"
-#include "kissra/iter/iter_base.hpp"
+#include "kissra/impl/iter/all_iter.hpp"
+#include "kissra/impl/iter/iter_base.hpp"
 #include "kissra/misc/type_list.hpp"
 #include "kissra/misc/utility.hpp"
 #include <algorithm>

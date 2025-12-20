@@ -1,6 +1,6 @@
 #pragma once
 #include "kissra/fn/member.hpp"
-#include "kissra/iter/transform_iter.hpp"
+#include "kissra/impl/iter/transform_iter.hpp"
 #include <algorithm>
 #include <type_traits>
 
