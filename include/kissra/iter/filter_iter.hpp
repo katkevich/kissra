@@ -103,22 +103,27 @@ template <typename Tag>
 struct filter_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     constexpr auto filter(this TSelf&& self, TFn fn) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return filter_iter<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{ std::forward<TSelf>(self), fn };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
+            return filter_iter<std::remove_cvref_t<TSelf>, TFn, TMixins...>{ std::forward<TSelf>(self), fn };
         });
     }
 };
 
+template <kissra::iterator_compatible T, typename TFn, typename DeferInstantiation = void>
+constexpr auto filter(T&& rng_or_kissra_iter, TFn fn) {
+    return impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rng_or_kissra_iter)).filter(fn);
+}
+
 
 namespace compo {
-template <typename TBaseCompose, typename TFn, template <typename> typename... TMixins>
-struct filter_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBaseCompose>... {
+template <typename TBaseCompose, typename TFn, template <typename> typename... TMixinsCompose>
+struct filter_compose : public builtin_mixins_compose<TBaseCompose>, public TMixinsCompose<TBaseCompose>... {
     [[no_unique_address]] TBaseCompose base_comp;
     [[no_unique_address]] functor_ebo<TFn, TBaseCompose> fn;
 
-    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    template <template <typename> typename... TMixins, typename TSelf, kissra::iterator UBaseIter>
     constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
-        return filter_iter<std::remove_cvref_t<UBaseIter>, TFn, UMixins...>{
+        return filter_iter<std::remove_cvref_t<UBaseIter>, TFn, TMixins...>{
             std::forward<UBaseIter>(base_iter),
             std::forward<TSelf>(self).fn.inst,
         };
@@ -129,8 +134,8 @@ template <typename Tag>
 struct filter_compose_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     constexpr auto filter(this TSelf&& self, TFn fn) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return filter_compose<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{
+        return with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
+            return filter_compose<std::remove_cvref_t<TSelf>, TFn, TMixinsCompose...>{
                 .base_comp = std::forward<TSelf>(self),
                 .fn = fn,
             };

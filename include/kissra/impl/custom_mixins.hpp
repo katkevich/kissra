@@ -6,7 +6,7 @@ template <typename Tag>
 struct builtin_mixins;
 
 template <typename Tag>
-struct no_custom_mixins;
+struct no_custom_mixins {};
 
 template <typename DeferInstantiation>
 struct custom_mixins_traits;
@@ -27,18 +27,18 @@ constexpr auto with_custom_mixins(TMakeIterFn fn) {
 
 namespace compo {
 template <typename Tag>
-struct builtin_mixins;
+struct builtin_mixins_compose;
 
 template <typename Tag>
-using no_custom_mixins = kissra::no_custom_mixins<Tag>;
+using no_custom_mixins_compose = kissra::no_custom_mixins<Tag>;
 
 template <typename DeferInstantiation>
-consteval bool has_custom_mixins() {
+consteval bool has_custom_mixins_compose() {
     return !std::is_same_v<typename custom_mixins_traits<DeferInstantiation>::template compose_mixins<DeferInstantiation>, no_custom_mixins<DeferInstantiation>>;
 }
 
 template <typename DeferInstantiation, typename TMakeComposePartFn>
-constexpr auto with_custom_mixins(TMakeComposePartFn fn) {
+constexpr auto with_custom_mixins_compose(TMakeComposePartFn fn) {
     if constexpr (has_custom_mixins<DeferInstantiation>()) {
         return fn.template operator()<custom_mixins_traits<DeferInstantiation>::template compose_mixins>();
     } else {

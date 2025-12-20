@@ -205,22 +205,22 @@ struct chunk_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
         requires is_forward_v<TSelf>
     constexpr auto chunk(this TSelf&& self, std::size_t n) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return chunk_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self), n };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
+            return chunk_iter<std::remove_cvref_t<TSelf>, TMixins...>{ std::forward<TSelf>(self), n };
         });
     }
 };
 
 
 namespace compo {
-template <typename TBaseCompose, template <typename> typename... TMixins>
-struct chunk_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBaseCompose>... {
+template <typename TBaseCompose, template <typename> typename... TMixinsCompose>
+struct chunk_compose : public builtin_mixins_compose<TBaseCompose>, public TMixinsCompose<TBaseCompose>... {
     [[no_unique_address]] TBaseCompose base_comp;
     std::size_t n;
 
-    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    template <template <typename> typename... TMixins, typename TSelf, kissra::iterator UBaseIter>
     constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
-        return chunk_iter<std::remove_cvref_t<UBaseIter>, UMixins...>{
+        return chunk_iter<std::remove_cvref_t<UBaseIter>, TMixins...>{
             std::forward<UBaseIter>(base_iter),
             self.n,
         };
@@ -231,8 +231,8 @@ template <typename Tag>
 struct chunk_compose_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     constexpr auto chunk(this TSelf&& self, std::size_t n) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return chunk_compose<std::remove_cvref_t<TSelf>, CustomMixins...>{
+        return with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
+            return chunk_compose<std::remove_cvref_t<TSelf>, TMixinsCompose...>{
                 .base_comp = std::forward<TSelf>(self),
                 .n = n,
             };

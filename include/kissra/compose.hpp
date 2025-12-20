@@ -5,16 +5,16 @@
 
 namespace kissra {
 namespace compo {
-template <typename DeferInstantiation = void, template <typename> typename... TMixins>
-struct root : builtin_mixins<DeferInstantiation>, TMixins<DeferInstantiation>... {
-    static constexpr bool is_root = true;
+template <typename DeferInstantiation = void, template <typename> typename... TMixinsCompose>
+struct root : builtin_mixins_compose<DeferInstantiation>, TMixinsCompose<DeferInstantiation>... {
+    using is_composition_root = void;
 };
 } // namespace compo
 
 template <typename DeferInstantiation = void>
 constexpr auto compose() {
-    return compo::with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> { //
-        return compo::root<DeferInstantiation, CustomMixins...>{};
+    return compo::with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
+        return compo::root<DeferInstantiation, TMixinsCompose...>{};
     });
 }
 } // namespace kissra

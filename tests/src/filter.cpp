@@ -211,4 +211,18 @@ TEST_CASE("filter_iter predicate should be callable with destructured tuple arg 
     REQUIRE_EQ(std::get<1>(*iter.front()), 1);
 }
 
+TEST_CASE("kissra::filter(container, fn) should produce kissra::iterator") {
+    std::array arr = { 1, 2, 3 };
+    auto iter = kissra::filter(arr, fn::even).transform(fn::to_chars);
+
+    REQUIRE_EQ(*iter.front(), "2"s);
+}
+
+TEST_CASE("kissra::filter(kissra::iterator, fn) should produce kissra::iterator") {
+    std::array arr = { 4, 1, 2, 3 };
+    auto iter = kissra::filter(kissra::all(arr).drop(1), fn::even).transform(fn::to_chars);
+
+    REQUIRE_EQ(*iter.front(), "2"s);
+}
+
 } // namespace kissra::test

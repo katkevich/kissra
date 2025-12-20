@@ -1,5 +1,6 @@
 #pragma once
 #include "kissra/impl/custom_mixins.hpp"
+#include "kissra/impl/into_iter.hpp"
 #include "kissra/misc/optional.hpp"
 #include <memory>
 #include <ranges>
@@ -127,8 +128,6 @@ private:
 
 template <std::ranges::range TRng, typename DeferInstantiation = void>
 constexpr auto all(TRng& rng) {
-    return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> { //
-        return all_iter<TRng, CustomMixins...>{ rng };
-    });
+    return impl::into_kissra_iter<DeferInstantiation>(rng);
 }
 } // namespace kissra

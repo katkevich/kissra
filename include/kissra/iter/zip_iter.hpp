@@ -131,14 +131,15 @@ private:
 
 template <kissra::iterator_compatible T, kissra::iterator_compatible... Ts, typename DeferInstantiation = void>
 constexpr auto zip(T&& rng_or_kissra_iter, Ts&&... rngs_or_kissra_iters) {
-    return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-        using fst_iter = std::remove_reference_t<decltype(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rng_or_kissra_iter)))>;
-        using iters_type_list =
-            tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
+    using iter_first =
+        std::remove_reference_t<decltype(impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rng_or_kissra_iter)))>;
+    using iters_type_list =
+        tmp::type_list<std::remove_reference_t<decltype(impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
 
-        return zip_iter<fst_iter, iters_type_list, CustomMixins...>{ //
-            into_kissra_iter<CustomMixins...>(KISSRA_FWD(rng_or_kissra_iter)),
-            into_kissra_iter<CustomMixins...>(KISSRA_FWD(rngs_or_kissra_iters))...
+    return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
+        return zip_iter<iter_first, iters_type_list, TMixins...>{ //
+            impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rng_or_kissra_iter)),
+            impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rngs_or_kissra_iters))...
         };
     });
 }
@@ -153,20 +154,21 @@ struct zip_mixin {
 
 
 namespace compo {
-template <typename TBaseCompose, typename TItersTypeList, template <typename> typename... TMixins>
+template <typename TBaseCompose, typename TItersTypeList, template <typename> typename... TMixinsCompose>
 struct zip_compose;
 
-template <typename TBaseCompose, kissra::iterator_compatible... TIters, template <typename> typename... TMixins>
-struct zip_compose<TBaseCompose, tmp::type_list<TIters...>, TMixins...> : public builtin_mixins<TBaseCompose>,
-                                                                          public TMixins<TBaseCompose>... {
+template <typename TBaseCompose, kissra::iterator_compatible... TIters, template <typename> typename... TMixinsCompose>
+struct zip_compose<TBaseCompose, tmp::type_list<TIters...>, TMixinsCompose...>
+    : public builtin_mixins_compose<TBaseCompose>, public TMixinsCompose<TBaseCompose>... {
+
     [[no_unique_address]] TBaseCompose base_comp;
     [[no_unique_address]] std::tuple<TIters...> iters;
 
-    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    template <template <typename> typename... TMixins, typename TSelf, kissra::iterator UBaseIter>
     constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
         auto&& [... iters] = KISSRA_FWD(self).iters;
 
-        return zip_iter<std::remove_cvref_t<UBaseIter>, tmp::type_list<TIters...>, UMixins...>{
+        return zip_iter<std::remove_cvref_t<UBaseIter>, tmp::type_list<TIters...>, TMixins...>{
             KISSRA_FWD(base_iter),
             kissra::forward_member<TSelf, decltype(iters)>(iters)...,
         };
@@ -177,13 +179,13 @@ template <typename Tag>
 struct zip_compose_mixin {
     template <typename TSelf, kissra::iterator_compatible... Ts, typename DeferInstantiation = void>
     constexpr auto zip(this TSelf&& self, Ts&&... rngs_or_kissra_iters) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            using iters_type_list =
-                tmp::type_list<std::remove_reference_t<decltype(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
+        using iters_type_list =
+            tmp::type_list<std::remove_reference_t<decltype(impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rngs_or_kissra_iters)))>...>;
 
-            return zip_compose<std::remove_cvref_t<TSelf>, iters_type_list, CustomMixins...>{
+        return with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
+            return zip_compose<std::remove_cvref_t<TSelf>, iters_type_list, TMixinsCompose...>{
                 .base_comp = KISSRA_FWD(self),
-                .iters = std::make_tuple(into_kissra_iter<CustomMixins...>(KISSRA_FWD(rngs_or_kissra_iters))...),
+                .iters = std::make_tuple(impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rngs_or_kissra_iters))...),
             };
         });
     }

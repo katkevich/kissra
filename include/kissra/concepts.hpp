@@ -47,15 +47,7 @@ concept random_iterator = bidir_iterator<T> && is_random_v<T>;
 
 
 template <typename T>
-concept composition_root = requires {
-    { T::is_root };
-};
-
-template <typename T, typename ForIterator>
-concept composition_for = composition_root<T> || requires(T t, ForIterator base_iter) {
-    { t.make_iter(base_iter) } -> iterator;
-    { t.base_comp };
-};
+concept composition_root = requires { typename T::is_composition_root; };
 } // namespace impl
 
 template <typename T>
@@ -83,9 +75,6 @@ concept iterator_compatible = std::ranges::range<T> && std::is_lvalue_reference_
 
 template <typename T>
 concept composition_root = impl::composition_root<std::remove_reference_t<T>>;
-
-template <typename T, typename ForIterator>
-concept composition_for = impl::composition_for<std::remove_reference_t<T>, ForIterator>;
 
 
 template <typename T>

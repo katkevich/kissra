@@ -34,16 +34,16 @@
 namespace kissra {
 namespace compo {
 template <typename Tag>
-struct builtin_mixins : filter_compose_mixin<Tag>,
-                        transform_compose_mixin<Tag>,
-                        zip_compose_mixin<Tag>,
-                        members_compose_mixin<Tag>,
-                        reverse_compose_mixin<Tag>,
-                        chunk_compose_mixin<Tag>,
-                        drop_compose_mixin<Tag>,
-                        drop_last_compose_mixin<Tag>,
-                        drop_while_compose_mixin<Tag>,
-                        drop_last_while_compose_mixin<Tag> {};
+struct builtin_mixins_compose : filter_compose_mixin<Tag>,
+                                transform_compose_mixin<Tag>,
+                                zip_compose_mixin<Tag>,
+                                members_compose_mixin<Tag>,
+                                reverse_compose_mixin<Tag>,
+                                chunk_compose_mixin<Tag>,
+                                drop_compose_mixin<Tag>,
+                                drop_last_compose_mixin<Tag>,
+                                drop_while_compose_mixin<Tag>,
+                                drop_last_while_compose_mixin<Tag> {};
 } // namespace compo
 
 template <typename Tag>

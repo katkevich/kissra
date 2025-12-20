@@ -12,8 +12,8 @@ template <typename Tag>
 struct members_mixin {
     template <std::size_t MemberIdx, typename TSelf, typename DeferInstantiation = void>
     constexpr auto members(this TSelf&& self) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return members_iter<std::remove_cvref_t<TSelf>, MemberIdx, CustomMixins...>{
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
+            return members_iter<std::remove_cvref_t<TSelf>, MemberIdx, TMixins...>{
                 std::forward<TSelf>(self),
                 fn::member<MemberIdx>,
             };
@@ -23,15 +23,15 @@ struct members_mixin {
 
 namespace compo {
 
-template <typename TBaseCompose, std::size_t MemberIdx, template <typename> typename... TMixins>
-using members_compose = transform_compose<TBaseCompose, functor::member_t<MemberIdx>, TMixins...>;
+template <typename TBaseCompose, std::size_t MemberIdx, template <typename> typename... TMixinsCompose>
+using members_compose = transform_compose<TBaseCompose, functor::member_t<MemberIdx>, TMixinsCompose...>;
 
 template <typename Tag>
 struct members_compose_mixin {
     template <std::size_t MemberIdx, typename TSelf, typename DeferInstantiation = void>
     constexpr auto members(this TSelf&& self) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return members_compose<std::remove_cvref_t<TSelf>, MemberIdx, CustomMixins...>{
+        return with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
+            return members_compose<std::remove_cvref_t<TSelf>, MemberIdx, TMixinsCompose...>{
                 .base_comp = std::forward<TSelf>(self),
                 .fn = fn::member<MemberIdx>,
             };

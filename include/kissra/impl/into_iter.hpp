@@ -1,18 +1,33 @@
 #pragma once
 #include "kissra/concepts.hpp"
-#include "kissra/iter/all_iter.hpp"
 #include <concepts>
 #include <utility>
 
 namespace kissra {
-template <template <typename> typename... TMixins, std::ranges::range TContainer>
-constexpr auto into_kissra_iter(TContainer& container) {
-    return all_iter<TContainer, TMixins...>{ container };
+template <std::ranges::range TRng, template <typename> typename... TMixins>
+class all_iter;
+
+namespace impl {
+template <template <typename> typename... TMixins, std::ranges::range TRng>
+constexpr auto into_kissra_iter_with_mixins(TRng& rng) {
+    return all_iter<TRng, TMixins...>{ rng };
 }
 
 template <template <typename> typename... TMixins, kissra::iterator TIter>
-constexpr decltype(auto) into_kissra_iter(TIter&& iter) {
+constexpr decltype(auto) into_kissra_iter_with_mixins(TIter&& iter) {
     return std::forward<TIter>(iter);
 }
 
+template <typename DeferInstantiation, std::ranges::range TRng>
+constexpr auto into_kissra_iter(TRng& rng) {
+    return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> { //
+        return all_iter<TRng, TMixins...>{ rng };
+    });
+}
+
+template <typename DeferInstantiation, kissra::iterator TIter>
+constexpr decltype(auto) into_kissra_iter(TIter&& iter) {
+    return std::forward<TIter>(iter);
+}
+} // namespace impl
 } // namespace kissra

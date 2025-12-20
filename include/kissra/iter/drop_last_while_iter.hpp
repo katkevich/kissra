@@ -93,22 +93,22 @@ struct drop_last_while_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
         requires is_common_v<TSelf> && is_bidir_v<TSelf>
     constexpr auto drop_last_while(this TSelf&& self, TFn fn) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return drop_last_while_iter<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{ std::forward<TSelf>(self), fn };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
+            return drop_last_while_iter<std::remove_cvref_t<TSelf>, TFn, TMixins...>{ std::forward<TSelf>(self), fn };
         });
     }
 };
 
 
 namespace compo {
-template <typename TBaseCompose, typename TFn, template <typename> typename... TMixins>
-struct drop_last_while_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBaseCompose>... {
+template <typename TBaseCompose, typename TFn, template <typename> typename... TMixinsCompose>
+struct drop_last_while_compose : public builtin_mixins_compose<TBaseCompose>, public TMixinsCompose<TBaseCompose>... {
     [[no_unique_address]] TBaseCompose base_comp;
     [[no_unique_address]] functor_ebo<TFn, TBaseCompose> fn;
 
-    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    template <template <typename> typename... TMixins, typename TSelf, kissra::iterator UBaseIter>
     constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
-        return drop_last_while_iter<std::remove_cvref_t<UBaseIter>, TFn, UMixins...>{
+        return drop_last_while_iter<std::remove_cvref_t<UBaseIter>, TFn, TMixins...>{
             std::forward<UBaseIter>(base_iter),
             std::forward<TSelf>(self).fn.inst,
         };
@@ -119,8 +119,8 @@ template <typename Tag>
 struct drop_last_while_compose_mixin {
     template <typename TSelf, typename TFn, typename DeferInstantiation = void>
     constexpr auto drop_last_while(this TSelf&& self, TFn fn) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return drop_last_while_compose<std::remove_cvref_t<TSelf>, TFn, CustomMixins...>{
+        return with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
+            return drop_last_while_compose<std::remove_cvref_t<TSelf>, TFn, TMixinsCompose...>{
                 .base_comp = std::forward<TSelf>(self),
                 .fn = fn,
             };

@@ -69,8 +69,8 @@ template <typename Tag>
 struct custom_enumerate_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     auto custom_enumerate(this TSelf&& self) {
-        return kissra::with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return custom_enumerate_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self) };
+        return kissra::with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
+            return custom_enumerate_iter<std::remove_cvref_t<TSelf>, TMixins...>{ std::forward<TSelf>(self) };
         });
     }
 };
@@ -94,12 +94,16 @@ struct custom_collect_mixin {
 
 /**
  * To hook into the library's mixins system and add support for your custom mixins, you need to specialize the
- * kissra::custom_mixins_traits<void> trait and define the inner `mixins` template struct.
+ * kissra::custom_mixins_traits<void> trait and define the inner `mixins` and `compose_mixins` template struct.
  * ```
  *     template <>
  *     struct kissra::registered_mixins_traits<void> {
  *         template<typename Tag>
  *         struct mixins : custom_ns::custom_enumerate_mixin<Tag>, custom_ns::custom_collect_mixin<Tag> {};
+ *
+ *         // if you don't care about supporting compositions - just left it with `kissra::compo::no_custom_mixins<Tag>`
+ *         template <typename Tag>
+ *         struct compose_mixins : kissra::compo::no_custom_mixins<Tag> {};
  *     };
  * ```
  */
@@ -107,6 +111,9 @@ template <>
 struct kissra::custom_mixins_traits<void> {
     template <typename Tag>
     struct mixins : custom_ns::custom_enumerate_mixin<Tag>, custom_ns::custom_collect_mixin<Tag> {};
+
+    template <typename Tag>
+    struct compose_mixins : kissra::compo::no_custom_mixins_compose<Tag> {};
 };
 
 namespace kissra::test {
@@ -139,5 +146,21 @@ TEST_CASE(
                       .transform([](auto item) { return std::get<1>(item); })
                       .custom_push_back();
     REQUIRE_EQ(actual, (std::vector{ "2"s, "3"s }));
+}
+
+TEST_CASE(
+    "composition compo::zip(arr, all().custom_enumerate()) works (custom_enumerate_mixin successfully mixed with other "
+    "mixins)") {
+    std::vector arr = { 1, 2, 3, 4, 5 };
+
+    auto zip_compo = kissra::compo::zip(kissra::all(arr));
+    auto actual = kissra::apply(arr, zip_compo) //
+                      .custom_enumerate()
+                      .members<1>()
+                      .transform([](int i, int j) { return i + j; })
+                      .collect();
+    auto expected = std::vector{ 2, 4, 6, 8, 10 };
+
+    REQUIRE_EQ(actual, expected);
 }
 } // namespace kissra::test

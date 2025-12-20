@@ -62,21 +62,21 @@ struct reverse_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
         requires is_bidir_v<TSelf>
     constexpr auto reverse(this TSelf&& self) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return reverse_iter<std::remove_cvref_t<TSelf>, CustomMixins...>{ std::forward<TSelf>(self) };
+        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... TMixins> {
+            return reverse_iter<std::remove_cvref_t<TSelf>, TMixins...>{ std::forward<TSelf>(self) };
         });
     }
 };
 
 
 namespace compo {
-template <typename TBaseCompose, template <typename> typename... TMixins>
-struct reverse_compose : public builtin_mixins<TBaseCompose>, public TMixins<TBaseCompose>... {
+template <typename TBaseCompose, template <typename> typename... TMixinsCompose>
+struct reverse_compose : public builtin_mixins_compose<TBaseCompose>, public TMixinsCompose<TBaseCompose>... {
     [[no_unique_address]] TBaseCompose base_comp;
 
-    template <typename TSelf, template <typename> typename... UMixins, kissra::iterator UBaseIter>
+    template <template <typename> typename... TMixins, typename TSelf, kissra::iterator UBaseIter>
     constexpr auto make_iter(this TSelf&& self, UBaseIter&& base_iter) {
-        return reverse_iter<std::remove_cvref_t<UBaseIter>, UMixins...>{ std::forward<UBaseIter>(base_iter) };
+        return reverse_iter<std::remove_cvref_t<UBaseIter>, TMixins...>{ std::forward<UBaseIter>(base_iter) };
     }
 };
 
@@ -84,8 +84,8 @@ template <typename Tag>
 struct reverse_compose_mixin {
     template <typename TSelf, typename DeferInstantiation = void>
     constexpr auto reverse(this TSelf&& self) {
-        return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> {
-            return reverse_compose<std::remove_cvref_t<TSelf>, CustomMixins...>{ .base_comp = std::forward<TSelf>(self) };
+        return with_custom_mixins_compose<DeferInstantiation>([&]<template <typename> typename... TMixinsCompose> {
+            return reverse_compose<std::remove_cvref_t<TSelf>, TMixinsCompose...>{ .base_comp = std::forward<TSelf>(self) };
         });
     }
 };
