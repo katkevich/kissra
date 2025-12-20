@@ -17,8 +17,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(MORFO_HEADERS
     include/kissra/kissra.hpp
     include/kissra/type_traits.hpp
-    include/kissra/compose.hpp
     include/kissra/concepts.hpp
+    include/kissra/impl/compose.hpp
     include/kissra/impl/custom_mixins.hpp
     include/kissra/impl/into_iter.hpp
     include/kissra/impl/iter/iter_base.hpp

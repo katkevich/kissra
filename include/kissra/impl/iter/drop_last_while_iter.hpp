@@ -1,5 +1,5 @@
 #pragma once
-#include "kissra/compose.hpp"
+#include "kissra/impl/compose.hpp"
 #include "kissra/impl/iter/iter_base.hpp"
 #include "kissra/misc/functional.hpp"
 #include <functional>

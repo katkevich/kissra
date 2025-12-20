@@ -1,5 +1,4 @@
 #pragma once
-#include "kissra/compose.hpp"
 #include "kissra/concepts.hpp"
 #include "kissra/fn/cmp.hpp"
 #include "kissra/fn/convert.hpp"
@@ -13,6 +12,7 @@
 #include "kissra/impl/algo/find_mixin.hpp"
 #include "kissra/impl/algo/front_mixin.hpp"
 #include "kissra/impl/algo/ssize_mixin.hpp"
+#include "kissra/impl/compose.hpp"
 #include "kissra/impl/custom_mixins.hpp"
 #include "kissra/impl/iter/all_iter.hpp"
 #include "kissra/impl/iter/chunk_iter.hpp"
