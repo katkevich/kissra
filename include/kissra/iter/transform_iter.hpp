@@ -10,8 +10,8 @@ class transform_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseI
     using base_reference = typename TBaseIter::reference;
 
 public:
-    using value_type = kissra::invoke_result_t<TFn, base_reference>;
-    using reference = value_type;
+    using reference = kissra::invoke_result_t<TFn, base_reference>;
+    using value_type = std::remove_cvref_t<reference>;
     using result_t = kissra::optional<reference>;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
