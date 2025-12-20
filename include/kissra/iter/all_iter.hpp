@@ -5,23 +5,23 @@
 #include <ranges>
 
 namespace kissra {
-template <std::ranges::range TContainer, template <typename> typename... TMixins>
-class all_iter : public builtin_mixins<TContainer>, public TMixins<TContainer>... {
+template <std::ranges::range TRng, template <typename> typename... TMixins>
+class all_iter : public builtin_mixins<TRng>, public TMixins<TRng>... {
 public:
-    using value_type = typename TContainer::value_type;
-    using reference = typename TContainer::reference;
+    using value_type = std::ranges::range_value_t<TRng>;
+    using reference = std::ranges::range_reference_t<TRng>;
     using result_t = kissra::optional<reference>;
 
     /* We need to be able to evaluate the size from iterators. Having member `size` is not enough in a general case. */
-    static constexpr bool is_sized = std::ranges::random_access_range<TContainer>;
-    static constexpr bool is_common = std::ranges::common_range<TContainer>;
-    static constexpr bool is_forward = std::ranges::forward_range<TContainer>;
-    static constexpr bool is_bidir = std::ranges::bidirectional_range<TContainer>;
-    static constexpr bool is_random = std::ranges::random_access_range<TContainer>;
+    static constexpr bool is_sized = std::ranges::random_access_range<TRng>;
+    static constexpr bool is_common = std::ranges::common_range<TRng>;
+    static constexpr bool is_forward = std::ranges::forward_range<TRng>;
+    static constexpr bool is_bidir = std::ranges::bidirectional_range<TRng>;
+    static constexpr bool is_random = std::ranges::random_access_range<TRng>;
 
-    explicit all_iter(TContainer& container)
-        : cursor(std::ranges::begin(container))
-        , sentinel(std::ranges::end(container)) {}
+    explicit all_iter(TRng& rng)
+        : cursor(std::ranges::begin(rng))
+        , sentinel(std::ranges::end(rng)) {}
 
     [[nodiscard]] result_t next() {
         if (this->cursor != this->sentinel) {
@@ -121,14 +121,14 @@ public:
     }
 
 private:
-    std::ranges::iterator_t<TContainer> cursor{};
-    std::ranges::sentinel_t<TContainer> sentinel{};
+    std::ranges::iterator_t<TRng> cursor{};
+    std::ranges::sentinel_t<TRng> sentinel{};
 };
 
-template <std::ranges::range TContainer, typename DeferInstantiation = void>
-auto all(TContainer& container) {
+template <std::ranges::range TRng, typename DeferInstantiation = void>
+auto all(TRng& rng) {
     return with_custom_mixins<DeferInstantiation>([&]<template <typename> typename... CustomMixins> { //
-        return all_iter<TContainer, CustomMixins...>{ container };
+        return all_iter<TRng, CustomMixins...>{ rng };
     });
 }
 } // namespace kissra
