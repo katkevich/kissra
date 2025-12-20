@@ -40,9 +40,10 @@ set(MORFO_HEADERS
     include/kissra/algo/find_mixin.hpp
     include/kissra/algo/ssize_mixin.hpp
     include/kissra/fn/cmp.hpp
-    include/kissra/fn/num.hpp
     include/kissra/fn/convert.hpp
+    include/kissra/fn/member.hpp
     include/kissra/fn/misc.hpp
+    include/kissra/fn/num.hpp
     include/kissra/misc/functional.hpp
     include/kissra/misc/optional.hpp
     include/kissra/misc/static_string.hpp

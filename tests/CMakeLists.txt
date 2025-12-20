@@ -28,6 +28,7 @@ add_executable(kissra_tests
     src/find.cpp
     src/functional.cpp
     src/iter_chains.cpp
+    src/member.cpp
     src/size.cpp
     src/transform.cpp
     src/zip.cpp
@@ -37,6 +38,12 @@ target_compile_features(kissra_tests PRIVATE cxx_std_26)
 target_link_libraries(kissra_tests kissra::kissra doctest::doctest_with_main)
 target_compile_definitions(kissra_tests PUBLIC
     DOCTEST_CONFIG_VOID_CAST_EXPRESSIONS
+)
+target_sources(kissra_tests PRIVATE
+    FILE_SET kissra_tests_headers_set TYPE HEADERS
+    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
+    FILES
+        include/kissra/noisy.hpp
 )
 
 #

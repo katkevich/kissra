@@ -4,13 +4,13 @@
 #define KISSRA_FWD(x) std::forward<decltype(x)>(x)
 
 namespace kissra {
-// T&& + int&& - can move
-// T&& + int&
-// T&& + int - can move
+// TArg&& + TMember&& -> rvalue
+// TArg&& + TMember&
+// TArg&& + TMember -> rvalue
 //
-// T& + int&&
-// T& + int&
-// T& + int
+// TArg& + TMember&&
+// TArg& + TMember&
+// TArg& + TMember
 template <typename TArg, typename TMember, typename T>
 constexpr decltype(auto) forward_member(T&& member) {
     if constexpr (std::is_rvalue_reference_v<TArg&&> && std::is_rvalue_reference_v<TMember&&>) {

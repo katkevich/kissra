@@ -10,6 +10,7 @@
 #include "kissra/concepts.hpp"
 #include "kissra/fn/cmp.hpp"
 #include "kissra/fn/convert.hpp"
+#include "kissra/fn/member.hpp"
 #include "kissra/fn/misc.hpp"
 #include "kissra/fn/num.hpp"
 #include "kissra/impl/custom_mixins.hpp"
