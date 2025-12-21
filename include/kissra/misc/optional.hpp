@@ -1,8 +1,8 @@
 #pragma once
-#include "beman/optional/optional.hpp"
 #include "kissra/impl/export.hpp"
 
 #ifndef KISSRA_MODULE
+#include "beman/optional/optional.hpp"
 #endif
 
 KISSRA_EXPORT()

@@ -46,4 +46,3 @@ build/
 .idea
 
 # CMake
-CMakePresets.json
