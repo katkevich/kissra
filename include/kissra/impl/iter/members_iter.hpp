@@ -27,6 +27,11 @@ struct members_mixin {
     }
 };
 
+template <std::size_t MemberIdx, kissra::iterator_compatible T, typename DeferInstantiation = void>
+constexpr auto members(T&& rng_or_kissra_iter) {
+    return impl::into_kissra_iter<DeferInstantiation>(KISSRA_FWD(rng_or_kissra_iter)).template members<MemberIdx>();
+}
+
 namespace compo {
 
 template <typename TBaseCompose, std::size_t MemberIdx, template <typename> typename... TMixinsCompose>

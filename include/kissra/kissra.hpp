@@ -23,9 +23,11 @@
 #include "kissra/impl/iter/drop_while_iter.hpp"
 #include "kissra/impl/iter/filter_iter.hpp"
 #include "kissra/impl/iter/iter_base.hpp"
+#include "kissra/impl/iter/keys_iter.hpp"
 #include "kissra/impl/iter/members_iter.hpp"
 #include "kissra/impl/iter/reverse_iter.hpp"
 #include "kissra/impl/iter/transform_iter.hpp"
+#include "kissra/impl/iter/values_iter.hpp"
 #include "kissra/impl/iter/zip_iter.hpp"
 #include "kissra/misc/functional.hpp"
 #include "kissra/misc/optional.hpp"
@@ -42,6 +44,8 @@ template <typename Tag>
 struct builtin_mixins_compose : filter_compose_mixin<Tag>,
                                 transform_compose_mixin<Tag>,
                                 zip_compose_mixin<Tag>,
+                                keys_compose_mixin<Tag>,
+                                values_compose_mixin<Tag>,
                                 members_compose_mixin<Tag>,
                                 reverse_compose_mixin<Tag>,
                                 chunk_compose_mixin<Tag>,
@@ -55,6 +59,8 @@ template <typename Tag>
 struct builtin_mixins : filter_mixin<Tag>,
                         transform_mixin<Tag>,
                         zip_mixin<Tag>,
+                        keys_mixin<Tag>,
+                        values_mixin<Tag>,
                         members_mixin<Tag>,
                         reverse_mixin<Tag>,
                         chunk_mixin<Tag>,

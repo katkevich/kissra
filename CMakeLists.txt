@@ -45,6 +45,7 @@ set(KISSRA_HEADERS
     include/kissra/impl/iter/filter_iter.hpp
     include/kissra/impl/iter/reverse_iter.hpp
     include/kissra/impl/iter/transform_iter.hpp
+    include/kissra/impl/iter/values_iter.hpp
     include/kissra/impl/iter/zip_iter.hpp
     include/kissra/impl/algo/apply_mixin.hpp
     include/kissra/impl/algo/collect_mixin.hpp
