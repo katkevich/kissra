@@ -1,8 +1,8 @@
 {
   "version": 3,
   "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 30,
+    "major": 4,
+    "minor": 2,
     "patch": 0
   },
   "configurePresets": [
@@ -12,6 +12,7 @@
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS": "/usr/lib/llvm-21/bin/clang-scan-deps",
+        "CMAKE_CXX_STDLIB_MODULES_JSON": "/usr/lib/llvm-21/lib/libc++.modules.json",
         "CMAKE_CXX_COMPILER": "/usr/lib/llvm-21/bin/clang++",
         "CMAKE_C_COMPILER": "/usr/lib/llvm-21/bin/clang",
         "CMAKE_BUILD_TYPE": "Release",
@@ -25,6 +26,7 @@
       "binaryDir": "${sourceDir}/build/debug",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS": "/usr/lib/llvm-21/bin/clang-scan-deps",
+        "CMAKE_CXX_STDLIB_MODULES_JSON": "/usr/lib/llvm-21/lib/libc++.modules.json",
         "CMAKE_CXX_COMPILER": "/usr/lib/llvm-21/bin/clang++",
         "CMAKE_C_COMPILER": "/usr/lib/llvm-21/bin/clang",
         "CMAKE_BUILD_TYPE": "Debug",

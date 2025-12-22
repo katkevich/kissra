@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 4.2)
 
 # This specific value changes as experimental `import std` support evolves.
 # See `Help/dev/experimental.rst` in the CMake source (https://cmake.org/download/) corresponding to
@@ -12,7 +12,7 @@ project(kissra VERSION 0.7.1)
 include(FetchContent)
 FetchContent_Declare(beman_optional
     GIT_REPOSITORY https://github.com/bemanproject/optional.git
-    GIT_TAG main
+    GIT_TAG v1.0.0-rc1
     GIT_SHALLOW 1
     FIND_PACKAGE_ARGS
 )

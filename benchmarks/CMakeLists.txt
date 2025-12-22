@@ -1,7 +1,7 @@
 #
 # cmake --build build/refl-release --target kissra_bench_tests && ./build/refl-release/benchmarks/kissra_bench_tests
 #
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 4.2)
 
 include(FetchContent)
 

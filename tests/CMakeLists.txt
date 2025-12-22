@@ -2,7 +2,7 @@
 # cmake --build build/refl-release --target kissra_tests && ctest --test-dir ./build/refl-release/tests --output-on-failure
 #
 
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 4.2)
 
 include(FetchContent)
 
