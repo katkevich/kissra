@@ -1,4 +1,4 @@
-#include <doctest/doctest.h>
+#include "kissra/doctest_printers.hpp"
 
 #include "kissra/kissra.hpp"
 #include "kissra/noisy.hpp"

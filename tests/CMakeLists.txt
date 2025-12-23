@@ -47,6 +47,7 @@ target_sources(kissra_tests PRIVATE
     BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
     FILES
         include/kissra/noisy.hpp
+        include/kissra/doctest_printers.hpp
 )
 
 #
