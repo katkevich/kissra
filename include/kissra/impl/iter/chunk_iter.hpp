@@ -29,7 +29,7 @@ public:
 
 private:
     template <typename TUnderlyingIt>
-    constexpr chunk(iter_base<TBaseIter> base_iter, std::ranges::subrange<TUnderlyingIt> subrange)
+    constexpr chunk(TBaseIter base_iter, std::ranges::subrange<TUnderlyingIt> subrange)
         : iter_base<TBaseIter>(std::move(base_iter)) {
         this->underlying_subrange_override(subrange);
     }
@@ -93,13 +93,11 @@ public:
     [[nodiscard]] constexpr result_t next()
         requires is_forward
     {
-        /* Fast-forward underlying cursor & sentinel if needed. */
-        this->base_iter.advance(0);
         /**
-         * Underlying cursor & sentinel now point to "real" iteratable positions.
-         * `this->base_iter` state is potentially being updated (see `drop_iter` for instance).
+         * Fast-forward underlying cursor & sentinel if needed as well as update `base_iter` inner state.
+         * We want to make sure that after `advance` it is safe to use raw underlying cursor & sentinel.
          */
-
+        this->base_iter.advance(0);
         const auto chunk_begin = this->base_iter.underlying_cursor();
         const auto chunk_advancement = this->base_iter.advance(this->n);
         if (chunk_advancement == 0) {
@@ -124,7 +122,7 @@ public:
         }
         const auto chunk_begin = this->base_iter.underlying_sentinel();
 
-        return reference{ this->base_iter, std::ranges::subrange{ chunk_begin, chunk_end } };
+        return reference{ this->base_iter, { chunk_begin, chunk_end } };
     }
 
     [[nodiscard]] constexpr result_t nth(std::size_t n)

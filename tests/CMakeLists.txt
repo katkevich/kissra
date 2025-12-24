@@ -32,10 +32,10 @@ add_executable(kissra_tests
     src/member.cpp
     src/members.cpp
     src/size.cpp
+    src/sizeof.cpp
     src/transform.cpp
     src/values.cpp
     src/zip.cpp
-    src/sizeof.cpp
 )
 target_compile_features(kissra_tests PRIVATE cxx_std_26)
 target_link_libraries(kissra_tests kissra::kissra_classic doctest::doctest_with_main)
@@ -46,8 +46,8 @@ target_sources(kissra_tests PRIVATE
     FILE_SET kissra_tests_headers_set TYPE HEADERS
     BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
     FILES
-        include/kissra/noisy.hpp
-        include/kissra/doctest_printers.hpp
+    include/kissra/noisy.hpp
+    include/kissra/doctest_printers.hpp
 )
 
 #

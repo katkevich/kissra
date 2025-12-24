@@ -28,6 +28,7 @@ target_link_libraries(beman_optional_mod PRIVATE beman_optional)
 
 set(KISSRA_HEADERS
     include/kissra/kissra.hpp
+    include/kissra/ranges_traits.hpp
     include/kissra/type_traits.hpp
     include/kissra/concepts.hpp
     include/kissra/impl/compose.hpp

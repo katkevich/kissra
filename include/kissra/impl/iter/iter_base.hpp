@@ -5,8 +5,9 @@
 #include "kissra/misc/optional.hpp"
 
 #ifndef KISSRA_MODULE
-#include <utility>
+#include <concepts>
 #include <ranges>
+#include <utility>
 #endif
 
 KISSRA_EXPORT()
@@ -30,8 +31,8 @@ public:
         return this->base_iter.underlying_sentinel();
     }
 
-    template <typename TIt>
-    constexpr void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
+    template <std::input_iterator TIt, std::sentinel_for<TIt> TSentinel>
+    constexpr void underlying_subrange_override(std::ranges::subrange<TIt, TSentinel> subrange) {
         this->base_iter.underlying_subrange_override(subrange);
     }
 
@@ -41,6 +42,6 @@ public:
     }
 
 protected:
-    TBaseIter base_iter;
+    [[no_unique_address]] TBaseIter base_iter;
 };
 } // namespace kissra

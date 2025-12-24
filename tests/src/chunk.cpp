@@ -239,4 +239,34 @@ TEST_CASE("all().filter(...).chunk(2) works (filter pred is called while evaluat
     REQUIRE_EQ(actual, (std::vector{ 1, 3, 5, 7 }));
 }
 
+TEST_CASE("all().reverse().chunk(2) should produce chunks backwards") {
+    std::array arr = { 0, 1, 2, 3, 4, 5, 6 };
+
+    auto iter = kissra::all(arr).reverse().chunk(2);
+    auto expected = std::vector{ std::vector{ 6, 5 }, std::vector{ 4, 3 }, std::vector{ 2, 1 }, std::vector{ 0 } };
+    auto expected_it = expected.begin();
+
+    while (auto ch = iter.next()) {
+        CHECK_EQ(ch->collect(), *expected_it++);
+    }
+}
+
+TEST_CASE("all().chunk(2).chunk(2) should work") {
+    std::array arr = { 0, 1, 2, 3, 4, 5, 6 };
+
+    auto iter = kissra::all(arr).chunk(2).chunk(2);
+    
+    auto expected = std::vector{
+        std::vector{ std::vector{ 0, 1 }, std::vector{ 2, 3 } },
+        std::vector{ std::vector{ 4, 5 }, std::vector{ 6 } },
+    };
+    auto expected_outer_it = expected.begin();
+
+    while (auto outer_chunk = iter.next()) {
+        auto expected_inner_it = (expected_outer_it++)->begin();
+        while (auto inner_chunk = outer_chunk->next()) {
+            CHECK_EQ(inner_chunk->collect(), *expected_inner_it++);
+        }
+    }
+}
 } // namespace kissra::test

@@ -2,8 +2,10 @@
 #include "kissra/impl/custom_mixins.hpp"
 #include "kissra/impl/into_iter.hpp"
 #include "kissra/misc/optional.hpp"
+#include "kissra/ranges_traits.hpp"
 
 #ifndef KISSRA_MODULE
+#include <concepts>
 #include <memory>
 #include <ranges>
 #endif
@@ -23,6 +25,8 @@ public:
     static constexpr bool is_forward = std::ranges::forward_range<TRng>;
     static constexpr bool is_bidir = std::ranges::bidirectional_range<TRng>;
     static constexpr bool is_random = std::ranges::random_access_range<TRng>;
+    static constexpr bool is_contiguous = std::ranges::contiguous_range<TRng>;
+    static constexpr bool is_monotonic = kissra::is_monotonic_v<TRng>;
 
     constexpr explicit all_iter(TRng& rng)
         : cursor(std::ranges::begin(rng))
@@ -119,8 +123,8 @@ public:
         return this->sentinel;
     }
 
-    template <typename TIt>
-    constexpr void underlying_subrange_override(std::ranges::subrange<TIt> subrange) {
+    template <std::input_iterator TIt, std::sentinel_for<TIt> TSentinel>
+    constexpr void underlying_subrange_override(std::ranges::subrange<TIt, TSentinel> subrange) {
         this->cursor = subrange.begin();
         this->sentinel = subrange.end();
     }

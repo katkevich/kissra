@@ -48,6 +48,8 @@ constexpr bool is_bidir_v = std::remove_cvref_t<T>::is_bidir;
 template <typename T>
 constexpr bool is_random_v = std::remove_cvref_t<T>::is_random;
 
+template <typename T>
+constexpr bool is_contiguous_v = std::remove_cvref_t<T>::is_contiguous;
 
 /**
  * TArg   + T&& -> T&&
