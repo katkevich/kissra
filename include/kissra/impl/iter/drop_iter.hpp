@@ -11,6 +11,71 @@
 KISSRA_EXPORT()
 namespace kissra {
 template <typename TBaseIter, template <typename> typename... TMixins>
+class drop_iter;
+
+/* For `random` sequences it is cheap to evaluate the `cursor` position in ctor and NOT to store `n`. */
+template <typename TBaseIter, template <typename> typename... TMixins>
+    requires is_random_v<TBaseIter>
+class drop_iter<TBaseIter, TMixins...>
+    : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
+public:
+    using value_type = typename TBaseIter::value_type;
+    using reference = typename TBaseIter::reference;
+    using result_t = typename TBaseIter::result_t;
+    using cursor_t = typename TBaseIter::cursor_t;
+    using sentinel_t = typename TBaseIter::sentinel_t;
+
+    static constexpr bool is_sized = TBaseIter::is_sized;
+    static constexpr bool is_common = TBaseIter::is_common;
+    static constexpr bool is_forward = true;
+    static constexpr bool is_bidir = true;
+    static constexpr bool is_random = true;
+    static constexpr bool is_contiguous = TBaseIter::is_contiguous;
+    static constexpr bool is_monotonic = TBaseIter::is_monotonic;
+
+    template <typename UBaseIter>
+    constexpr drop_iter(UBaseIter&& base_iter, std::size_t n)
+        : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter)) {
+        this->base_iter.advance(n);
+    }
+
+    [[nodiscard]] constexpr result_t next() {
+        return this->base_iter.next();
+    }
+
+    [[nodiscard]] constexpr result_t next_back()
+        requires is_common
+    {
+        return this->base_iter.next_back();
+    }
+
+    [[nodiscard]] constexpr result_t nth(std::size_t n) {
+        return this->base_iter.nth(n);
+    }
+
+    [[nodiscard]] constexpr result_t nth_back(std::size_t n)
+        requires is_common
+    {
+        return this->base_iter.nth_back(n);
+    }
+
+    constexpr std::size_t advance(std::size_t n) {
+        return this->base_iter.advance(n);
+    }
+
+    constexpr std::size_t advance_back(std::size_t n) {
+        return this->base_iter.advance_back(n);
+    }
+
+    constexpr auto size() const
+        requires is_sized
+    {
+        return this->base_iter.size();
+    }
+};
+
+/* For non-`random` sequences it is NOT cheap to evaluate the `cursor`, hence we perform `advance` only when we must. */
+template <typename TBaseIter, template <typename> typename... TMixins>
 class drop_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;

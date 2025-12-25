@@ -14,37 +14,36 @@ using std::string_literals::operator""s;
 TEST_CASE("filter_iter::nth(0) should filter out an element but not move the cursor") {
     std::array arr = { 1, 2, 3, 4 };
 
-    auto iter = kissra::all(arr) //
-                    .filter(fn::even)
-                    .drop_while(fn::even)
-                    .reverse()
-                    .drop(5)
-                    .drop(5)
-                    .drop_while(fn::even)
-                    .reverse()
-                    .drop_last_while(fn::even)
-                    .reverse()
-                    .drop_last_while(fn::even)
-                    .filter(fn::odd)
-                    .reverse()
-                    .drop_last(1)
-                    .filter(fn::odd)
-                    .drop_last(1)
-                    .filter(fn::even)
-                    .transform(fn::to_chars)
-                    .transform([](const auto& s) { return s.size(); })
-                    .filter(fn::even)
-                    .chunk(2)
-                    .chunk(2)
-                    .filter([](const auto& s) { return true; })
-                    .zip(arr, arr)
-                    .zip(arr);
+    auto iter = kissra::all(arr)                                       // 16 bytes (2 pointers)
+                    .drop_last(1)                                      // random-access specialization take no space!
+                    .drop(1)                                           // random-access specialization take no space!
+                    .filter(fn::even)                                  // empty functor take no space!
+                    .drop_while(fn::even)                              // 8 bytes (`dropped` flag)
+                    .reverse()                                         // empty
+                    .drop(5)                                           // 8 bytes
+                    .drop(5)                                           // 8 bytes
+                    .drop_while(fn::even)                              // 8 bytes (`dropped` flag)
+                    .reverse()                                         // empty
+                    .drop_last_while(fn::even)                         // 8 bytes (`dropped` flag)
+                    .reverse()                                         // empty
+                    .drop_last_while(fn::even)                         // 8 bytes (`dropped` flag)
+                    .filter(fn::odd)                                   // empty functor take no space!
+                    .reverse()                                         // empty
+                    .drop_last(1)                                      // 8 bytes
+                    .filter(fn::odd)                                   // empty functor take no space!
+                    .drop_last(1)                                      // 8 bytes
+                    .filter(fn::even)                                  // empty functor take no space!
+                    .transform(fn::to_chars)                           // empty functor take no space!
+                    .transform([](const auto& s) { return s.size(); }) // empty functor take no space!
+                    .filter(fn::even)                                  // empty functor take no space!
+                    .chunk(2)                                          // 8 bytes - non-random specialization
+                    .chunk(2)                                          // 8 bytes - non-random specialization
+                    .filter([](const auto& s) { return true; })        // empty functor take no space!
+                    .zip(arr, arr)                                     // 32 bytes (4 pointers)
+                    .zip(arr);                                         // 16 bytes (2 pointers)
 
     constexpr auto s0 = sizeof(iter);
-    // 16 'all' + 16 'x2 drop_while' + 16 'x2 drop_last_while' + 16 'x2 drop' + 16 'x2 drop_last' +
-    // 16 'x2 chunk' + 48 'x3 zip'
-    // static_assert(sizeof(iter) == 16 + 16 + 16 + 16 + 16 + 16 + 48); // 144
-    static_assert(sizeof(iter) == 128); // it is in fact 128! (it "should" be 144 but it is not - likely `drop_last_while::dropped` share space with its base iter thanks to [[no_unique_address of `base_iter`]])
+    static_assert(sizeof(iter) == 128); //  "should" be 144 really - likely `drop_last_while::dropped` share space with its base iter thanks to [[no_unique_address of `base_iter`]])
     CHECK_LE(sizeof(iter), 144);
 
     // clang-format off
