@@ -11,28 +11,33 @@
 
 KISSRA_EXPORT()
 namespace kissra {
+template <typename T>
+struct take_range_iterator {
+    T base{};
+    std::size_t n{};
+};
+
+/* For non-`monotonic` or non-`random` sequences it is NOT cheap to evaluate the `sentinel` hence we only support `forward` iteration. */
 template <typename TBaseIter, template <typename> typename... TMixins>
-class take_iter : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
+class take_iter : public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
     using result_t = typename TBaseIter::result_t;
-    using underlying_cursor_t = typename TBaseIter::underlying_cursor_t;
-    using underlying_sentinel_t = typename TBaseIter::underlying_sentinel_t;
+    using cursor_t = take_range_iterator<typename TBaseIter::cursor_t>;
+    using sentinel_t = take_range_iterator<typename TBaseIter::sentinel_t>;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
     static constexpr bool is_common = TBaseIter::is_common;
     static constexpr bool is_forward = TBaseIter::is_forward;
-    /**
-     * In order to evaluate the "end" we would need to traverse the whole sequence which is bad,
-     * hence we only do that if underlying iterator is random-access.
-     */
     static constexpr bool is_bidir = false;
     static constexpr bool is_random = false;
+    static constexpr bool is_contiguous = false;
+    static constexpr bool is_monotonic = TBaseIter::is_monotonic;
 
     template <typename UBaseIter>
     constexpr take_iter(UBaseIter&& base_iter, std::size_t n)
-        : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter))
+        : base_iter(KISSRA_FWD(base_iter))
         , n(n) {}
 
     [[nodiscard]] constexpr result_t next() {
@@ -61,37 +66,65 @@ public:
         return std::min(this->base_iter.size(), this->n);
     }
 
+
+    constexpr auto underlying_cursor() const {
+        return take_range_iterator{ this->base_iter.underlying_cursor(), n };
+    }
+
+    constexpr auto underlying_sentinel() const {
+        return take_range_iterator{ this->base_iter.underlying_sentinel(), n };
+    }
+
+    constexpr void underlying_cursor_override(cursor_t cursor) {
+        this->n = cursor.n;
+        this->base_iter.underlying_cursor_override(cursor.base);
+    }
+
+    constexpr void underlying_sentinel_override(sentinel_t sentinel) {
+        this->n = sentinel.n;
+        this->base_iter.underlying_sentinel_override(sentinel.base);
+    }
+
+    constexpr auto& base() {
+        return this->base_iter;
+    }
+
 private:
+    [[no_unique_address]] TBaseIter base_iter;
     std::size_t n;
 };
 
-
+/* For `random` sequences it is cheap to evaluate the `sentinel` position in ctor and NOT to store `n`. */
 template <typename TBaseIter, template <typename> typename... TMixins>
-    requires is_random_v<TBaseIter>
+    requires(is_random_v<TBaseIter> && is_monotonic_v<TBaseIter>)
 class take_iter<TBaseIter, TMixins...>
     : public iter_base<TBaseIter>, public builtin_mixins<TBaseIter>, public TMixins<TBaseIter>... {
 public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
     using result_t = typename TBaseIter::result_t;
-    using underlying_cursor_t = typename TBaseIter::underlying_cursor_t;
-    using underlying_sentinel_t = typename TBaseIter::underlying_sentinel_t;
+    using cursor_t = typename TBaseIter::cursor_t;
+    using sentinel_t = typename TBaseIter::sentinel_t;
 
     static constexpr bool is_sized = true;
     static constexpr bool is_common = TBaseIter::is_common;
     static constexpr bool is_forward = true;
     static constexpr bool is_bidir = true;
     static constexpr bool is_random = true;
+    static constexpr bool is_contiguous = TBaseIter::is_contiguous;
+    static constexpr bool is_monotonic = true;
 
     template <typename UBaseIter>
     constexpr take_iter(UBaseIter&& base_iter, std::size_t n)
         : iter_base<TBaseIter>(std::forward<UBaseIter>(base_iter)) {
         this->base_iter.advance(0);
 
-        const auto size_min = std::min(this->base_iter.size(), n);
-        const auto cursor = this->base_iter.underlying_cursor();
+        const auto chunk_begin = this->base_iter.underlying_cursor();
+        this->base_iter.advance(n);
+        const auto chunk_end = this->base_iter.underlying_cursor();
 
-        this->base_iter.underlying_subrange_override(std::ranges::subrange{ cursor, cursor + size_min });
+        this->base_iter.underlying_sentinel_override(chunk_end);
+        this->base_iter.underlying_cursor_override(chunk_begin);
     }
 
     [[nodiscard]] constexpr result_t next() {

@@ -185,6 +185,45 @@ TEST_CASE("all(<forward iter>).take(N).chunk(M).next() where M < N should work")
     }
 }
 
+TEST_CASE("all(<forward iter>).reverse().take(N).chunk(M).next() where M < N should work") {
+    std::list arr = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+    auto iter = kissra::all(arr).reverse().take(5).chunk(2);
+
+    std::array expected = { std::vector{ 8, 7 }, std::vector{ 6, 5 }, std::vector{ 4 } };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(item->collect(), *expected_it++);
+    }
+}
+
+TEST_CASE("all(<random iter>).reverse().take(N).chunk(M).reverse().next() where M < N should work") {
+    std::array arr = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+    auto iter = kissra::all(arr).reverse().take(5).chunk(2).reverse();
+
+    std::array expected = { std::vector{ 4 }, std::vector{ 6, 5 }, std::vector{ 8, 7 } };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(item->collect(), *expected_it++);
+    }
+}
+
+TEST_CASE("all(<forward iter>).take(N).chunk(M).next() where M < N should work") {
+    std::list arr = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+    auto iter = kissra::all(arr).take(5).chunk(2);
+
+    std::array expected = { std::vector{ 1, 2 }, std::vector{ 3, 4 }, std::vector{ 5 } };
+    auto expected_it = expected.begin();
+
+    while (auto item = iter.next()) {
+        CHECK_EQ(item->collect(), *expected_it++);
+    }
+}
+
 TEST_CASE("all(<random access>).take(N).chunk(M).next_back() where M < N should work") {
     std::array arr = { 1, 2, 3, 4, 5, 6, 7, 8 };
 

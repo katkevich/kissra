@@ -17,7 +17,7 @@ namespace kissra {
  * for all non-trivial iterators out there: `take`, `zip` to name a few. For now it is not a priority.
  */
 template <typename T>
-struct reversed_range_iterator {
+struct reverse_range_iterator {
     T base{};
 };
 
@@ -28,8 +28,8 @@ public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
     using result_t = typename TBaseIter::result_t;
-    using cursor_t = reversed_range_iterator<typename TBaseIter::cursor_t>;
-    using sentinel_t = reversed_range_iterator<typename TBaseIter::sentinel_t>;
+    using cursor_t = reverse_range_iterator<typename TBaseIter::cursor_t>;
+    using sentinel_t = reverse_range_iterator<typename TBaseIter::sentinel_t>;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
     static constexpr bool is_common = TBaseIter::is_common;
@@ -85,13 +85,13 @@ public:
     constexpr auto underlying_cursor() const
         requires is_common
     {
-        return reversed_range_iterator{ this->base_iter.underlying_sentinel() };
+        return reverse_range_iterator{ this->base_iter.underlying_sentinel() };
     }
 
     constexpr auto underlying_sentinel() const
         requires is_common
     {
-        return reversed_range_iterator{ this->base_iter.underlying_cursor() };
+        return reverse_range_iterator{ this->base_iter.underlying_cursor() };
     }
 
     constexpr void underlying_cursor_override(cursor_t cursor)

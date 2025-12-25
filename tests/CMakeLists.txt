@@ -33,6 +33,7 @@ add_executable(kissra_tests
     src/members.cpp
     src/size.cpp
     src/sizeof.cpp
+    src/take.cpp
     src/transform.cpp
     src/values.cpp
     src/zip.cpp

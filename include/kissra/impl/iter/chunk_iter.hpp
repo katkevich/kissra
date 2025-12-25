@@ -34,11 +34,8 @@ public:
     static constexpr bool is_monotonic = true;
 
 private:
-    constexpr chunk(TBaseIter base_iter, cursor_t cursor, cursor_t sentinel)
-        : iter_base<TBaseIter>(std::move(base_iter)) {
-        this->base_iter.underlying_cursor_override(cursor);
-        this->base_iter.underlying_sentinel_override(sentinel);
-    }
+    constexpr chunk(TBaseIter base_iter)
+        : iter_base<TBaseIter>(std::move(base_iter)) {}
 
 public:
     [[nodiscard]] constexpr result_t next() {
@@ -116,7 +113,12 @@ public:
         }
         const auto chunk_end = this->base_iter.underlying_cursor();
 
-        return reference{ this->base_iter, chunk_begin, chunk_end };
+        auto result = reference{ this->base_iter };
+        /* Since `cursor` and `sentinel` may have state in it (e.g. see `take_iter`) it is crucial to set "before advancement" state last. */
+        result.base_iter.underlying_sentinel_override(chunk_end);
+        result.base_iter.underlying_cursor_override(chunk_begin);
+
+        return result;
     }
 
     [[nodiscard]] constexpr result_t next_back()
@@ -133,7 +135,12 @@ public:
         }
         const auto chunk_begin = this->base_iter.underlying_sentinel();
 
-        return reference{ this->base_iter, chunk_begin, chunk_end };
+        auto result = reference{ this->base_iter };
+        /* Since `cursor` and `sentinel` may have state in it (e.g. see `take_iter`) it is crucial to set "before advancement" state last. */
+        result.base_iter.underlying_cursor_override(chunk_begin);
+        result.base_iter.underlying_sentinel_override(chunk_end);
+
+        return result;
     }
 
     [[nodiscard]] constexpr result_t nth(std::size_t n)
@@ -149,7 +156,10 @@ public:
         }
         const auto chunk_end = this->base_iter.underlying_cursor();
 
-        reference nth_chunk{ this->base_iter, chunk_begin, chunk_end };
+        auto nth_chunk = reference{ this->base_iter };
+        /* Since `cursor` and `sentinel` may have state in it (e.g. see `take_iter`) it is crucial to set "before advancement" state last. */
+        nth_chunk.base_iter.underlying_sentinel_override(chunk_end);
+        nth_chunk.base_iter.underlying_cursor_override(chunk_begin);
 
         /* Chunk advancement consumed elements (moved the underlying cursor), so we need to restore cursor old position. */
         this->underlying_cursor_override(chunk_begin);
@@ -174,7 +184,10 @@ public:
         }
         const auto chunk_begin = this->base_iter.underlying_sentinel();
 
-        reference nth_chunk{ this->base_iter, chunk_begin, chunk_end };
+        auto nth_chunk = reference{ this->base_iter };
+        /* Since `cursor` and `sentinel` may have state in it (e.g. see `take_iter`) it is crucial to set "before advancement" state last. */
+        nth_chunk.base_iter.underlying_cursor_override(chunk_begin);
+        nth_chunk.base_iter.underlying_sentinel_override(chunk_end);
 
         /* Chunk advancement consumed elements (moved the underlying sentinel), so we need to restore sentinel old position. */
         this->underlying_sentinel_override(chunk_end);

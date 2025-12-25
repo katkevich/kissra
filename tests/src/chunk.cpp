@@ -311,7 +311,6 @@ TEST_CASE("all().zip(...).chunk(2).next_back() should work") {
     }
 }
 
-// TODO: ...and here (or not? we can't make chunk sized from std::list, coz chunk can be short and we need "random-access" to determine its size)
 TEST_CASE("all().zip(...).chunk(2).next_back() should work (iterate chunk in reverse)") {
     std::array arr = { 0, 1, 2, 3 };
     std::array lst = { 0.f, 1.f, 2.f };
