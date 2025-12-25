@@ -51,6 +51,9 @@ constexpr bool is_random_v = std::remove_cvref_t<T>::is_random;
 template <typename T>
 constexpr bool is_contiguous_v = std::remove_cvref_t<T>::is_contiguous;
 
+template <typename T>
+constexpr bool is_monotonic_v = std::remove_cvref_t<T>::is_monotonic;
+
 /**
  * TArg   + T&& -> T&&
  * TArg   + T&  -> T&

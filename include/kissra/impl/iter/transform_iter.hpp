@@ -18,12 +18,16 @@ public:
     using reference = kissra::invoke_result_t<TFn, base_reference>;
     using value_type = std::remove_cvref_t<reference>;
     using result_t = kissra::optional<reference>;
+    using cursor_t = typename TBaseIter::cursor_t;
+    using sentinel_t = typename TBaseIter::sentinel_t;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
     static constexpr bool is_common = TBaseIter::is_common;
     static constexpr bool is_forward = TBaseIter::is_forward;
     static constexpr bool is_bidir = TBaseIter::is_bidir;
     static constexpr bool is_random = TBaseIter::is_random;
+    static constexpr bool is_contiguous = false;
+    static constexpr bool is_monotonic = TBaseIter::is_monotonic;
 
     template <typename UBaseIter>
     constexpr transform_iter(UBaseIter&& base_iter, TFn fn)

@@ -255,7 +255,7 @@ TEST_CASE("all().chunk(2).chunk(2) should work") {
     std::array arr = { 0, 1, 2, 3, 4, 5, 6 };
 
     auto iter = kissra::all(arr).chunk(2).chunk(2);
-    
+
     auto expected = std::vector{
         std::vector{ std::vector{ 0, 1 }, std::vector{ 2, 3 } },
         std::vector{ std::vector{ 4, 5 }, std::vector{ 6 } },
@@ -266,6 +266,109 @@ TEST_CASE("all().chunk(2).chunk(2) should work") {
         auto expected_inner_it = (expected_outer_it++)->begin();
         while (auto inner_chunk = outer_chunk->next()) {
             CHECK_EQ(inner_chunk->collect(), *expected_inner_it++);
+        }
+    }
+}
+
+TEST_CASE("all().zip(...).chunk(2).next() should work") {
+    std::array arr = { 0, 1, 2, 3 };
+    std::list lst = { 0.f, 1.f, 2.f };
+
+    auto iter = kissra::zip(arr, lst).chunk(2);
+
+    auto expected = std::vector{
+        std::vector{ std::tuple{ 0, 0.f }, std::tuple{ 1, 1.f } },
+        std::vector{ std::tuple{ 2, 2.f } },
+    };
+    auto expected_outer_it = expected.begin();
+
+    while (auto chunk = iter.next()) {
+        auto expected_inner_it = (expected_outer_it++)->begin();
+        while (auto tuple = chunk->next()) {
+            CHECK_EQ(*tuple, *expected_inner_it++);
+        }
+    }
+}
+
+// TODO: try to fix 'is_sized' (it should work here ideally, but it will be tricky to make it work) & test
+TEST_CASE("all().zip(...).chunk(2).next_back() should work") {
+    std::array arr = { 0, 1, 2, 3 };
+    std::array lst = { 0.f, 1.f, 2.f };
+
+    auto iter = kissra::zip(arr, lst).chunk(2);
+
+    auto expected = std::vector{
+        std::vector{ std::tuple{ 2, 2.f } },
+        std::vector{ std::tuple{ 0, 0.f }, std::tuple{ 1, 1.f } },
+    };
+    auto expected_outer_it = expected.begin();
+
+    while (auto chunk = iter.next_back()) {
+        auto expected_inner_it = (expected_outer_it++)->begin();
+        while (auto tuple = chunk->next()) {
+            CHECK_EQ(*tuple, *expected_inner_it++);
+        }
+    }
+}
+
+// TODO: ...and here (or not? we can't make chunk sized from std::list, coz chunk can be short and we need "random-access" to determine its size)
+TEST_CASE("all().zip(...).chunk(2).next_back() should work (iterate chunk in reverse)") {
+    std::array arr = { 0, 1, 2, 3 };
+    std::array lst = { 0.f, 1.f, 2.f };
+
+    auto iter = kissra::zip(arr, lst).chunk(2);
+
+    auto expected = std::vector{
+        std::vector{ std::tuple{ 1, 1.f }, std::tuple{ 0, 0.f } },
+        std::vector{ std::tuple{ 2, 2.f } },
+    };
+    auto expected_outer_it = expected.begin();
+
+    while (auto chunk = iter.next()) {
+        auto expected_inner_it = (expected_outer_it++)->begin();
+        while (auto tuple = chunk->next_back()) {
+            CHECK_EQ(*tuple, *expected_inner_it++);
+        }
+    }
+}
+
+
+TEST_CASE("all().zip(...).reverse().chunk(2).next() should work (zipped array has same length)") {
+    std::array arr = { 0, 1, 2 };
+    std::array lst = { 0.f, 1.f, 2.f };
+
+    auto iter = kissra::zip(arr, lst).reverse().chunk(2);
+
+    auto expected = std::vector{
+        std::vector{ std::tuple{ 2, 2.f }, std::tuple{ 1, 1.f } },
+        std::vector{ std::tuple{ 0, 0.f } },
+    };
+    auto expected_outer_it = expected.begin();
+
+    while (auto chunk = iter.next()) {
+        auto expected_inner_it = (expected_outer_it++)->begin();
+        while (auto tuple = chunk->next()) {
+            CHECK_EQ(*tuple, *expected_inner_it++);
+        }
+    }
+}
+
+TEST_CASE("all().zip(...).reverse().chunk(2).next() should work (zipped array has different length)") {
+    std::array arr = { 0, 1, 2, 3, 4 };
+    std::array lst = { 0.f, 1.f, 2.f };
+
+    auto iter = kissra::zip(arr, lst).reverse().chunk(2);
+
+    auto expected = std::vector{
+        std::vector{ std::tuple{ 2, 2.f }, std::tuple{ 1, 1.f } },
+        std::vector{ std::tuple{ 0, 0.f } },
+    };
+    auto expected_outer_it = expected.begin();
+
+    while (auto chunk = iter.next()) {
+        auto expected_inner_it = (expected_outer_it++)->begin();
+        while (auto tuple = chunk->next()) {
+            CHECK_EQ(*tuple, *expected_inner_it++);
         }
     }
 }

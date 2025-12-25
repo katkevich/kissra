@@ -2,6 +2,7 @@
 #include "kissra/impl/export.hpp"
 #include "kissra/misc/functional.hpp"
 #include "kissra/misc/type_list.hpp"
+#include "kissra/ranges_traits.hpp"
 #include "kissra/type_traits.hpp"
 
 #ifndef KISSRA_MODULE
@@ -83,8 +84,16 @@ template <typename T>
 concept composition_root = impl::composition_root<std::remove_reference_t<T>>;
 
 
+template <typename TRng>
+concept monotonic_range = kissra::is_monotonic_range_v<std::remove_cvref_t<TRng>>;
+
+
 template <typename T>
 concept mut = !std::is_const<std::remove_reference_t<T>>::value;
+
+template <typename T, typename U>
+concept not_the_same = !std::is_same_v<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
+
 
 template <typename T, typename TValue>
 concept can_push_back = std::ranges::range<T> && requires(T rng, TValue val) { rng.push_back(val); };

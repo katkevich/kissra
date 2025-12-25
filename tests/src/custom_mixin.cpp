@@ -20,6 +20,12 @@ public:
     using value_type = std::tuple<std::int64_t, typename TBaseIter::reference>;
     using reference = std::tuple<std::int64_t, typename TBaseIter::reference>;
     using result_t = kissra::optional<reference>;
+    /**
+     *  TODO: this is not quite right - we need to implement custom cursor & sentinel and store `n` inside so that
+     * `custom_enumerate_iter` can cooperate with `chunk_iter`.
+     */
+    using cursor_t = typename TBaseIter::cursor_t;
+    using sentinel_t = typename TBaseIter::sentinel_t;
 
     /**
      * Add support for "size" to illustrate the possibility to intermix custom mixins with builtin ones.
@@ -34,6 +40,8 @@ public:
     static constexpr bool is_forward = false;
     static constexpr bool is_bidir = false;
     static constexpr bool is_random = false;
+    static constexpr bool is_contiguous = false;
+    static constexpr bool is_monotonic = true;
 
     template <typename UBaseIter>
     custom_enumerate_iter(UBaseIter&& base_iter)

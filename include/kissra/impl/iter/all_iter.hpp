@@ -18,6 +18,8 @@ public:
     using value_type = std::ranges::range_value_t<TRng>;
     using reference = std::ranges::range_reference_t<TRng>;
     using result_t = kissra::optional<reference>;
+    using cursor_t = std::ranges::iterator_t<TRng>;
+    using sentinel_t = std::ranges::sentinel_t<TRng>;
 
     /* We need to be able to evaluate the size from iterators. Having member `size` is not enough in a general case. */
     static constexpr bool is_sized = std::ranges::random_access_range<TRng>;
@@ -26,7 +28,7 @@ public:
     static constexpr bool is_bidir = std::ranges::bidirectional_range<TRng>;
     static constexpr bool is_random = std::ranges::random_access_range<TRng>;
     static constexpr bool is_contiguous = std::ranges::contiguous_range<TRng>;
-    static constexpr bool is_monotonic = kissra::is_monotonic_v<TRng>;
+    static constexpr bool is_monotonic = kissra::monotonic_range<TRng>;
 
     constexpr explicit all_iter(TRng& rng)
         : cursor(std::ranges::begin(rng))
@@ -111,9 +113,6 @@ public:
         return std::size_t(this->sentinel - this->cursor);
     }
 
-    constexpr auto underlying_subrange() const {
-        return std::ranges::subrange{ this->cursor, this->sentinel };
-    }
 
     constexpr auto underlying_cursor() const {
         return this->cursor;
@@ -123,15 +122,17 @@ public:
         return this->sentinel;
     }
 
-    template <std::input_iterator TIt, std::sentinel_for<TIt> TSentinel>
-    constexpr void underlying_subrange_override(std::ranges::subrange<TIt, TSentinel> subrange) {
-        this->cursor = subrange.begin();
-        this->sentinel = subrange.end();
+    constexpr void underlying_cursor_override(cursor_t cursor) {
+        this->cursor = cursor;
+    }
+
+    constexpr void underlying_sentinel_override(sentinel_t sentinel) {
+        this->sentinel = sentinel;
     }
 
 private:
-    std::ranges::iterator_t<TRng> cursor{};
-    std::ranges::sentinel_t<TRng> sentinel{};
+    cursor_t cursor;
+    sentinel_t sentinel;
 };
 
 template <std::ranges::range TRng, typename DeferInstantiation = void>

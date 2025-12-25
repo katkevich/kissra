@@ -12,8 +12,11 @@ template <typename Tag>
 struct empty_mixin {
     template <kissra::mut TSelf>
     constexpr bool empty(this TSelf&& self) {
-        self.advance(0);
-        return self.underlying_subrange().empty();
+        // self.advance(0);
+        // return self.underlying_subrange().empty();
+
+        // TODO: try make it non-advancing (using cursor & sentinel - could be tricky, given different cursor & sentinel types out there: take, zip, reverse to name a few)
+        return self.advance(1) == 0;
     }
 
     template <typename TSelf>

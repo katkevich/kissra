@@ -7,10 +7,10 @@
 KISSRA_EXPORT()
 namespace kissra {
 template <typename TRng>
-struct is_monotonic {
+struct is_monotonic_range {
     static constexpr bool value = true;
 };
 
 template <typename TRng>
-constexpr bool is_monotonic_v = is_monotonic<TRng>::value;
+constexpr bool is_monotonic_range_v = is_monotonic_range<TRng>::value;
 } // namespace kissra

@@ -16,12 +16,16 @@ public:
     using value_type = typename TBaseIter::value_type;
     using reference = typename TBaseIter::reference;
     using result_t = typename TBaseIter::result_t;
+    using cursor_t = typename TBaseIter::cursor_t;
+    using sentinel_t = typename TBaseIter::sentinel_t;
 
     static constexpr bool is_sized = TBaseIter::is_sized;
     static constexpr bool is_common = TBaseIter::is_common;
     static constexpr bool is_forward = TBaseIter::is_forward;
     static constexpr bool is_bidir = TBaseIter::is_bidir;
     static constexpr bool is_random = TBaseIter::is_random;
+    static constexpr bool is_contiguous = TBaseIter::is_contiguous;
+    static constexpr bool is_monotonic = TBaseIter::is_monotonic;
 
     template <typename UBaseIter>
     constexpr drop_last_iter(UBaseIter&& base_iter, std::size_t n)

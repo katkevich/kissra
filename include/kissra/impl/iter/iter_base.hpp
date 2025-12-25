@@ -19,9 +19,6 @@ public:
     constexpr iter_base(UBaseIter&& base_iter)
         : base_iter(std::forward<UBaseIter>(base_iter)) {}
 
-    constexpr auto underlying_subrange() const {
-        return this->base_iter.underlying_subrange();
-    }
 
     constexpr auto underlying_cursor() const {
         return this->base_iter.underlying_cursor();
@@ -31,9 +28,14 @@ public:
         return this->base_iter.underlying_sentinel();
     }
 
-    template <std::input_iterator TIt, std::sentinel_for<TIt> TSentinel>
-    constexpr void underlying_subrange_override(std::ranges::subrange<TIt, TSentinel> subrange) {
-        this->base_iter.underlying_subrange_override(subrange);
+    template <typename TSelf, typename T>
+    constexpr void underlying_cursor_override(this TSelf&& self, T cursor) {
+        self.base_iter.underlying_cursor_override(cursor);
+    }
+
+    template <typename TSelf, typename T>
+    constexpr void underlying_sentinel_override(this TSelf&& self, T sentinel) {
+        self.base_iter.underlying_sentinel_override(sentinel);
     }
 
     template <typename TSelf>
